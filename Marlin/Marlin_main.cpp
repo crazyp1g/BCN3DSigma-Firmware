@@ -261,7 +261,7 @@ int version_number;
 
 int raft_line = 0;
 int raft_line_counter = 0;
-
+int raft_line_counter_g = 0;
 #ifdef RECOVERY_PRINT
 
 float saved_x_position;
@@ -2585,18 +2585,20 @@ void get_command()
 					raft_line++;
 					if(raft_line == 1){
 						fileraftstart = card.getIndex()-serial_count;
+						raft_line_counter_g = 1;
 						raft_line_counter = 1;
 						Serial.print("raft line: ");
 						Serial.println(raft_line);
 						/*Serial.print("fileraftstart: ");
 						Serial.println(fileraftstart);*/
 						}else if(raft_line%2 == 0){
-						raft_line_counter++;
+						raft_line_counter_g++;
 						serial_count = MAX_CMD_SIZE;
 						comment_mode = true;
 						memset( cmdbuffer[bufindw], '\0', sizeof(cmdbuffer[bufindw]));
 						card.setIndex(fileraftstart);
-						strcpy_P(cmdbuffer[bufindw], PSTR("G92 E0 Z0"));
+						char string[MAX_CMD_SIZE];
+						sprintf_P(cmdbuffer[bufindw], PSTR("G92 E0 Z0 R%d"), raft_line_counter_g);
 						/*
 						Serial.print("raft line: ");
 						Serial.println(raft_line_counter);
@@ -5398,6 +5400,10 @@ inline void gcode_G92(){
 			}
 		}
 	}
+	if (code_seen('R')) {
+		raft_line_counter = (int) code_value();
+	}
+	
 }
 
 #pragma endregion GCODES
@@ -5508,6 +5514,7 @@ inline void gcode_M24(){
 	feedmultiply = 100;
 	raft_line = 0;
 	raft_line_counter = 0;
+	raft_line_counter_g = 0;
 	x0mmdone = 0;
 	x1mmdone = 0;
 	ymmdone = 0;
@@ -8106,7 +8113,7 @@ void process_commands()
 	#ifdef ENABLE_AUTO_BED_LEVELING
 	float x_tmp, y_tmp, z_tmp, real_z;
 	#endif
-	//Serial.println(cmdbuffer[bufindr]);
+	Serial.println(cmdbuffer[bufindr]);
 	
 	if(code_seen('G'))
 	{
@@ -9085,7 +9092,7 @@ void prepare_move()
 				}else{
 				// 2 possible situations
 				if(extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0){ // enable first tool 0, because is further(to the bed) than tool 1
-					if(destination[Z_AXIS] > (0.12 - extruder_offset[Z_AXIS][RIGHT_EXTRUDER])){
+					if((destination[Z_AXIS]*raft_line_counter) > (0.12 - extruder_offset[Z_AXIS][RIGHT_EXTRUDER])){
 						if(!Flag_Raft_Dual_Mode_On){
 							dual_mode_duplication_extruder_parked();
 							}else{
@@ -9116,7 +9123,7 @@ void prepare_move()
 					}
 					
 					}else{			// enable first tool 1, because is further(to the bed) than tool 0
-					if(destination[Z_AXIS] > (0.12 + extruder_offset[Z_AXIS][RIGHT_EXTRUDER])){
+					if((destination[Z_AXIS]*raft_line_counter) > (0.12 + extruder_offset[Z_AXIS][RIGHT_EXTRUDER])){
 						if(!Flag_Raft_Dual_Mode_On){
 							dual_mode_duplication_extruder_parked();
 							}else{
@@ -9224,6 +9231,8 @@ void prepare_move()
 							Flag_Raft_Dual_Mode_On = true;
 							current_position[E_AXIS]-=3;
 							plan_set_e_position(current_position[E_AXIS]);
+							Serial.print("FeedRate after park: ");
+							Serial.println(feedrate);
 						}
 						}else{
 						
