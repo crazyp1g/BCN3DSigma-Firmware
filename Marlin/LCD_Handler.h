@@ -80,6 +80,14 @@ int Temp_ChangeFilament_Saved = 0;
 int Tref1 = 0;
 int Tfinal1 = 0;
 int  print_setting_tool = 2;
+// Bed compensation
+inline void Bed_Compensation_Set_Lines(int jint);
+inline void Bed_Compensation_Redo_Lines(int jint);
+int8_t Bed_Compensation_Lines_Selected[3] = {0,0,0};
+uint8_t Bed_Compensation_state = 0;// state 0: First Bed Calib, state 1: ZL Calib, state 2: Bed Compensation Back, state 3: Bed Compensation Front Left, state 4: Bed Compensation Front Right
+bool FLAG_Bed_Compensation_Mode = false;
+// end Bed compensation
+
 float offset_calib_manu[4] = {0.0,0.0,0.0,0.0};
 unsigned int calib_value_selected;
 float offset_x_calib = 0;
@@ -1273,7 +1281,137 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						}
 						
 					}
-					}else{//All that has to be done out of the printing room
+					}else if(FLAG_Bed_Compensation_Mode && (Bed_Compensation_state > 1)){
+							SERIAL_PROTOCOLPGM("Bed_Compensation_Lines_Selected[0]");
+							Serial.println(Bed_Compensation_Lines_Selected[0]);
+							SERIAL_PROTOCOLPGM("Bed_Compensation_Lines_Selected[1]");
+							Serial.println(Bed_Compensation_Lines_Selected[1]);
+							SERIAL_PROTOCOLPGM("Bed_Compensation_Lines_Selected[2]");
+							Serial.println(Bed_Compensation_Lines_Selected[2]);
+						if(Event.reportObject.index == BUTTON_Z_LEFT_SELECT1){
+							if (millis() >= waitPeriod_button_press){
+								waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+								Bed_Compensation_Set_Lines(-2);
+								
+							}
+							
+						}
+						else if(Event.reportObject.index == BUTTON_Z_LEFT_SELECT2){
+							if (millis() >= waitPeriod_button_press){
+								waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+								Bed_Compensation_Set_Lines(-1);
+								
+							}
+						}
+						else if(Event.reportObject.index == BUTTON_Z_LEFT_SELECT3){
+							if (millis() >= waitPeriod_button_press){
+								waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+								Bed_Compensation_Set_Lines(0);
+								
+							}
+						}
+						else if(Event.reportObject.index == BUTTON_Z_LEFT_SELECT4){
+							if (millis() >= waitPeriod_button_press){
+								waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+								Bed_Compensation_Set_Lines(1);
+								
+							}
+						}
+						else if(Event.reportObject.index == BUTTON_Z_LEFT_SELECT5){
+							if (millis() >= waitPeriod_button_press){
+								waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+								Bed_Compensation_Set_Lines(2);
+								
+							}
+							
+						}
+						else if(Event.reportObject.index == BUTTON_REDO_Z_1){
+							if (millis() >= waitPeriod_button_press){
+								waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+								Bed_Compensation_Redo_Lines(-3);
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_LEFT_Z_TEST,0);
+							}
+							
+						}
+						else if(Event.reportObject.index == BUTTON_REDO_Z_5){
+							if (millis() >= waitPeriod_button_press){
+								waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+								Bed_Compensation_Redo_Lines(3);
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_LEFT_Z_TEST,0);
+							}
+						}
+						else if(Event.reportObject.index == BUTTON_REDO_Z){
+							if (millis() >= waitPeriod_button_press){
+								waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+								Bed_Compensation_Redo_Lines(0);
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_LEFT_Z_TEST,0);
+							}
+						}
+						else if(Event.reportObject.index == BUTTON_CLEAN_BED){
+							if (millis() >= waitPeriod_button_press){
+								waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+								redo_source = 0;
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_CLEAN_BED,0);
+							}
+						}
+						else if (Event.reportObject.index == BUTTON_INFO_TURN_SCREWS_FIRST){
+							gif_processing_state = PROCESSING_STOP;
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_CALIB_BED_SCREW2,0);
+							int8_t vuitensL = 0;
+							int8_t vuitensR = 0;
+							vuitensL = Bed_Compensation_Lines_Selected[1]-Bed_Compensation_Lines_Selected[0];
+							vuitensR = Bed_Compensation_Lines_Selected[2]-Bed_Compensation_Lines_Selected[0];
+							if(vuitensL != 0){
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_CALIB_BED_SCREW2,0);
+								if(vuitensL < 0){
+									abs(vuitensL) + 8;
+								}
+								genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_SCREW2,vuitensL);
+								
+							}
+							else if(vuitensR != 0){
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_CALIB_BED_SCREW3,0);
+								if(vuitensR < 0){
+									abs(vuitensR) + 8;
+								}
+								genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_SCREW3,vuitensR);
+							}
+							else{
+								genie.WriteObject(GENIE_OBJ_FORM, FORM_CAL_WIZARD_DONE_GOOD, 0);
+								gif_processing_state = PROCESSING_BED_SUCCESS;
+							}
+							
+						}
+						else if (Event.reportObject.index == BUTTON_BED_CALIB_SW3){
+							int8_t vuitensR = 0;
+							vuitensR = Bed_Compensation_Lines_Selected[2]-Bed_Compensation_Lines_Selected[0];
+							if(vuitensR != 0){
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_CALIB_BED_SCREW3,0);
+								if(vuitensR < 0){
+									abs(vuitensR) + 8;
+								}
+								genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_SCREW3,vuitensR);
+							}
+							else{
+								genie.WriteObject(GENIE_OBJ_FORM, FORM_CAL_WIZARD_DONE_GOOD, 0);
+								gif_processing_state = PROCESSING_BED_SUCCESS;
+							}
+						}
+						else if (Event.reportObject.index == BUTTON_REDO_BED_CALIB){
+							genie.WriteObject(GENIE_OBJ_FORM, FORM_CAL_WIZARD_DONE_GOOD, 0);
+							gif_processing_state = PROCESSING_BED_SUCCESS;
+						}
+						else if (Event.reportObject.index == BUTTON_BED_CALIB_SUCCESS )
+						{
+							Bed_Compensation_state = 0;
+							FLAG_Bed_Compensation_Mode = 0;
+							gif_processing_state = PROCESSING_STOP;
+							genie.WriteObject(GENIE_OBJ_FORM, FORM_FULL_CAL_ZR, 0);
+						}
+							
+						
+					}
+					else{//All that has to be done out of the printing room
 					
 					
 					
@@ -4353,14 +4491,26 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						if (millis() >= waitPeriod_button_press){
 							manual_fine_calib_offset[2]=0.0;
 							manual_fine_calib_offset[3]=0.0;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_ZR,0);
-							if(Step_First_Start_Wizard){
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZR_SKIP,1);
+							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+							if(FLAG_Bed_Compensation_Mode){
+								Bed_Compensation_state = 2;
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+								gif_processing_state = PROCESSING_TEST;
+								}else{
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_ZR,0);
+								if(Step_First_Start_Wizard){
+									genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZR_SKIP,1);
+								}
+								active_extruder = RIGHT_EXTRUDER;
 							}
-							active_extruder = RIGHT_EXTRUDER;
 							zprobe_zoffset+=0.05;
 							Config_StoreSettings(); //Store changes
-							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+							
+							if(FLAG_Bed_Compensation_Mode) {
+								bed_test_print_code(0, 0, 0);
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_LEFT_Z_TEST,0);
+								gif_processing_state = PROCESSING_STOP;
+							}
 						}
 						
 					}
@@ -4368,13 +4518,24 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						if (millis() >= waitPeriod_button_press){
 							manual_fine_calib_offset[2]=0.0;
 							manual_fine_calib_offset[3]=0.0;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_ZR,0);
-							if(Step_First_Start_Wizard){
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZR_SKIP,1);
+							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+							if(FLAG_Bed_Compensation_Mode){
+								Bed_Compensation_state = 2;
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+								gif_processing_state = PROCESSING_TEST;
+								}else{
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_ZR,0);
+								if(Step_First_Start_Wizard){
+									genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZR_SKIP,1);
+								}
+								active_extruder = RIGHT_EXTRUDER;
 							}
 							
-							active_extruder = RIGHT_EXTRUDER;
-							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+							if(FLAG_Bed_Compensation_Mode) {
+								bed_test_print_code(0, 0, 0);
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_LEFT_Z_TEST,0);
+								gif_processing_state = PROCESSING_STOP;
+							}
 						}
 						
 						
@@ -4383,44 +4544,76 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						if (millis() >= waitPeriod_button_press){
 							manual_fine_calib_offset[2]=0.0;
 							manual_fine_calib_offset[3]=0.0;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_ZR,0);
-							if(Step_First_Start_Wizard){
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZR_SKIP,1);
+							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+							if(FLAG_Bed_Compensation_Mode){
+								Bed_Compensation_state = 2;
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+								gif_processing_state = PROCESSING_TEST;
+							}else{
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_ZR,0);
+								if(Step_First_Start_Wizard){
+									genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZR_SKIP,1);
+								}
+								active_extruder = RIGHT_EXTRUDER;
 							}
 							
-							active_extruder = RIGHT_EXTRUDER;
 							zprobe_zoffset-=0.05;
 							Config_StoreSettings(); //Store changes
-							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+							if(FLAG_Bed_Compensation_Mode) {
+								bed_test_print_code(0, 0, 0);
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_LEFT_Z_TEST,0);
+								gif_processing_state = PROCESSING_STOP;
+							}
 						}
 					}
 					else if(Event.reportObject.index == BUTTON_Z_LEFT_SELECT4){
 						if (millis() >= waitPeriod_button_press){
 							manual_fine_calib_offset[2]=0.0;
 							manual_fine_calib_offset[3]=0.0;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_ZR,0);
-							if(Step_First_Start_Wizard){
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZR_SKIP,1);
+							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+							if(FLAG_Bed_Compensation_Mode){
+								Bed_Compensation_state = 2;
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+								gif_processing_state = PROCESSING_TEST;
+								}else{
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_ZR,0);
+								if(Step_First_Start_Wizard){
+									genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZR_SKIP,1);
+								}
+								active_extruder = RIGHT_EXTRUDER;
 							}
-							active_extruder = RIGHT_EXTRUDER;
 							zprobe_zoffset-=0.1;
 							Config_StoreSettings(); //Store changes
-							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+							if(FLAG_Bed_Compensation_Mode) {
+								bed_test_print_code(0, 0, 0);
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_LEFT_Z_TEST,0);
+								gif_processing_state = PROCESSING_STOP;
+							}
 						}
 					}
 					else if(Event.reportObject.index == BUTTON_Z_LEFT_SELECT5){
 						if (millis() >= waitPeriod_button_press){
 							manual_fine_calib_offset[2]=0.0;
 							manual_fine_calib_offset[3]=0.0;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_ZR,0);
-							if(Step_First_Start_Wizard){
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZR_SKIP,1);
+							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+							if(FLAG_Bed_Compensation_Mode){
+								Bed_Compensation_state = 2;
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+								gif_processing_state = PROCESSING_TEST;
+								}else{
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_ZR,0);
+								if(Step_First_Start_Wizard){
+									genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZR_SKIP,1);
+								}
+								active_extruder = RIGHT_EXTRUDER;
 							}
-							
-							active_extruder = RIGHT_EXTRUDER;
 							zprobe_zoffset-=0.15;
 							Config_StoreSettings(); //Store changes
-							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+							if(FLAG_Bed_Compensation_Mode) {
+								bed_test_print_code(0, 0, 0);
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_LEFT_Z_TEST,0);
+								gif_processing_state = PROCESSING_STOP;
+							}
 						}
 						
 					}
@@ -6093,6 +6286,77 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 			workDir_vector_lenght--;
 
 		}
+	}
+	inline void Bed_Compensation_Set_Lines(int jint){
+		if(Bed_Compensation_state == 2){
+			Bed_Compensation_state = 3;
+			genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+			gif_processing_state = PROCESSING_TEST;
+			Bed_Compensation_Lines_Selected[0]+=jint;
+			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+			bed_test_print_code(-84.0,-220.0, 0);
+			#else
+			bed_test_print_code(-184.0,-220.0, 0);
+			#endif
+			
+			genie.WriteObject(GENIE_OBJ_FORM,FORM_LEFT_Z_TEST,0);
+			gif_processing_state = PROCESSING_STOP;
+			}
+			else if(Bed_Compensation_state == 3){
+			Bed_Compensation_state = 4;
+			genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+			gif_processing_state = PROCESSING_TEST;
+			Bed_Compensation_Lines_Selected[1]+=jint;
+			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+			bed_test_print_code(82.0,-220.0, 0);
+			#else
+			bed_test_print_code(192.0,-220.0, 0);
+			#endif
+			genie.WriteObject(GENIE_OBJ_FORM,FORM_LEFT_Z_TEST,0);
+			gif_processing_state = PROCESSING_STOP;
+		}
+		else if(Bed_Compensation_state == 4){
+			Bed_Compensation_Lines_Selected[2]+=jint;
+			genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_TURN_SCREWS_FIRST,0);
+			gif_processing_state = PROCESSING_BED_FIRST;
+			
+		}
+		
+	}
+	inline void Bed_Compensation_Redo_Lines(int jint){
+		if(Bed_Compensation_state == 2){
+			genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+			gif_processing_state = PROCESSING_TEST;
+			Bed_Compensation_Lines_Selected[0]+=jint;
+			bed_test_print_code(0, 0, 0);
+			genie.WriteObject(GENIE_OBJ_FORM,FORM_LEFT_Z_TEST,0);
+			gif_processing_state = PROCESSING_STOP;
+			}
+		else if(Bed_Compensation_state == 3){
+			genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+			gif_processing_state = PROCESSING_TEST;
+			Bed_Compensation_Lines_Selected[1]+=jint;
+			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+			bed_test_print_code(-84.0,-220.0, Bed_Compensation_Lines_Selected[1]);
+			#else
+			bed_test_print_code(-184.0,-220.0, Bed_Compensation_Lines_Selected[1]);
+			#endif
+			genie.WriteObject(GENIE_OBJ_FORM,FORM_LEFT_Z_TEST,0);
+			gif_processing_state = PROCESSING_STOP;
+		}
+		else if(Bed_Compensation_state == 4){
+			genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+			gif_processing_state = PROCESSING_TEST;		
+			Bed_Compensation_Lines_Selected[2]+=jint;
+			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+			bed_test_print_code(82.0,-220.0, Bed_Compensation_Lines_Selected[2]);
+			#else
+			bed_test_print_code(192.0,-220.0, Bed_Compensation_Lines_Selected[2]);
+			#endif
+			genie.WriteObject(GENIE_OBJ_FORM,FORM_LEFT_Z_TEST,0);
+			gif_processing_state = PROCESSING_STOP;
+		}
+		
 	}
 
 	#endif /* INCLUDE */
