@@ -1364,7 +1364,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							if(vuitensL != 0){
 								genie.WriteObject(GENIE_OBJ_FORM,FORM_CALIB_BED_SCREW2,0);
 								if(vuitensL < 0){
-									abs(vuitensL) + 8;
+									vuitensL = abs(vuitensL) + 8;
 								}
 								genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_SCREW2,vuitensL);
 								
@@ -1372,7 +1372,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							else if(vuitensR != 0){
 								genie.WriteObject(GENIE_OBJ_FORM,FORM_CALIB_BED_SCREW3,0);
 								if(vuitensR < 0){
-									abs(vuitensR) + 8;
+									vuitensR = abs(vuitensR) + 8;
 								}
 								genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_SCREW3,vuitensR);
 							}
@@ -1388,7 +1388,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							if(vuitensR != 0){
 								genie.WriteObject(GENIE_OBJ_FORM,FORM_CALIB_BED_SCREW3,0);
 								if(vuitensR < 0){
-									abs(vuitensR) + 8;
+									vuitensR = abs(vuitensR) + 8;
 								}
 								genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_SCREW3,vuitensR);
 							}
@@ -4926,7 +4926,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							
 						}
 					}
-					else if(Event.reportObject.index == BUTTON_FULL_CAL_ZL_SKIP && !Step_First_Start_Wizard){
+					else if(Event.reportObject.index == BUTTON_FULL_CAL_ZL_SKIP && !Step_First_Start_Wizard && !FLAG_Bed_Compensation_Mode){
 						if (millis() >= waitPeriod_button_press){
 							
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_ZR,0);
@@ -5439,7 +5439,6 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 							
 							gif_processing_state = PROCESSING_STOP;
-							gif_processing_state = PROCESSING_STOP;
 							touchscreen_update();
 							if (FLAG_CalibFull){
 								bed_calibration_times = 0;
@@ -5459,7 +5458,11 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								enquecommand_P(PSTR("T0"));
 								gif_processing_state = PROCESSING_STOP;
 								genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_ZL,0);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZL_SKIP,0);
 								if(Step_First_Start_Wizard){
+									genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZL_SKIP,1);
+								}else if(FLAG_Bed_Compensation_Mode){
+									Bed_Compensation_state = 1;
 									genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZL_SKIP,1);
 								}
 								

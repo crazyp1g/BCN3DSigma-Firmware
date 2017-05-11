@@ -334,7 +334,7 @@ extern bool cancel_heatup;
 //extern unsigned long previous_millis_cmd;
 extern void right_test_print_code();
 extern void left_test_print_code();
-extern void bed_test_print_code(float x_offset, float y_offset, int8_t zline);
+extern void bed_test_print_code(float x_offset, float y_offset, int zline);
 extern bool heatting;
 extern char namefilegcode[24];
 

@@ -262,6 +262,8 @@ int version_number;
 int raft_line = 0;
 int raft_line_counter = 0;
 int raft_line_counter_g = 0;
+bool Flag_raft_last_line = false;
+float raft_extrusion_adjusting = 1.0;
 #ifdef RECOVERY_PRINT
 
 float saved_x_position;
@@ -4898,6 +4900,7 @@ inline void gcode_G34(){
 			enquecommand_P(PSTR("T0"));
 			gif_processing_state = PROCESSING_STOP;
 			genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_ZL,0);
+			genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZL_SKIP,0);
 			if(Step_First_Start_Wizard){
 				genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZL_SKIP,1);
 			}
@@ -4920,9 +4923,9 @@ inline void gcode_G34(){
 			enquecommand_P(PSTR("T0"));
 			gif_processing_state = PROCESSING_STOP;
 			genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_ZL,0);
-			if(Step_First_Start_Wizard){
-				genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZL_SKIP,1);
-			}
+			
+			genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZL_SKIP,1);
+				
 			
 			flag_continue_calib = true;
 			Bed_Compensation_state = 1;
@@ -5559,6 +5562,8 @@ inline void gcode_M24(){
 	raft_line = 0;
 	raft_line_counter = 0;
 	raft_line_counter_g = 0;
+	raft_extrusion_adjusting = 1.0;
+	Flag_raft_last_line = false;
 	x0mmdone = 0;
 	x1mmdone = 0;
 	ymmdone = 0;
@@ -9138,13 +9143,13 @@ void prepare_move()
 		}
 		else if(dual_x_carriage_mode == DXC_DUPLICATION_MODE_RAFT ){ ///Smart_Raft_duplication_mode
 			
-			if ((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] >= 0.0 && extruder_offset[Z_AXIS][RIGHT_EXTRUDER] <= 0.1) || (extruder_offset[Z_AXIS][RIGHT_EXTRUDER] <= 0.0 && extruder_offset[Z_AXIS][RIGHT_EXTRUDER] >= -0.1)){
+			if ((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] >= 0.0 && extruder_offset[Z_AXIS][RIGHT_EXTRUDER] <= 0.05) || (extruder_offset[Z_AXIS][RIGHT_EXTRUDER] <= 0.0 && extruder_offset[Z_AXIS][RIGHT_EXTRUDER] >= -0.05)){
 				dual_mode_duplication_extruder_parked();
 				
 				}else{
 				// 2 possible situations
 				if(extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0){ // enable first tool 0, because is further(to the bed) than tool 1
-					if((destination[Z_AXIS]*raft_line_counter) > (0.12 - extruder_offset[Z_AXIS][RIGHT_EXTRUDER])){
+					if(((destination[Z_AXIS]*raft_line_counter) > (extruder_offset[Z_AXIS][RIGHT_EXTRUDER])) && Flag_raft_last_line){
 						if(!Flag_Raft_Dual_Mode_On){
 							dual_mode_duplication_extruder_parked();
 							}else{
@@ -9172,10 +9177,17 @@ void prepare_move()
 							Flag_Raft_Dual_Mode_On = true;
 							
 						}
+						if((destination[Z_AXIS]*raft_line_counter) > (extruder_offset[Z_AXIS][RIGHT_EXTRUDER])){
+							raft_extrusion_adjusting = (destination[Z_AXIS]*raft_line_counter - extruder_offset[Z_AXIS][RIGHT_EXTRUDER])/destination[Z_AXIS];
+							destination[Z_AXIS] = destination[Z_AXIS]*raft_line_counter - extruder_offset[Z_AXIS][RIGHT_EXTRUDER];
+							Flag_raft_last_line = true;
+							
+						}
+						destination[E_AXIS] = raft_extrusion_adjusting * destination[E_AXIS];
 					}
 					
 					}else{			// enable first tool 1, because is further(to the bed) than tool 0
-					if((destination[Z_AXIS]*raft_line_counter) > (0.12 + extruder_offset[Z_AXIS][RIGHT_EXTRUDER])){
+					if(((destination[Z_AXIS]*raft_line_counter) > (extruder_offset[Z_AXIS][RIGHT_EXTRUDER])) && Flag_raft_last_line){
 						if(!Flag_Raft_Dual_Mode_On){
 							dual_mode_duplication_extruder_parked();
 							}else{
@@ -9208,6 +9220,14 @@ void prepare_move()
 							st_synchronize();
 						}
 						destination[X_AXIS] += duplicate_extruder_x_offset;
+						if((destination[Z_AXIS]*raft_line_counter) > (extruder_offset[Z_AXIS][RIGHT_EXTRUDER])){
+							raft_extrusion_adjusting = (destination[Z_AXIS]*raft_line_counter - extruder_offset[Z_AXIS][RIGHT_EXTRUDER])/destination[Z_AXIS];
+							destination[Z_AXIS] = destination[Z_AXIS]*raft_line_counter - extruder_offset[Z_AXIS][RIGHT_EXTRUDER];
+							Flag_raft_last_line = true;
+							Serial.println()
+							
+						}
+						destination[E_AXIS] = raft_extrusion_adjusting * destination[E_AXIS];
 					}
 					
 					
@@ -9219,14 +9239,14 @@ void prepare_move()
 		}
 		else if(dual_x_carriage_mode == DXC_DUPLICATION_MIRROR_MODE_RAFT ){ ///Smart_Raft_duplication_mirror_mode
 			
-			if ((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] >= 0.0 && extruder_offset[Z_AXIS][RIGHT_EXTRUDER] <= 0.1) || (extruder_offset[Z_AXIS][RIGHT_EXTRUDER] <= 0.0 && extruder_offset[Z_AXIS][RIGHT_EXTRUDER] >= -0.1)){
+			if ((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] >= 0.0 && extruder_offset[Z_AXIS][RIGHT_EXTRUDER] <= 0.05) || (extruder_offset[Z_AXIS][RIGHT_EXTRUDER] <= 0.0 && extruder_offset[Z_AXIS][RIGHT_EXTRUDER] >= -0.05)){
 				dual_mode_duplication_mirror_extruder_parked();
 				
 			}
 			else{
 				if(extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0){ // enable first tool 0, because is further(to the bed) than tool 1
 					
-					if((destination[Z_AXIS]*raft_line_counter) > (0.12 - extruder_offset[Z_AXIS][RIGHT_EXTRUDER])){
+					if(((destination[Z_AXIS]*raft_line_counter) > (extruder_offset[Z_AXIS][RIGHT_EXTRUDER])) && Flag_raft_last_line){
 						if(!Flag_Raft_Dual_Mode_On){
 							dual_mode_duplication_mirror_extruder_parked();
 							}else{
@@ -9252,6 +9272,13 @@ void prepare_move()
 							Flag_Raft_Dual_Mode_On = true;
 							
 						}
+						if((destination[Z_AXIS]*raft_line_counter) > (extruder_offset[Z_AXIS][RIGHT_EXTRUDER])){
+							raft_extrusion_adjusting = (destination[Z_AXIS]*raft_line_counter - extruder_offset[Z_AXIS][RIGHT_EXTRUDER])/destination[Z_AXIS];
+							destination[Z_AXIS] = destination[Z_AXIS]*raft_line_counter - extruder_offset[Z_AXIS][RIGHT_EXTRUDER];
+							Flag_raft_last_line = true;
+							
+						}
+						destination[E_AXIS] = raft_extrusion_adjusting * destination[E_AXIS];
 						/*if(destination[Z_AXIS] > current_position[Z_AXIS]){
 							current_position[Z_AXIS]=0;
 							plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
@@ -9261,7 +9288,7 @@ void prepare_move()
 				}
 				else{
 					
-					if((destination[Z_AXIS]*raft_line_counter) > (0.12 + extruder_offset[Z_AXIS][RIGHT_EXTRUDER])){
+					if(((destination[Z_AXIS]*raft_line_counter) > (extruder_offset[Z_AXIS][RIGHT_EXTRUDER])) && Flag_raft_last_line){
 						if(!Flag_Raft_Dual_Mode_On){
 							
 							dual_mode_duplication_mirror_extruder_parked();
@@ -9296,6 +9323,13 @@ void prepare_move()
 							st_synchronize();
 						}						
 						destination[X_AXIS] = extruder_offset[X_AXIS][RIGHT_EXTRUDER]-(destination[X_AXIS]);
+						if((destination[Z_AXIS]*raft_line_counter) > (extruder_offset[Z_AXIS][RIGHT_EXTRUDER])){
+							 raft_extrusion_adjusting = (destination[Z_AXIS]*raft_line_counter - extruder_offset[Z_AXIS][RIGHT_EXTRUDER])/destination[Z_AXIS];
+							 destination[Z_AXIS] = destination[Z_AXIS]*raft_line_counter - extruder_offset[Z_AXIS][RIGHT_EXTRUDER];
+							 Flag_raft_last_line = true;
+							 
+						}
+						destination[E_AXIS] = raft_extrusion_adjusting * destination[E_AXIS];
 						/*if(destination[Z_AXIS] > current_position[Z_AXIS]){
 							current_position[Z_AXIS]=0;
 							plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
@@ -9967,7 +10001,7 @@ void right_test_print_code(){
 	gif_processing_state = PROCESSING_STOP;
 	genie.WriteObject(GENIE_OBJ_FORM,FORM_RIGHT_Z_TEST,0);
 }
-void bed_test_print_code(float x_offset, float y_offset, int8_t zline){
+void bed_test_print_code(float x_offset, float y_offset, int zline){
 
 	//home_axis_from_code(true,true,true);
 	doblocking = true;
@@ -10037,11 +10071,11 @@ void bed_test_print_code(float x_offset, float y_offset, int8_t zline){
 	
 	
 	
-	int	  distance_x = 4;
+	int	  distance_x = -4;
 	int	  distance_y = 40;
-	float initial_x_pos = NOZZLE_PARK_DISTANCE_BED_X0 + 97 + x_offset;
+	float initial_x_pos = NOZZLE_PARK_DISTANCE_BED_X0 + 113 + x_offset;
 	float initial_y_pos = 275 + y_offset;
-	float initial_z_pos = 0.0 + 0.1*zline;
+	float initial_z_pos = 0.4 + 0.1*zline;
 	float z_layer_test = 0.15;
 	
 	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
@@ -10075,7 +10109,7 @@ void bed_test_print_code(float x_offset, float y_offset, int8_t zline){
 			current_position[X_AXIS] = initial_x_pos+(distance_x*i) + X_OFFSET_CALIB_PROCEDURES;
 			#endif
 			current_position[Y_AXIS] = initial_y_pos;
-			current_position[Z_AXIS]+= 0.1;
+			current_position[Z_AXIS]-= 0.1;
 			plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],200,active_extruder);
 			st_synchronize();
 			if(gif_processing_state == PROCESSING_ERROR)return;
