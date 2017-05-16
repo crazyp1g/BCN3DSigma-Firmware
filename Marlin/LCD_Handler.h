@@ -1361,6 +1361,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							int8_t vuitensR = 0;
 							vuitensL = Bed_Compensation_Lines_Selected[1]-Bed_Compensation_Lines_Selected[0];
 							vuitensR = Bed_Compensation_Lines_Selected[2]-Bed_Compensation_Lines_Selected[0];
+							bed_offset_left_screw = -0.1*vuitensL;
+							bed_offset_right_screw = -0.1*vuitensR;
 							if(vuitensL != 0){
 								genie.WriteObject(GENIE_OBJ_FORM,FORM_CALIB_BED_SCREW2,0);
 								if(vuitensL < 0){
@@ -1380,6 +1382,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								genie.WriteObject(GENIE_OBJ_FORM, FORM_CAL_WIZARD_DONE_GOOD, 0);
 								gif_processing_state = PROCESSING_BED_SUCCESS;
 							}
+							Config_StoreSettings();
 							
 						}
 						else if (Event.reportObject.index == BUTTON_BED_CALIB_SW3){

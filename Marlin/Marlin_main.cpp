@@ -4854,11 +4854,11 @@ inline void gcode_G34(){
 	if (vuitens2>8) vuitens2=8;
 	if (vuitens3>8) vuitens3=8;
 
-	if (dz2 <= PAS_M5/8 && dz2 >= -PAS_M5/8){
+	if (dz2 <= (abs(PAS_M5/8)-0.03)){
 		aprox2 = 0;
 		vuitens2 = 0;
 	}
-	if (dz3 <= PAS_M5/8 && dz3 >= -PAS_M5/8){
+	if (dz3 <= (abs(PAS_M5/8)-0.03)){
 		aprox3 = 0;
 		vuitens3 = 0;
 	}
@@ -4921,9 +4921,9 @@ inline void gcode_G34(){
 			st_synchronize();
 			if(gif_processing_state == PROCESSING_ERROR)return;
 			enquecommand_P(PSTR("T0"));
-			gif_processing_state = PROCESSING_STOP;
-			genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_ZL,0);
 			
+			gif_processing_state = PROCESSING_STOP;
+			genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_ZL,0);			
 			genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZL_SKIP,1);
 				
 			
@@ -5051,6 +5051,8 @@ inline void gcode_G35(){
 }
 inline void gcode_G36()
 {
+	bed_offset_left_screw = 0.0;
+	bed_offset_right_screw = 0.0;
 	Bed_Compensation_state = 0;
 	Bed_Compensation_Lines_Selected[0] = 0;
 	Bed_Compensation_Lines_Selected[1] = 0;
@@ -8162,7 +8164,7 @@ void process_commands()
 	#ifdef ENABLE_AUTO_BED_LEVELING
 	float x_tmp, y_tmp, z_tmp, real_z;
 	#endif
-	//Serial.println(cmdbuffer[bufindr]);
+	Serial.println(cmdbuffer[bufindr]);
 	
 	if(code_seen('G'))
 	{
@@ -9143,13 +9145,13 @@ void prepare_move()
 		}
 		else if(dual_x_carriage_mode == DXC_DUPLICATION_MODE_RAFT ){ ///Smart_Raft_duplication_mode
 			
-			if ((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] >= 0.0 && extruder_offset[Z_AXIS][RIGHT_EXTRUDER] <= 0.05) || (extruder_offset[Z_AXIS][RIGHT_EXTRUDER] <= 0.0 && extruder_offset[Z_AXIS][RIGHT_EXTRUDER] >= -0.05)){
+			if (abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) <= 0.05){
 				dual_mode_duplication_extruder_parked();
 				
 				}else{
 				// 2 possible situations
 				if(extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0){ // enable first tool 0, because is further(to the bed) than tool 1
-					if(((destination[Z_AXIS]*raft_line_counter) > (extruder_offset[Z_AXIS][RIGHT_EXTRUDER])) && Flag_raft_last_line){
+					if(((destination[Z_AXIS]*raft_line_counter) > abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])) && Flag_raft_last_line){
 						if(!Flag_Raft_Dual_Mode_On){
 							dual_mode_duplication_extruder_parked();
 							}else{
@@ -9171,23 +9173,33 @@ void prepare_move()
 							
 							current_position[E_AXIS]-=3;
 							plan_set_e_position(current_position[E_AXIS]);
+							raft_extrusion_adjusting=1.0;
 						}
 						}else{
 						if(!Flag_Raft_Dual_Mode_On){
 							Flag_Raft_Dual_Mode_On = true;
 							
 						}
-						if((destination[Z_AXIS]*raft_line_counter) > (extruder_offset[Z_AXIS][RIGHT_EXTRUDER])){
+						if((destination[Z_AXIS]*raft_line_counter) > abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])){
 							raft_extrusion_adjusting = (destination[Z_AXIS]*raft_line_counter - extruder_offset[Z_AXIS][RIGHT_EXTRUDER])/destination[Z_AXIS];
 							destination[Z_AXIS] = destination[Z_AXIS]*raft_line_counter - extruder_offset[Z_AXIS][RIGHT_EXTRUDER];
 							Flag_raft_last_line = true;
 							
+						Serial.print("raft_extrusion_adjusting[1]: ");
+						Serial.println(raft_extrusion_adjusting);
+						Serial.print("destination[Z_AXIS]: ");
+						Serial.println(destination[Z_AXIS]);
+							
 						}
-						destination[E_AXIS] = raft_extrusion_adjusting * destination[E_AXIS];
+						//destination[E_AXIS] = raft_extrusion_adjusting * destination[E_AXIS];
+						/*if(destination[Z_AXIS] > current_position[Z_AXIS]){
+							current_position[Z_AXIS]=0;
+							plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+						}*/
 					}
 					
 					}else{			// enable first tool 1, because is further(to the bed) than tool 0
-					if(((destination[Z_AXIS]*raft_line_counter) > (extruder_offset[Z_AXIS][RIGHT_EXTRUDER])) && Flag_raft_last_line){
+					if(((destination[Z_AXIS]*raft_line_counter) > abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])) && Flag_raft_last_line){
 						if(!Flag_Raft_Dual_Mode_On){
 							dual_mode_duplication_extruder_parked();
 							}else{
@@ -9204,7 +9216,7 @@ void prepare_move()
 							dual_mode_duplication_extruder_parked_purge();
 							//DUAL PROTOCOL
 							current_position[X_AXIS] = 0.0;
-							
+							raft_extrusion_adjusting=1.0;
 							dual_mode_duplication_extruder_parked();
 							Flag_Raft_Dual_Mode_On = true;
 							current_position[E_AXIS]-=3;
@@ -9220,14 +9232,22 @@ void prepare_move()
 							st_synchronize();
 						}
 						destination[X_AXIS] += duplicate_extruder_x_offset;
-						if((destination[Z_AXIS]*raft_line_counter) > (extruder_offset[Z_AXIS][RIGHT_EXTRUDER])){
+						if((destination[Z_AXIS]*raft_line_counter) > abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])){
 							raft_extrusion_adjusting = (destination[Z_AXIS]*raft_line_counter - extruder_offset[Z_AXIS][RIGHT_EXTRUDER])/destination[Z_AXIS];
 							destination[Z_AXIS] = destination[Z_AXIS]*raft_line_counter - extruder_offset[Z_AXIS][RIGHT_EXTRUDER];
 							Flag_raft_last_line = true;
-							Serial.println()
+							
+						Serial.print("raft_extrusion_adjusting[2]: ");
+						Serial.println(raft_extrusion_adjusting);
+						Serial.print("destination[Z_AXIS]: ");
+						Serial.println(destination[Z_AXIS]);
 							
 						}
-						destination[E_AXIS] = raft_extrusion_adjusting * destination[E_AXIS];
+						//destination[E_AXIS] = raft_extrusion_adjusting * destination[E_AXIS];
+						/*if(destination[Z_AXIS] > current_position[Z_AXIS]){
+							current_position[Z_AXIS]=0;
+							plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+						}*/
 					}
 					
 					
@@ -9239,14 +9259,14 @@ void prepare_move()
 		}
 		else if(dual_x_carriage_mode == DXC_DUPLICATION_MIRROR_MODE_RAFT ){ ///Smart_Raft_duplication_mirror_mode
 			
-			if ((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] >= 0.0 && extruder_offset[Z_AXIS][RIGHT_EXTRUDER] <= 0.05) || (extruder_offset[Z_AXIS][RIGHT_EXTRUDER] <= 0.0 && extruder_offset[Z_AXIS][RIGHT_EXTRUDER] >= -0.05)){
+			if (abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) <= 0.05){
 				dual_mode_duplication_mirror_extruder_parked();
 				
 			}
 			else{
 				if(extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0){ // enable first tool 0, because is further(to the bed) than tool 1
 					
-					if(((destination[Z_AXIS]*raft_line_counter) > (extruder_offset[Z_AXIS][RIGHT_EXTRUDER])) && Flag_raft_last_line){
+					if(((destination[Z_AXIS]*raft_line_counter) > abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])) && Flag_raft_last_line){
 						if(!Flag_Raft_Dual_Mode_On){
 							dual_mode_duplication_mirror_extruder_parked();
 							}else{
@@ -9261,7 +9281,7 @@ void prepare_move()
 							st_synchronize();
 							dual_mode_duplication_extruder_parked_purge();
 							//DUAL PROTOCOL
-							
+							raft_extrusion_adjusting=1.0;
 							dual_mode_duplication_mirror_extruder_parked();
 							Flag_Raft_Dual_Mode_On = true;
 							current_position[E_AXIS]-=3;
@@ -9272,13 +9292,18 @@ void prepare_move()
 							Flag_Raft_Dual_Mode_On = true;
 							
 						}
-						if((destination[Z_AXIS]*raft_line_counter) > (extruder_offset[Z_AXIS][RIGHT_EXTRUDER])){
+						if((destination[Z_AXIS]*raft_line_counter) > abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])){
 							raft_extrusion_adjusting = (destination[Z_AXIS]*raft_line_counter - extruder_offset[Z_AXIS][RIGHT_EXTRUDER])/destination[Z_AXIS];
 							destination[Z_AXIS] = destination[Z_AXIS]*raft_line_counter - extruder_offset[Z_AXIS][RIGHT_EXTRUDER];
 							Flag_raft_last_line = true;
+						
+						Serial.print("raft_extrusion_adjusting[3]: ");
+						Serial.println(raft_extrusion_adjusting);
+						Serial.print("destination[Z_AXIS]: ");
+						Serial.println(destination[Z_AXIS]);
 							
 						}
-						destination[E_AXIS] = raft_extrusion_adjusting * destination[E_AXIS];
+						//destination[E_AXIS] = raft_extrusion_adjusting * destination[E_AXIS];
 						/*if(destination[Z_AXIS] > current_position[Z_AXIS]){
 							current_position[Z_AXIS]=0;
 							plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
@@ -9288,7 +9313,7 @@ void prepare_move()
 				}
 				else{
 					
-					if(((destination[Z_AXIS]*raft_line_counter) > (extruder_offset[Z_AXIS][RIGHT_EXTRUDER])) && Flag_raft_last_line){
+					if(((destination[Z_AXIS]*raft_line_counter) > abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])) && Flag_raft_last_line){
 						if(!Flag_Raft_Dual_Mode_On){
 							
 							dual_mode_duplication_mirror_extruder_parked();
@@ -9312,6 +9337,7 @@ void prepare_move()
 							plan_set_e_position(current_position[E_AXIS]);
 							Serial.print("FeedRate after park: ");
 							Serial.println(feedrate);
+							raft_extrusion_adjusting=1.0;
 						}
 						}else{
 						
@@ -9323,13 +9349,18 @@ void prepare_move()
 							st_synchronize();
 						}						
 						destination[X_AXIS] = extruder_offset[X_AXIS][RIGHT_EXTRUDER]-(destination[X_AXIS]);
-						if((destination[Z_AXIS]*raft_line_counter) > (extruder_offset[Z_AXIS][RIGHT_EXTRUDER])){
+						if((destination[Z_AXIS]*raft_line_counter) > abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])){
 							 raft_extrusion_adjusting = (destination[Z_AXIS]*raft_line_counter - extruder_offset[Z_AXIS][RIGHT_EXTRUDER])/destination[Z_AXIS];
 							 destination[Z_AXIS] = destination[Z_AXIS]*raft_line_counter - extruder_offset[Z_AXIS][RIGHT_EXTRUDER];
 							 Flag_raft_last_line = true;
 							 
+						Serial.print("raft_extrusion_adjusting[4]: ");
+						Serial.println(raft_extrusion_adjusting);
+						Serial.print("destination[Z_AXIS]: ");
+						Serial.println(destination[Z_AXIS]);
+							
 						}
-						destination[E_AXIS] = raft_extrusion_adjusting * destination[E_AXIS];
+						//destination[E_AXIS] = raft_extrusion_adjusting * destination[E_AXIS];
 						/*if(destination[Z_AXIS] > current_position[Z_AXIS]){
 							current_position[Z_AXIS]=0;
 							plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
@@ -9355,11 +9386,11 @@ void prepare_move()
 	//ACTUAL MOVE Prepared
 	// Do not use feedmultiply for E or Z only moves
 	if((current_position[X_AXIS] == destination [X_AXIS]) && (current_position[Y_AXIS] == destination [Y_AXIS])) {
-		plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+		plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS]*raft_extrusion_adjusting, feedrate/60, active_extruder);
 		
 	}
 	else {
-		plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply/60/100.0, active_extruder);
+		plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS]*raft_extrusion_adjusting, feedrate*feedmultiply/60/100.0, active_extruder);
 		
 	}
 
