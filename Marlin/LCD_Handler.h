@@ -70,10 +70,10 @@ bool FLAG_ZAdjust10Up = false;
 bool FLAG_ZAdjust50Down = false;
 bool FLAG_ZAdjust10Down = false;
 bool FLAG_DataRefresh =  false;
-bool FLAG_PurgeSelect0 = false;//purge
-bool FLAG_PurgeSelect1 = false;//Retract
-bool FLAG_LoadSelect0 = false;//purge
-bool FLAG_UnloadSelect1 = false;//Retract
+bool FLAG_PurgeSelect0 = false;
+bool FLAG_PurgeSelect1 = false;
+bool FLAG_LoadSelect0 = false;
+bool FLAG_UnloadSelect1 = false;
 bool FLAG_SavePrintCommand = false;
 bool busy_button = false;
 int Temp_ChangeFilament_Saved = 0;
@@ -1424,27 +1424,27 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					//*****SD Gcode Selection*****
 					#pragma region SD Gcode Selector
 					
-					if ((Event.reportObject.index == BUTTON_SD_SELECTED0) && FLAG_FilesUpDown)
+					if ((Event.reportObject.index == BUTTON_SD_SELECTED0))
 					{
 						FLAG_ListFilesSelect0 = true;
 						SERIAL_PROTOCOLLNPGM("Select 0");
 					}
-					else if ((Event.reportObject.index == BUTTON_SD_SELECTED1) && FLAG_FilesUpDown)
+					else if ((Event.reportObject.index == BUTTON_SD_SELECTED1))
 					{
 						FLAG_ListFilesSelect1 = true;
 						SERIAL_PROTOCOLLNPGM("Select 1");
 					}
-					else if ((Event.reportObject.index == BUTTON_SD_SELECTED2) && FLAG_FilesUpDown)
+					else if ((Event.reportObject.index == BUTTON_SD_SELECTED2))
 					{
 						FLAG_ListFilesSelect2 = true;
 						SERIAL_PROTOCOLLNPGM("Select 2");
 					}
-					else if ((Event.reportObject.index == BUTTON_SD_SELECTED3) && FLAG_FilesUpDown)
+					else if ((Event.reportObject.index == BUTTON_SD_SELECTED3))
 					{
 						FLAG_ListFilesSelect3 = true;
 						SERIAL_PROTOCOLLNPGM("Select 3");
 					}
-					else if ((Event.reportObject.index == BUTTON_SD_SELECTED4) && FLAG_FilesUpDown)
+					else if ((Event.reportObject.index == BUTTON_SD_SELECTED4))
 					{
 						FLAG_ListFilesSelect4 = true;
 						SERIAL_PROTOCOLLNPGM("Select 4");
