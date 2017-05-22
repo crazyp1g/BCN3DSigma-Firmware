@@ -29,7 +29,7 @@
 
 #define VERSION_STRING  "01-1.2.5_devL"
 #define BUILD_DATE  "|M05.22"
-#define VERSION_NUMBER  124
+#define VERSION_NUMBER  125
 //#define BUILD_DATE  " "
 #define UI_SerialID  "At Bottom Sticker"
 //#define DEFAULT_QUICK_GUIDE  0;
