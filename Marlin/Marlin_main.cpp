@@ -9061,14 +9061,6 @@ inline void dual_mode_duplication_z_adjust_raft(void){
 		destination[Z_AXIS] = abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) - destination_Z_2*(raft_line_counter-1);
 		raft_extrusion_adjusting = destination[Z_AXIS]/destination_Z_2;
 		Flag_raft_last_line = true;
-		Serial.print("raft_line_counter: ");
-		Serial.println(raft_line_counter);
-		Serial.print("raft_extrusion_adjusting[1]: ");
-		Serial.println(raft_extrusion_adjusting);
-		Serial.print("destination[Z_AXIS]: ");
-		Serial.println(destination[Z_AXIS]);
-		Serial.print("destination_Z_2: ");
-		Serial.println(destination_Z_2);
 		
 	}
 }
@@ -9203,11 +9195,6 @@ void prepare_move()
 							
 						}
 						dual_mode_duplication_z_adjust_raft();
-						//destination[E_AXIS] = raft_extrusion_adjusting * destination[E_AXIS];
-						/*if(destination[Z_AXIS] > current_position[Z_AXIS]){
-							current_position[Z_AXIS]=0;
-							plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-						}*/
 					}
 					
 					}else{			// enable first tool 1, because is further(to the bed) than tool 0
@@ -9244,11 +9231,7 @@ void prepare_move()
 							st_synchronize();
 						}
 						dual_mode_duplication_z_adjust_raft();
-						//destination[E_AXIS] = raft_extrusion_adjusting * destination[E_AXIS];
-						/*if(destination[Z_AXIS] > current_position[Z_AXIS]){
-							current_position[Z_AXIS]=0;
-							plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-						}*/
+						destination[X_AXIS] = destination_X_2 + duplicate_extruder_x_offset;
 					}
 					
 					
@@ -9294,13 +9277,6 @@ void prepare_move()
 							
 						}
 						dual_mode_duplication_z_adjust_raft();
-						Serial.print("destination[X_AXIS][3]: ");
-						Serial.println(destination[X_AXIS]);
-						//destination[E_AXIS] = raft_extrusion_adjusting * destination[E_AXIS];
-						/*if(destination[Z_AXIS] > current_position[Z_AXIS]){
-							current_position[Z_AXIS]=0;
-							plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-						}*/
 					}
 					
 				}
@@ -9343,13 +9319,6 @@ void prepare_move()
 						}						
 						destination[X_AXIS] = extruder_offset[X_AXIS][RIGHT_EXTRUDER]-destination_X_2;
 						dual_mode_duplication_z_adjust_raft();
-						Serial.print("destination[X_AXIS][4]: ");
-						Serial.println(destination[X_AXIS]);
-						//destination[E_AXIS] = raft_extrusion_adjusting * destination[E_AXIS];
-						/*if(destination[Z_AXIS] > current_position[Z_AXIS]){
-							current_position[Z_AXIS]=0;
-							plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-						}*/
 					}
 					
 					
