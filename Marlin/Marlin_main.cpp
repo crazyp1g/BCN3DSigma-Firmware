@@ -4910,27 +4910,22 @@ inline void gcode_G34(){
 			flag_continue_calib = true;
 		}else if(FLAG_Bed_Compensation_Mode){
 			
-			
 			active_extruder = LEFT_EXTRUDER;
 			//genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
 			//gif_processing_state = PROCESSING_DEFAULT;
-			setTargetHotend0(print_temp_l);
-			setTargetHotend1(print_temp_r);
-			setTargetBed(max(bed_temp_l,bed_temp_r));
-			
-			
 			
 			st_synchronize();
+			
+			Bed_Compensation_state = 2;
+			
 			if(gif_processing_state == PROCESSING_ERROR)return;
 			enquecommand_P(PSTR("T0"));
 			
 			gif_processing_state = PROCESSING_STOP;
-			genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_ZL,0);			
-			genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZL_SKIP,1);
-				
+			genie.WriteObject(GENIE_OBJ_FORM,FORM_CLEAN_BED,0);
 			
-			flag_continue_calib = true;
-			Bed_Compensation_state = 1;
+			
+			
 		}
 		else{
 			gif_processing_state = PROCESSING_STOP;
@@ -5053,6 +5048,7 @@ inline void gcode_G35(){
 }
 inline void gcode_G36()
 {
+	HeaterCooldownInactivity(false);
 	bed_offset_left_screw = 0.0;
 	bed_offset_right_screw = 0.0;
 	Bed_Compensation_state = 0;
@@ -5061,7 +5057,7 @@ inline void gcode_G36()
 	Bed_Compensation_Lines_Selected[2] = 0;
 	FLAG_Bed_Compensation_Mode = true;
 	setTargetHotend0(print_temp_l);
-	setTargetHotend1(print_temp_r);
+	//setTargetHotend1(print_temp_r);
 	setTargetBed(max(bed_temp_l,bed_temp_r));
 	genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
 	gif_processing_state = PROCESSING_DEFAULT;
