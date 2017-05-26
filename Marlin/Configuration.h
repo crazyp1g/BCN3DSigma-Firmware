@@ -759,14 +759,17 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 	#endif
 	
 	#if MOTHERBOARD == BCN3D_BOARD
-		#define X_SIGMA_PROBE_OFFSET_FROM_EXTRUDER  17//20
-		#define Y_SIGMA_PROBE_OFFSET_FROM_EXTRUDER	24
-		#define Z_SIGMA_PROBE_OFFSET_FROM_EXTRUDER  2.7//2.80//3.4 //It is negative, it is compensated
+		#define X_SIGMA_PROBE_OFFSET_FROM_EXTRUDER  17.05//20
+		#define Y_SIGMA_PROBE_OFFSET_FROM_EXTRUDER	22.2
+		#define Z_SIGMA_PROBE_OFFSET_FROM_EXTRUDER  2//2.80//3.4 //It is negative, it is compensated
+		
+		#define X_SIGMA_SECOND_PROBE_OFFSET_FROM_EXTRUDER	-13.4
+		#define Y_SIGMA_SECOND_PROBE_OFFSET_FROM_EXTRUDER	22.2
+		#define Z_SIGMA_SECOND_PROBE_OFFSET_FROM_EXTRUDER	2//2.90
+		
 	#endif
 	
-	#define X_SIGMA_SECOND_PROBE_OFFSET_FROM_EXTRUDER	-13.5
-	#define Y_SIGMA_SECOND_PROBE_OFFSET_FROM_EXTRUDER	24
-	#define Z_SIGMA_SECOND_PROBE_OFFSET_FROM_EXTRUDER	2.80//2.90
+	
 	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
 		//Left extruder probe point
 		#define X_SIGMA_PROBE_1_LEFT_EXTR 55
@@ -774,11 +777,11 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 		//#define Y_SIGMA_PROBE_1_LEFT_EXTR 275
 	
 		#define X_SIGMA_PROBE_2_LEFT_EXTR 55
-		#define Y_SIGMA_PROBE_2_LEFT_EXTR 15
+		#define Y_SIGMA_PROBE_2_LEFT_EXTR 10
 		//#define Y_SIGMA_PROBE_2_LEFT_EXTR 10
 	
 		#define X_SIGMA_PROBE_3_LEFT_EXTR 254
-		#define Y_SIGMA_PROBE_3_LEFT_EXTR 15
+		#define Y_SIGMA_PROBE_3_LEFT_EXTR 10
 		//#define Y_SIGMA_PROBE_3_LEFT_EXTR 10
 	
 		//Right extruder probe point
@@ -787,11 +790,11 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 		//#define Y_SIGMA_PROBE_1_RIGHT_EXTR 275
 	
 		#define X_SIGMA_PROBE_2_RIGHT_EXTR 254
-		#define Y_SIGMA_PROBE_2_RIGHT_EXTR 15
+		#define Y_SIGMA_PROBE_2_RIGHT_EXTR 10
 		//#define Y_SIGMA_PROBE_2_RIGHT_EXTR 10
 	
 		#define X_SIGMA_PROBE_3_RIGHT_EXTR 55
-		#define Y_SIGMA_PROBE_3_RIGHT_EXTR 15
+		#define Y_SIGMA_PROBE_3_RIGHT_EXTR 10
 		//#define Y_SIGMA_PROBE_3_RIGHT_EXTR 10
 	#endif
 	#if BCN3D_PRINTER == BCN3D_SIGMAX_PRINTER
@@ -801,11 +804,11 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 		//#define Y_SIGMA_PROBE_1_LEFT_EXTR 275
 	
 		#define X_SIGMA_PROBE_2_LEFT_EXTR 52
-		#define Y_SIGMA_PROBE_2_LEFT_EXTR 15
+		#define Y_SIGMA_PROBE_2_LEFT_EXTR 10
 		//#define Y_SIGMA_PROBE_2_LEFT_EXTR 10
 	
 		#define X_SIGMA_PROBE_3_LEFT_EXTR 458 //254
-		#define Y_SIGMA_PROBE_3_LEFT_EXTR 15
+		#define Y_SIGMA_PROBE_3_LEFT_EXTR 10
 		//#define Y_SIGMA_PROBE_3_LEFT_EXTR 10
 	
 		//Right extruder probe point
@@ -814,30 +817,45 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 		//#define Y_SIGMA_PROBE_1_RIGHT_EXTR 275
 	
 		#define X_SIGMA_PROBE_2_RIGHT_EXTR 458 ///254
-		#define Y_SIGMA_PROBE_2_RIGHT_EXTR 15
+		#define Y_SIGMA_PROBE_2_RIGHT_EXTR 10
 		//#define Y_SIGMA_PROBE_2_RIGHT_EXTR 10
 	
 		#define X_SIGMA_PROBE_3_RIGHT_EXTR 52
-		#define Y_SIGMA_PROBE_3_RIGHT_EXTR 15
+		#define Y_SIGMA_PROBE_3_RIGHT_EXTR 10
 		//#define Y_SIGMA_PROBE_3_RIGHT_EXTR 10
 	#endif
 #endif
 
 #ifdef  SIGMA_BED_AUTOCALIB
-	//Calibration WIZARD --------
+//Calibration WIZARD --------
 	#define PAS_M5 0.80
-	//Screw positions on BED for
-	#define CARGOL_1_X  156;
-	//#define CARGOL_1_X  104;
-	#define CARGOL_1_Y  276;
+	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+		//Screw positions on BED for
+		#define CARGOL_1_X  152
+		//#define CARGOL_1_X  104;
+		#define CARGOL_1_Y  272.5
 
-	#define CARGOL_2_X  70;
-	//#define CARGOL_2_X  17;
-	#define CARGOL_2_Y  25;
+		#define CARGOL_2_X  74.5
+		//#define CARGOL_2_X  17;
+		#define CARGOL_2_Y  19
 
-	#define CARGOL_3_X  245;
-	//#define CARGOL_3_X  192;
-	#define CARGOL_3_Y  25;
+		#define CARGOL_3_X  230.5
+		//#define CARGOL_3_X  192;
+		#define CARGOL_3_Y 19
+	#elif BCN3D_PRINTER == BCN3D_SIGMAX_PRINTER
+		//Screw positions on BED for
+		#define CARGOL_1_X  156
+		//#define CARGOL_1_X  104;
+		#define CARGOL_1_Y  276
+
+		#define CARGOL_2_X  70
+		//#define CARGOL_2_X  17;
+		#define CARGOL_2_Y  25
+
+		#define CARGOL_3_X  245
+		//#define CARGOL_3_X  192;
+		#define CARGOL_3_Y  25
+	#endif
 	// -END BED calibration WIZARD
 #endif // ENABLE_AUTO_BED_LEVELING
 

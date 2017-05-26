@@ -4744,14 +4744,17 @@ inline void gcode_G34(){
 	vector_3 from_3_to_2_1 = (pt2_1 - pt3_1);
 	vector_3 planeNormal_1 = vector_3::cross(from_3_to_1_1, from_3_to_2_1); // Point 3 is 2 on the left
 	planeNormal_1 = vector_3(planeNormal_1.x, planeNormal_1.y, planeNormal_1.z);
-		
-	float z1_0=(-planeNormal_0.x*0.0-planeNormal_0.y*(Y_SIGMA_PROBE_1_LEFT_EXTR-Y_SIGMA_PROBE_3_LEFT_EXTR))/planeNormal_0.z;
-	float z2_0=(-planeNormal_0.x*0.0-planeNormal_0.y*0.0)/planeNormal_0.z;
-	float z3_0=(-planeNormal_0.x*(X_SIGMA_PROBE_1_RIGHT_EXTR-X_SIGMA_PROBE_1_LEFT_EXTR)-planeNormal_0.y*0.0)/planeNormal_0.z;
 	
-	float z1_1=(-planeNormal_1.x*(X_SIGMA_PROBE_1_RIGHT_EXTR-X_SIGMA_PROBE_1_LEFT_EXTR)-planeNormal_1.y*(Y_SIGMA_PROBE_1_RIGHT_EXTR-Y_SIGMA_PROBE_3_RIGHT_EXTR))/planeNormal_1.z;
-	float z2_1=(-planeNormal_1.x*(X_SIGMA_PROBE_1_RIGHT_EXTR-X_SIGMA_PROBE_1_LEFT_EXTR)-planeNormal_1.y*0.0)/planeNormal_1.z;
-	float z3_1=(-planeNormal_1.x*0.0-planeNormal_1.y*0.0)/planeNormal_1.z;
+	float Zscroll_0=(-planeNormal_0.x*(CARGOL_1_X-X_SIGMA_PROBE_1_LEFT_EXTR)-planeNormal_0.y*(CARGOL_1_Y-Y_SIGMA_PROBE_3_LEFT_EXTR))/planeNormal_0.z;
+	float Zscroll_1=(-planeNormal_1.x*(CARGOL_1_X-X_SIGMA_PROBE_1_LEFT_EXTR)-planeNormal_1.y*(CARGOL_1_Y-Y_SIGMA_PROBE_3_LEFT_EXTR))/planeNormal_1.z;
+		
+	//float z1_0=(-planeNormal_0.x*0.0-planeNormal_0.y*(Y_SIGMA_PROBE_1_LEFT_EXTR-Y_SIGMA_PROBE_3_LEFT_EXTR))/planeNormal_0.z;
+	float z2_0=(-planeNormal_0.x*(CARGOL_2_X-X_SIGMA_PROBE_1_LEFT_EXTR)-planeNormal_0.y*(CARGOL_2_Y-Y_SIGMA_PROBE_3_LEFT_EXTR))/planeNormal_0.z;
+	float z3_0=(-planeNormal_0.x*(CARGOL_3_X-X_SIGMA_PROBE_1_LEFT_EXTR)-planeNormal_0.y*(CARGOL_3_Y-Y_SIGMA_PROBE_3_LEFT_EXTR))/planeNormal_0.z;
+	
+	//float z1_1=(-planeNormal_1.x*(X_SIGMA_PROBE_1_RIGHT_EXTR-X_SIGMA_PROBE_1_LEFT_EXTR)-planeNormal_1.y*(Y_SIGMA_PROBE_1_RIGHT_EXTR-Y_SIGMA_PROBE_3_RIGHT_EXTR))/planeNormal_1.z;
+	float z2_1=(-planeNormal_1.x*(CARGOL_2_X-X_SIGMA_PROBE_1_LEFT_EXTR)-planeNormal_1.y*(CARGOL_2_Y-Y_SIGMA_PROBE_3_LEFT_EXTR))/planeNormal_1.z;
+	float z3_1=(-planeNormal_1.x*(CARGOL_3_X-X_SIGMA_PROBE_1_LEFT_EXTR)-planeNormal_1.y*(CARGOL_3_Y-Y_SIGMA_PROBE_3_LEFT_EXTR))/planeNormal_1.z;
 	
 	SERIAL_PROTOCOLPGM("planeNormal_0.x: ");
 	Serial.println(planeNormal_0.x);
@@ -4760,13 +4763,6 @@ inline void gcode_G34(){
 	SERIAL_PROTOCOLPGM("planeNormal_0.z: ");
 	Serial.println(planeNormal_0.z);
 	
-	SERIAL_PROTOCOLPGM("z1_0: ");
-	Serial.println(z1_0);
-	SERIAL_PROTOCOLPGM("z2_0: ");
-	Serial.println(z2_0);
-	SERIAL_PROTOCOLPGM("z3_0: ");
-	Serial.println(z3_0);
-	
 	SERIAL_PROTOCOLPGM("planeNormal_1.x: ");
 	Serial.println(planeNormal_1.x);
 	SERIAL_PROTOCOLPGM("planeNormal_1.y: ");
@@ -4774,28 +4770,20 @@ inline void gcode_G34(){
 	SERIAL_PROTOCOLPGM("planeNormal_1.z: ");
 	Serial.println(planeNormal_1.z);
 	
-	SERIAL_PROTOCOLPGM("z1_1: ");
-	Serial.println(z1_1);
+	SERIAL_PROTOCOLPGM("Zscroll_0: ");
+	Serial.println(Zscroll_0);
+	SERIAL_PROTOCOLPGM("z2_0: ");
+	Serial.println(z2_0);
+	SERIAL_PROTOCOLPGM("z3_0: ");
+	Serial.println(z3_0);
+		
+	SERIAL_PROTOCOLPGM("Zscroll_1: ");
+	Serial.println(Zscroll_1);	
 	SERIAL_PROTOCOLPGM("z2_1: ");
 	Serial.println(z2_1);
 	SERIAL_PROTOCOLPGM("z3_1: ");
 	Serial.println(z3_1);
 	
-	
-	float Xscroll, Yscroll;
-	Xscroll = (X_SIGMA_PROBE_1_RIGHT_EXTR-X_SIGMA_PROBE_1_LEFT_EXTR)/2;
-	Yscroll = Y_SIGMA_PROBE_1_LEFT_EXTR-Y_SIGMA_PROBE_3_LEFT_EXTR;
-	float Zscroll_0=(-planeNormal_0.x*Xscroll-planeNormal_0.y*Yscroll)/planeNormal_0.z;
-	float Zscroll_1=(-planeNormal_1.x*Xscroll-planeNormal_1.y*Yscroll)/planeNormal_1.z;
-	
-	SERIAL_PROTOCOLPGM("Xscroll: ");
-	Serial.println(Xscroll);
-	SERIAL_PROTOCOLPGM("Yscroll: ");
-	Serial.println(Yscroll);
-	SERIAL_PROTOCOLPGM("Zscroll_0: ");
-	Serial.println(Zscroll_0);
-	SERIAL_PROTOCOLPGM("Zscroll_1: ");
-	Serial.println(Zscroll_1);
 	
 	//Update zOffset. We have to take into account the 2 different probe offsets
 	//NOT NEEDED because we have to check the bed from the same position. Theorically the offsets between probes is inexistent
@@ -4804,8 +4792,8 @@ inline void gcode_G34(){
 	
 	///Alejandro
 
-	float dz2 = z2_0 - (z2_0 - z3_1)/2.0 - (Zscroll_0 - (Zscroll_0 - Zscroll_1)/2.0) - bed_offset_left_screw;
-	float dz3 = z3_0 - (z3_0 - z2_1)/2.0 - (Zscroll_0 - (Zscroll_0 - Zscroll_1)/2.0) - bed_offset_right_screw;
+	float dz2 = z2_0 - (z2_0 - z2_1)/2.0 - (Zscroll_0 - (Zscroll_0 - Zscroll_1)/2.0) - bed_offset_left_screw;
+	float dz3 = z3_0 - (z3_0 - z3_1)/2.0 - (Zscroll_0 - (Zscroll_0 - Zscroll_1)/2.0) - bed_offset_right_screw;
 	
 	//Voltes cargols
 	
@@ -4856,11 +4844,11 @@ inline void gcode_G34(){
 	if (vuitens2>8) vuitens2=8;
 	if (vuitens3>8) vuitens3=8;
 
-	if (dz2 <= (abs(PAS_M5/8)-0.03)){
+	if (abs(dz2) <= (PAS_M5/8-0.03)){
 		aprox2 = 0;
 		vuitens2 = 0;
 	}
-	if (dz3 <= (abs(PAS_M5/8)-0.03)){
+	if (abs(dz3) <= (PAS_M5/8-0.03)){
 		aprox3 = 0;
 		vuitens3 = 0;
 	}
