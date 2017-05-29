@@ -6363,7 +6363,7 @@ inline void gcode_M106(){
 		fanSpeed=255;
 	}
 	if (code_seen('T')){
-		fanSpeed=constrain(code_value(),0,1);
+		Flag_fanSpeed_mirror=constrain(code_value(),0,1);
 	}
 	#endif //FAN_PIN
 }
