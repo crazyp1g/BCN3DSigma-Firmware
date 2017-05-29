@@ -187,6 +187,7 @@ void Config_StoreSettings()
 	EEPROM_WRITE_VAR(i,manual_fine_calib_offset[3]);
 	EEPROM_WRITE_VAR(i,saved_dual_x_carriage_mode);
 	EEPROM_WRITE_VAR(i,saved_duplicate_extruder_x_offset);
+	EEPROM_WRITE_VAR(i,Flag_fanSpeed_mirror);
 	#endif
 	char ver2[4]=EEPROM_VERSION;
 	i=EEPROM_OFFSET;
@@ -357,6 +358,7 @@ void Config_PrintSAVESettings()
 	SERIAL_ECHOPAIR(", saved_tempbed: " ,(float)saved_tempbed);
 	SERIAL_ECHOPAIR(", saved_fanlayer: " ,(float)saved_fanlayer);
 	SERIAL_ECHOPAIR(", saved_feedrate: " ,(float)saved_feedmulti);
+	SERIAL_ECHOPAIR(", saved_Flag_fanlayer_mirror: " ,(float)saved_Flag_fanSpeed_mirror);
 	SERIAL_ECHOLN("");
 	
 	
@@ -511,6 +513,7 @@ void Config_RetrieveSettings()
 		EEPROM_READ_VAR(i,manual_fine_calib_offset[3]);
 		EEPROM_READ_VAR(i,saved_dual_x_carriage_mode);
 		EEPROM_READ_VAR(i,saved_duplicate_extruder_x_offset);
+		EEPROM_READ_VAR(i,saved_Flag_fanSpeed_mirror);
 		#endif RECOVERY_PRINT
 		// Call updatePID (similar to when we have processed M301)
 		updatePID();

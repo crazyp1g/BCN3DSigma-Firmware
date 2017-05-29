@@ -627,6 +627,7 @@ void CardReader::closefile(bool store_location)
 		saved_tempbed  = target_temperature_bed;
 		saved_feedmulti = feedmultiply;
 		saved_fanlayer = fanSpeed;
+		saved_Flag_fanSpeed_mirror = Flag_fanSpeed_mirror;
 		saved_workDir_vector_lenght = workDir_vector_lenght;
 		saved_workDir_vector[0] = workDir_vector[0];
 		saved_workDir_vector[1] = workDir_vector[1];
@@ -762,6 +763,7 @@ void CardReader::printingHasFinished()
 		setTargetHotend0(0);
 		setTargetHotend1(0);
 		setTargetBed(0);
+		Flag_fanSpeed_mirror=0;
 		saved_print_smartpurge_flag = false;
 		screen_sdcard = false;
 		surfing_utilities=false;

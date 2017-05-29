@@ -237,6 +237,7 @@ extern float zprobe_zoffset;
 extern float bed_offset_left_screw;
 extern float bed_offset_right_screw;
 extern int fanSpeed;
+extern int Flag_fanSpeed_mirror;
 #ifdef BARICUDA
 extern int ValvePressure;
 extern int EtoPPressure;
@@ -377,6 +378,7 @@ extern bool saved_print_smartpurge_flag;
 extern int workDir_vector[MAX_DIR_DEPTH];
 extern uint8_t workDir_vector_lenght;
 extern int saved_workDir_vector[MAX_DIR_DEPTH];
+extern int saved_Flag_fanSpeed_mirror;
 extern uint8_t saved_workDir_vector_lenght;
 extern int saved_dual_x_carriage_mode;
 extern float saved_duplicate_extruder_x_offset;

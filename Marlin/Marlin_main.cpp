@@ -281,6 +281,7 @@ int saved_feedspeed;
 int saved_fanlayer;
 int saved_feedmulti;
 int saved_workDir_vector[MAX_DIR_DEPTH];
+int saved_Flag_fanSpeed_mirror;
 uint8_t saved_workDir_vector_lenght=0;
 int saved_print_flag = 888;
 bool saved_print_smartpurge_flag = false;
@@ -451,6 +452,7 @@ float extruder_offset[NUM_EXTRUDER_OFFSETS][EXTRUDERS] = {
 #endif
 uint8_t active_extruder = 0;
 int fanSpeed=0;
+int Flag_fanSpeed_mirror=0;
 #ifdef SERVO_ENDSTOPS
 int servo_endstops[] = SERVO_ENDSTOPS;
 int servo_endstop_angles[] = SERVO_ENDSTOP_ANGLES;
@@ -5543,6 +5545,7 @@ inline void gcode_M24(){
 	card.startFileprint();
 	starttime=millis();
 	//Rapduch
+	Flag_fanSpeed_mirror=0;
 	setTargetBed(0);
 	setTargetHotend0(0);
 	setTargetHotend1(0);
@@ -5853,7 +5856,7 @@ inline void gcode_M34(){
 			plan_set_e_position(current_position[E_AXIS]);
 			fanSpeed = saved_fanlayer;
 			feedrate = saved_feedrate;
-			
+			Flag_fanSpeed_mirror = saved_Flag_fanSpeed_mirror;
 
 			for(int8_t i=0; i < NUM_AXIS; i++) {
 				destination[i] = current_position[i];
@@ -6358,6 +6361,9 @@ inline void gcode_M106(){
 	}
 	else {
 		fanSpeed=255;
+	}
+	if (code_seen('T')){
+		fanSpeed=constrain(code_value(),0,1);
 	}
 	#endif //FAN_PIN
 }
