@@ -1316,6 +1316,15 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 #define PROCESSING_BED_FIRST				'O'
 #define PROCESSING_TEST						'P'
 #define PROCESSING_NYLON_STEP3				'Q'
+
+//PRINTER STATE DEFINITIONS
+
+#define STATE_NONE							'\0'
+#define STATE_MENU							'A'
+#define STATE_LOADUNLOAD_FILAMENT			'B'
+#define STATE_NYLONCLEANING					'C'
+#define STATE_CALIBRATION					'D'
+#define STATE_AUTOTUNEPID					'E'
 /*
 #define PROCESSING_Z_SET_0					'R'
 #define PROCESSING_Z_SET_1					'S'

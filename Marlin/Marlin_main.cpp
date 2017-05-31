@@ -386,6 +386,7 @@ float bed_offset_right_screw=0.0;
 
 /////// Processing Gifs	/////////
 char gif_processing_state = '\0';
+char printer_state = '\0';
 uint8_t processing_z_set = 255;
 
 //////// end Processing Gifs   //////////
@@ -1427,6 +1428,7 @@ void update_screen_printing(){
 	}
 	if(FLAG_FilamentAcceptOk && home_made && (gif_processing_state == PROCESSING_DEFAULT)){
 		gif_processing_state = PROCESSING_STOP;
+		printer_state = STATE_LOADUNLOAD_FILAMENT;
 		genie.WriteObject(GENIE_OBJ_FORM,FORM_SUCCESS_FILAMENT,0);
 		gif_processing_state = PROCESSING_SUCCESS;
 	}
@@ -1802,6 +1804,7 @@ void update_screen_noprinting(){
 	}
 	if(FLAG_FilamentAcceptOk && home_made && (gif_processing_state == PROCESSING_DEFAULT)){
 		gif_processing_state = PROCESSING_STOP;
+		printer_state = STATE_LOADUNLOAD_FILAMENT;
 		genie.WriteObject(GENIE_OBJ_FORM,FORM_SUCCESS_FILAMENT,0);
 		gif_processing_state = PROCESSING_SUCCESS;
 	}
@@ -4921,6 +4924,7 @@ inline void gcode_G34(){
 			gif_processing_state = PROCESSING_STOP;
 			touchscreen_update();
 			#ifdef SIGMA_TOUCH_SCREEN
+			printer_state = STATE_CALIBRATION;
 			genie.WriteObject(GENIE_OBJ_FORM,FORM_CAL_WIZARD_DONE_GOOD,0);
 			gif_processing_state = PROCESSING_BED_SUCCESS;
 			#endif
@@ -6362,14 +6366,18 @@ inline void gcode_M106(){
 	else {
 		fanSpeed=255;
 	}
-	if (code_seen('T')){
-		Flag_fanSpeed_mirror=constrain(code_value(),0,1);
-	}
 	#endif //FAN_PIN
 }
 inline void gcode_M107(){
 	#if defined(FAN_PIN) && FAN_PIN > -1
 	fanSpeed = 0;
+	#endif //FAN_PIN
+}
+inline void gcode_M108(){
+	#if defined(FAN_PIN) && FAN_PIN > -1
+	if (code_seen('T')){
+		Flag_fanSpeed_mirror=constrain(code_value(),0,1);
+	}
 	#endif //FAN_PIN
 }
 inline void gcode_M126(){
@@ -8386,6 +8394,10 @@ void process_commands()
 			
 			case 107: //M107 Fan Off
 			gcode_M107();
+			break;
+			
+			case 108: //M107 Fan DUAL
+			gcode_M108();
 			break;
 			
 			case 126: //M126 valve open

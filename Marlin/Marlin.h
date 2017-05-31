@@ -317,7 +317,7 @@ extern float manual_fine_calib_offset[4];
 //extern void updateLanguage();
 extern float x_home_pos(int extruder);
 extern int bed_calibration_times;
-
+extern char printer_state;
 /////// Processing Gifs	/////////
 extern char gif_processing_state;
 extern uint8_t processing_z_set;
