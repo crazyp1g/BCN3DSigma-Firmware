@@ -6227,7 +6227,7 @@ inline void gcode_M104(){
 	}
 	if (code_seen('S')) setTargetHotend(code_value(), tmp_extruder);
 	#ifdef DUAL_X_CARRIAGE
-	if (dual_x_carriage_mode == DXC_DUPLICATION_MODE && tmp_extruder == 0)
+	if ((dual_x_carriage_mode == DXC_DUPLICATION_MODE) && tmp_extruder == 0)
 	setTargetHotend1(code_value() == 0.0 ? 0.0 : code_value() + duplicate_extruder_temp_offset);
 	#endif
 	setWatch();
@@ -6373,9 +6373,9 @@ inline void gcode_M107(){
 	fanSpeed = 0;
 	#endif //FAN_PIN
 }
-inline void gcode_M108(){
+inline void gcode_M108(){// Enable dual fan mode: P0 to disable and P1 to enable
 	#if defined(FAN_PIN) && FAN_PIN > -1
-	if (code_seen('T')){
+	if (code_seen('P')){
 		Flag_fanSpeed_mirror=constrain(code_value(),0,1);
 	}
 	#endif //FAN_PIN
@@ -6438,7 +6438,7 @@ inline void gcode_M109(){
 		setTargetHotend(code_value(), tmp_extruder);
 		
 		#ifdef DUAL_X_CARRIAGE
-		if (dual_x_carriage_mode == DXC_DUPLICATION_MODE && tmp_extruder == 0)
+		if ((dual_x_carriage_mode == DXC_DUPLICATION_MODE) && tmp_extruder == 0)
 		setTargetHotend1(code_value() == 0.0 ? 0.0 : code_value() + duplicate_extruder_temp_offset);
 		#endif
 		
@@ -6514,7 +6514,9 @@ inline void gcode_M109(){
 		#ifdef TEMP_RESIDENCY_TIME
 		/* start/restart the TEMP_RESIDENCY_TIME timer whenever we reach target temp for the first time
 		or when current temp falls outside the hysteresis after target temp was reached */
-		if ((residencyStart == -1 &&  target_direction && (degHotend(tmp_extruder) >= (degTargetHotend(tmp_extruder)-TEMP_WINDOW))) || (residencyStart == -1 && !target_direction && (degHotend(tmp_extruder) <= (degTargetHotend(tmp_extruder)+TEMP_WINDOW))) || (residencyStart > -1 && labs(degHotend(tmp_extruder) - degTargetHotend(tmp_extruder)) > TEMP_HYSTERESIS) )
+		if ((residencyStart == -1 &&  target_direction && (degHotend(tmp_extruder) >= (degTargetHotend(tmp_extruder)-TEMP_WINDOW))) ||
+		 (residencyStart == -1 && !target_direction && (degHotend(tmp_extruder) <= (degTargetHotend(tmp_extruder)+TEMP_WINDOW))) ||
+		  (residencyStart > -1 && labs(degHotend(tmp_extruder) - degTargetHotend(tmp_extruder)) > TEMP_HYSTERESIS) )
 		{
 			residencyStart = millis();
 		}
@@ -7733,13 +7735,35 @@ inline void gcode_M605(){
 	{
 		dual_x_carriage_mode = DEFAULT_DUAL_X_CARRIAGE_MODE;
 	}
-	Serial.print("Upcoming mode: ");
-	Serial.println(dual_x_carriage_mode);
+	
 	active_extruder_parked = false;
 	extruder_duplication_enabled = false;
 	extruder_duplication_mirror_enabled = false;
 	Flag_Raft_Dual_Mode_On = false;
 	delayed_move_time = 0;
+	#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
+	if((dual_x_carriage_mode == DXC_DUPLICATION_MODE) && (degTargetBed() == 0)){
+		genie.WriteObject(GENIE_OBJ_FORM,FORM_RAFT_ADVISE, 0);
+		genie.WriteStr(STRING_RAFT_ADVISE_Z_OFFSET,abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]),2);
+		raft_advise_accept_cancel = -1;
+		while(raft_advise_accept_cancel == -1){
+			touchscreen_update();
+			manage_heater();
+		}
+		if(raft_advise_accept_cancel == 0){
+			is_on_printing_screen=false;
+			card.closefile();
+			FLAG_PrintPrintStop = true;
+			cancel_heatup = true;
+			genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+			gif_processing_state = PROCESSING_DEFAULT;
+		}else if(raft_advise_accept_cancel == 1){
+			FLAG_PrintSettingBack = true;
+		}
+		
+	}
+	#endif
+	
 	#endif //DUAL_X_CARRIAGE
 	
 }

@@ -76,6 +76,7 @@ bool FLAG_LoadSelect0 = false;
 bool FLAG_UnloadSelect1 = false;
 bool FLAG_SavePrintCommand = false;
 bool busy_button = false;
+int raft_advise_accept_cancel = -1;//0 cancel ; 1 accept
 int Temp_ChangeFilament_Saved = 0;
 int Tref1 = 0;
 int Tfinal1 = 0;
@@ -1134,37 +1135,15 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							genie.WriteObject(GENIE_OBJ_VIDEO,GIF_PURGE_LOAD,0);
 						}
 					}
-					//***************************************
-					//********CHANGE NEW FILAMENT
-					/*else if(Event.reportObject.index == BUTTON_PURGE_NEW_FILAMENT){
-					
-					
-					genie.WriteObject(GENIE_OBJ_USERIMAGES,10,0);
-					genie.WriteObject(GENIE_OBJ_FORM,FORM_ADJUSTING_TEMPERATURES,0);
-					
-					if (purge_extruder_selected == 0) setTargetHotend0(INSERT_FIL_TEMP);
-					else setTargetHotend1(INSERT_FIL_TEMP);
-					
-					if (!home_made) home_axis_from_code(true,true,true);
-					home_axis_from_code(true,true,false);
-					st_synchronize();
-					current_position[Z_AXIS]=Z_MAX_POS-15;
-					plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS]*2/60, active_extruder);
-					
-					while (degHotend(purge_extruder_selected)<=(degTargetHotend(purge_extruder_selected)-5)){ //Waiting to heat the extruder
-					manage_heater();
+					#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
+					else if(Event.reportObject.index== BUTTON_RAFT_ADVISE_ACCEPT){
+						raft_advise_accept_cancel = 1;
 					}
-					filament_mode = 'C';
-					genie.WriteStr(STRING_FILAMENT,"Press GO and keep pushing the filament \n until starts being pulled");
-					genie.WriteObject(GENIE_OBJ_FORM,FORM_INSERT_FIL,0);
-					genie.WriteStr(STRING_FILAMENT,"Press GO and keep pushing the filament \n until starts being pulled");
-					
-					}*/
-					
-					//****************************************
-					
-					
-					else if(Event.reportObject.index	== BUTTON_PURGE_BACK  && !blocks_queued()){
+					else if(Event.reportObject.index== BUTTON_RAFT_ADVISE_CANCEL){
+						raft_advise_accept_cancel = 0;
+					}
+					#endif
+					else if(Event.reportObject.index == BUTTON_PURGE_BACK  && !blocks_queued()){
 						//quickStop();
 						if (millis() >= waitPeriod_button_press){
 							
@@ -3046,6 +3025,11 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							gif_processing_state = PROCESSING_STOP;
 							fanSpeed=255;
 							printer_state = STATE_NYLONCLEANING;
+							#if BCN3D_SCREEN_VERSION
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_NYLON_STEP4,1);
+							#endif
+							
+							
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_STEP4,0);
 							gif_processing_state = PROCESSING_NYLON_STEP4;
 						}
@@ -3054,6 +3038,9 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					{
 						if (millis() >= waitPeriod_button_press){
 							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+							#if BCN3D_SCREEN_VERSION
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_NYLON_STEP4,0);
+							#endif
 							if(which_extruder == 0)digitalWrite(FAN_PIN, 1);
 							else digitalWrite(FAN2_PIN, 1);
 							
@@ -4893,6 +4880,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						}
 					}
+					#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
 					else if(Event.reportObject.index == BUTTON_Z_COMPENSATION_NEXT){
 						if (millis() >= waitPeriod_button_press){
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_X,0);
@@ -4901,6 +4889,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							}
 						}
 					}
+					#endif
 					else if(Event.reportObject.index == BUTTON_FULL_CAL_X_GO){
 						if (millis() >= waitPeriod_button_press){
 							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
@@ -6210,13 +6199,13 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 		
 	}
 	inline void Z_compensation_decisor(void){
-		#if BCN3D_PRINTER == BCN3D_SIGMAX_PRINTER
+		#if BCN3D_SCREEN_VERSION == BCN3D_SIGMA_PRINTER
 		genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_X,0);
 		if(Step_First_Start_Wizard){
 			genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_X_SKIP,1);
 		}
 		
-		#elif BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+		#elif BCN3D_SCREEN_VERSION == BCN3D_SIGMA_PRINTER
 		if(abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) <=0.05){
 			genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_X,0);
 			if(Step_First_Start_Wizard){
