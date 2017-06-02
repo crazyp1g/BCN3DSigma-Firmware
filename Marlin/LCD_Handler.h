@@ -2929,7 +2929,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								st_synchronize();
 								if(gif_processing_state == PROCESSING_ERROR)return;
 								gif_processing_state = PROCESSING_STOP;
-								printer_state = FORM_SUCCESS_FILAMENT;
+								printer_state = STATE_LOADUNLOAD_FILAMENT;
 								genie.WriteObject(GENIE_OBJ_FORM,FORM_SUCCESS_FILAMENT,0);
 								gif_processing_state = PROCESSING_SUCCESS;
 								if (which_extruder == 0){

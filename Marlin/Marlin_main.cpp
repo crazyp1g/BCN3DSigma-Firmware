@@ -9099,10 +9099,13 @@ inline void dual_mode_duplication_extruder_parked(void){
 	plan_set_position(extruder_offset[X_AXIS][RIGHT_EXTRUDER], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 	plan_buffer_line(current_position[X_AXIS] + duplicate_extruder_x_offset, current_position[Y_AXIS], current_position[Z_AXIS],
 	current_position[E_AXIS], max_feedrate[X_AXIS], 1);
-	if(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]>0.0 || Flag_Raft_Dual_Mode_On){
+	if(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]>0.0 && Flag_Raft_Dual_Mode_On){
 		plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 		}else{
 		plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] - extruder_offset[Z_AXIS][RIGHT_EXTRUDER], current_position[E_AXIS]);
+	}
+	if(!Flag_Raft_Dual_Mode_On){
+		plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] - extruder_offset[Z_AXIS][RIGHT_EXTRUDER]/2, current_position[E_AXIS]);
 	}
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],current_position[E_AXIS], feedrate/60, active_extruder);
 	st_synchronize();
@@ -9112,10 +9115,13 @@ inline void dual_mode_duplication_extruder_parked(void){
 	SERIAL_PROTOCOLLNPGM("Dual Mode ON");
 }
 inline void dual_mode_duplication_mirror_extruder_parked(void){
-	if(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]>0.0  || Flag_Raft_Dual_Mode_On){
+	if(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]>0.0  && Flag_Raft_Dual_Mode_On){
 		plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 		}else{
 		plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] - extruder_offset[Z_AXIS][RIGHT_EXTRUDER], current_position[E_AXIS]);
+	}
+	if(!Flag_Raft_Dual_Mode_On){
+		plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] - extruder_offset[Z_AXIS][RIGHT_EXTRUDER]/2, current_position[E_AXIS]);
 	}
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],current_position[E_AXIS], feedrate/60, active_extruder);
 	st_synchronize();
