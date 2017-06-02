@@ -6205,7 +6205,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 			genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_X_SKIP,1);
 		}
 		
-		#elif BCN3D_SCREEN_VERSION == BCN3D_SIGMA_PRINTER
+		#elif BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
 		if(abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) <=0.05){
 			genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_X,0);
 			if(Step_First_Start_Wizard){
