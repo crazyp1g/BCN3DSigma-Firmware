@@ -117,7 +117,7 @@
 #endif
 
 #ifndef BCN3D_SCREEN_VERSION
-	#define BCN3D_SCREEN_VERSION BCN3D_SIGMA_PRINTER
+	#define BCN3D_SCREEN_VERSION BCN3D_SIGMAX_PRINTER
 #endif
 
 #if MOTHERBOARD == MEGATRONICS_V3
@@ -125,7 +125,12 @@
 	//#define PROTO2
 #endif
 
+//	DUAL MODE SETTINGS
+// This defines the Z offset threshold tolerance
+#define RAFT_Z_THRESHOLD 0.05
+//	END DUAL MODE SETTINGS
 
+#define EXTRUDERS 2
 
 // Define this to set a custom name for your generic Mendel,
 // #define CUSTOM_MENDEL_NAME "This Mendel"

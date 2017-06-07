@@ -262,6 +262,7 @@ int version_number;
 int raft_line = 0;
 int raft_line_counter = 0;
 int raft_line_counter_g = 0;
+float raft_z_init = 0.0;
 bool Flag_raft_last_line = false;
 float raft_extrusion_adjusting = 1.0;
 float destination_X_2 = 0.0;
@@ -2539,7 +2540,9 @@ void get_command()
 
 	static bool stop_buffering=false;
 	if(buflen==0) stop_buffering=false;
-
+	static int raft_indicator = 0;
+	static uint32_t fileraftstart = 0;
+	static float current_z_raft_seen = 0.0;
 	while( !card.eof()  && buflen < BUFSIZE && !stop_buffering) {
 		int16_t n=card.get();
 		serial_char = (char)n;
@@ -2549,6 +2552,7 @@ void get_command()
 		(serial_char == ':' && comment_mode == false) ||
 		serial_count >= (MAX_CMD_SIZE - 1)||n==-1)
 		{
+						
 			if(card.eof()){
 				SERIAL_PROTOCOLLNPGM(MSG_FILE_PRINTED);
 				stoptime=millis();
@@ -2574,6 +2578,67 @@ void get_command()
 				return; //if empty line
 			}
 			cmdbuffer[bufindw][serial_count] = 0; //terminate string
+			
+			if(get_dual_x_carriage_mode() == 5 || get_dual_x_carriage_mode() == 6){
+				
+				if(raft_indicator == 1){//valor de Z <--si valor es diferente de z_init se deja proceder
+					strchr_pointer = strchr(cmdbuffer[bufindw], 'Z');//posible bug
+					if(strchr_pointer != NULL){
+						current_z_raft_seen = strtod(&cmdbuffer[bufindw][strchr_pointer - cmdbuffer[bufindw] + 1], NULL);
+						if(raft_line == 1){
+							raft_z_init = current_z_raft_seen;
+							Serial.print("raft_z_init: ");
+							Serial.println(raft_z_init);
+							raft_indicator = 0;
+							}else{
+							
+							if(raft_z_init==current_z_raft_seen){
+								raft_indicator = 0;
+							}
+						}
+					}
+					//buscando
+				}
+				else if(raft_indicator == 6){
+					raft_indicator = 0; //Z hopping
+					Serial.println("Z hopping detected ");
+				}
+				else if(raft_indicator == 10){
+					Serial.println("New Layer detected");
+					//Z layer
+					raft_line_counter_g++;
+					serial_count = MAX_CMD_SIZE;
+					comment_mode = true;
+					memset( cmdbuffer[bufindw], '\0', sizeof(cmdbuffer[bufindw]));
+					card.setIndex(fileraftstart);
+					char string[MAX_CMD_SIZE];
+					//float z_dif = current_z_raft_seen-raft_z_init;
+					//sprintf_P(cmdbuffer[bufindw], PSTR("G92 E0 R%d Z%d.%d%d%d"), raft_line_counter_g, (int)z_dif,(int)(z_dif*10)%10,(int)(z_dif*100)%10,(int)(z_dif*1000)%10);
+					sprintf_P(cmdbuffer[bufindw], PSTR("G92 E0 Z0 R%d"), raft_line_counter_g);
+					//dtostrf((double)z_dif,6,3,&cmdbuffer[bufindw][strlen(cmdbuffer[bufindw])]);
+					cmdbuffer[bufindw][serial_count] = 0; //terminate string
+					
+					fromsd[bufindw] = true;
+					buflen += 1;
+					bufindw = (bufindw + 1)%BUFSIZE;
+					
+					serial_count = 0; //clear buffer
+					raft_indicator = 0;
+				}
+				else if(raft_indicator == 3){//only a X
+					raft_indicator = 1;
+				}
+				else if(raft_indicator == 4){//only a Y
+					raft_indicator = 1;
+				}
+				else if(raft_indicator == 5){//only a E
+					raft_indicator = 1;
+				}
+			}
+			
+			
+			
+			
 			//      if(!comment_mode){
 			fromsd[bufindw] = true;
 			buflen += 1;
@@ -2581,50 +2646,35 @@ void get_command()
 			//      }
 			comment_mode = false; //for new command
 			serial_count = 0; //clear buffer
-			/*Serial.print("cmdbuffer new from sd: ");
-			Serial.println(cmdbuffer[bufindw]);*/
+			//Serial.print("cmdbuffer new from sd: ");
+			//Serial.println(cmdbuffer[bufindw]);
+			
 		}
 		else
-		{
+		{	
+			
 			if(serial_char == ';') comment_mode = true;
 			if(!comment_mode) cmdbuffer[bufindw][serial_count++] = serial_char;
 			if(get_dual_x_carriage_mode() == 5 || get_dual_x_carriage_mode() == 6){//5 = dual mode raft
-				static uint32_t fileraftstart = 0;
-				if(serial_char == 'Z'){
+				
+				if(serial_char == 'Z' && !comment_mode){
+					raft_indicator = 1;
 					raft_line++;
 					if(raft_line == 1){
 						fileraftstart = card.getIndex()-serial_count;
 						raft_line_counter_g = 1;
 						raft_line_counter = 1;
-						Serial.print("raft line: ");
+						/*SSerial.print("raft line: ");
 						Serial.println(raft_line);
-						/*Serial.print("fileraftstart: ");
+						erial.print("fileraftstart: ");
 						Serial.println(fileraftstart);*/
-						}else if(raft_line%2 == 0){
-						raft_line_counter_g++;
-						serial_count = MAX_CMD_SIZE;
-						comment_mode = true;
-						memset( cmdbuffer[bufindw], '\0', sizeof(cmdbuffer[bufindw]));
-						card.setIndex(fileraftstart);
-						char string[MAX_CMD_SIZE];
-						sprintf_P(cmdbuffer[bufindw], PSTR("G92 E0 Z0 R%d"), raft_line_counter_g);
-						/*
-						Serial.print("raft line: ");
-						Serial.println(raft_line_counter);
-						Serial.print("fileraftstart: ");
-						Serial.println(fileraftstart);
-						Serial.print("cmdbuffer add: ");
-						Serial.println(cmdbuffer[bufindw]);*/
-						//cmdbuffer[bufindw][serial_count] = 0; //terminate string
-						
-						fromsd[bufindw] = true;
-						buflen += 1;
-						bufindw = (bufindw + 1)%BUFSIZE;
-						
-						serial_count = 0; //clear buffer
-					}
+						}
 					
-					
+				}
+				if(raft_indicator >= 1 && !comment_mode){
+					if(serial_char == 'X')raft_indicator=raft_indicator+2;
+					if(serial_char == 'Y')raft_indicator=raft_indicator+3;
+					if(serial_char == 'E')raft_indicator=raft_indicator+4;
 				}
 			}
 		}
@@ -7742,25 +7792,27 @@ inline void gcode_M605(){
 	Flag_Raft_Dual_Mode_On = false;
 	delayed_move_time = 0;
 	#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
-	if((dual_x_carriage_mode == DXC_DUPLICATION_MODE) && (degTargetBed() == 0)){
-		genie.WriteObject(GENIE_OBJ_FORM,FORM_RAFT_ADVISE, 0);
-		genie.WriteStr(STRING_RAFT_ADVISE_Z_OFFSET,abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]),2);
-		raft_advise_accept_cancel = -1;
-		while(raft_advise_accept_cancel == -1){
-			touchscreen_update();
-			manage_heater();
+	if(code_seen('P')){
+		if(code_value() == 0){//raft off 0 , raft on 1
+			genie.WriteObject(GENIE_OBJ_FORM,FORM_RAFT_ADVISE, 0);
+			genie.WriteStr(STRING_RAFT_ADVISE_Z_OFFSET,abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]),2);
+			raft_advise_accept_cancel = -1;
+			while(raft_advise_accept_cancel == -1){
+				touchscreen_update();
+				manage_heater();
+			}
+			if(raft_advise_accept_cancel == 0){
+				is_on_printing_screen=false;
+				card.closefile();
+				FLAG_PrintPrintStop = true;
+				cancel_heatup = true;
+				genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+				gif_processing_state = PROCESSING_DEFAULT;
+				}else if(raft_advise_accept_cancel == 1){
+				FLAG_PrintSettingBack = true;
+			}
+			
 		}
-		if(raft_advise_accept_cancel == 0){
-			is_on_printing_screen=false;
-			card.closefile();
-			FLAG_PrintPrintStop = true;
-			cancel_heatup = true;
-			genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
-			gif_processing_state = PROCESSING_DEFAULT;
-		}else if(raft_advise_accept_cancel == 1){
-			FLAG_PrintSettingBack = true;
-		}
-		
 	}
 	#endif
 	
@@ -9087,11 +9139,14 @@ inline void dual_mode_duplication_extruder_parked(void);
 inline void dual_mode_duplication_mirror_extruder_parked(void);
 inline void dual_mode_duplication_extruder_parked_purge(void);
 inline void dual_mode_duplication_z_adjust_raft(void){
-	if((destination_Z_2*raft_line_counter+0.05) >= abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) && !Flag_raft_last_line){
-		destination[Z_AXIS] = abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) - destination_Z_2*(raft_line_counter-1);
-		raft_extrusion_adjusting = destination[Z_AXIS]/destination_Z_2;
+	if((raft_z_init*raft_line_counter+RAFT_Z_THRESHOLD) >= abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) && !Flag_raft_last_line){
+		destination[Z_AXIS] = abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) - raft_z_init*(raft_line_counter-1);
+		raft_extrusion_adjusting = destination[Z_AXIS]/raft_z_init;
 		Flag_raft_last_line = true;
-		
+	}else if(Flag_raft_last_line){
+		destination[Z_AXIS] = (abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) - raft_z_init*(raft_line_counter-1)) + (destination_Z_2 - raft_z_init);
+		//gestion de Z
+			
 	}
 }
 inline void dual_mode_duplication_extruder_parked(void){
@@ -9195,13 +9250,13 @@ void prepare_move()
 		}
 		else if(dual_x_carriage_mode == DXC_DUPLICATION_MODE_RAFT ){ ///Smart_Raft_duplication_mode
 			
-			if (abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) <= 0.05){
+			if (abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) <= RAFT_Z_THRESHOLD){
 				dual_mode_duplication_extruder_parked();
 				
 				}else{
 				// 2 possible situations
 				if(extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0){ // enable first tool 0, because is further(to the bed) than tool 1
-					if(((destination_Z_2*(raft_line_counter-1)) >= abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])-0.05) && Flag_raft_last_line){
+					if(((raft_z_init*(raft_line_counter-1)) >= abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])-RAFT_Z_THRESHOLD) && Flag_raft_last_line){
 						if(!Flag_Raft_Dual_Mode_On){
 							dual_mode_duplication_extruder_parked();
 							}else{
@@ -9234,7 +9289,7 @@ void prepare_move()
 					}
 					
 					}else{			// enable first tool 1, because is further(to the bed) than tool 0
-					if(((destination_Z_2*(raft_line_counter-1)) >= abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])-0.05) && Flag_raft_last_line){
+					if(((raft_z_init*(raft_line_counter-1)) >= abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])-RAFT_Z_THRESHOLD) && Flag_raft_last_line){
 						if(!Flag_Raft_Dual_Mode_On){
 							dual_mode_duplication_extruder_parked();
 							}else{
@@ -9279,14 +9334,14 @@ void prepare_move()
 		}
 		else if(dual_x_carriage_mode == DXC_DUPLICATION_MIRROR_MODE_RAFT ){ ///Smart_Raft_duplication_mirror_mode
 			
-			if (abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) <= 0.05){
+			if (abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) <= RAFT_Z_THRESHOLD){
 				dual_mode_duplication_mirror_extruder_parked();
 				
 			}
 			else{
 				if(extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0){ // enable first tool 0, because is further(to the bed) than tool 1
 					
-					if(((destination_Z_2*(raft_line_counter-1)) >= abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])-0.05) && Flag_raft_last_line){
+					if(((raft_z_init*(raft_line_counter-1)) >= abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])-RAFT_Z_THRESHOLD) && Flag_raft_last_line){
 						if(!Flag_Raft_Dual_Mode_On){
 							dual_mode_duplication_mirror_extruder_parked();
 							}else{
@@ -9318,7 +9373,7 @@ void prepare_move()
 				}
 				else{
 					
-					if(((destination_Z_2*(raft_line_counter-1)) >= abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])-0.05) && Flag_raft_last_line){
+					if(((raft_z_init*(raft_line_counter-1)) >= abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])-RAFT_Z_THRESHOLD) && Flag_raft_last_line){
 						if(!Flag_Raft_Dual_Mode_On){
 							
 							dual_mode_duplication_mirror_extruder_parked();
@@ -9381,7 +9436,6 @@ void prepare_move()
 	}
 	else {
 		plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS]*raft_extrusion_adjusting, feedrate*feedmultiply/60/100.0, active_extruder);
-		
 	}
 
 	for(int8_t i=0; i < NUM_AXIS; i++) {
