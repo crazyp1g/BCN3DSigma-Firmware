@@ -22,6 +22,7 @@ class Listfiles
 	public:
 	Listfiles();
 	void get_lineduration(bool fromfilepoiter, char* name);
+	int check_extract_ensure_duplication_print();
 	int get_hours(void);
 	int get_minutes(void);
 	int get_filmetros1(void);
@@ -42,11 +43,15 @@ class Listfiles
 	long segundos;
 	int filmetros1, filmetros2;
 	int filgramos1, filgramos2;
+	int search_line_data_code(char code);
+	int search_line_data_commentary(void);
 	void extract_data(void);
 	void extract_data1(void);
+	int extract_ensure_duplication_print(void);
+	int extract_ensure_duplication_print_with_raft_simplify(void);
+	int extract_ensure_duplication_print_with_raft_cura(void);
 	uint32_t get_firstdigit_from_integer(uint32_t num_input);
-	int extract_data_Symplify(void);
-	int extract_data_fromCura(void);
+	int extract_data_Simplify(void);
 };
 	
 extern Listfiles listsd;	

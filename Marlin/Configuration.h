@@ -28,7 +28,7 @@
 //get the hw and fw version to Cura-BCN3D and update the new firmware
 
 #define VERSION_STRING  "01-1.2.5_devL"
-#define BUILD_DATE  "|M05.29"
+#define BUILD_DATE  "|M06.13"
 #define VERSION_NUMBER  125
 //#define BUILD_DATE  " "
 #define UI_SerialID  "At Bottom Sticker"
@@ -200,8 +200,8 @@
 
 // Actual temperature must be close to target for this long before M109 returns success
 #define TEMP_RESIDENCY_TIME 1  // (seconds)
-#define TEMP_HYSTERESIS 5       // (degC) range of +/- temperatures considered "close" to the target one
-#define TEMP_WINDOW     6       // (degC) Window around target to start the residency timer x degC early.
+#define TEMP_HYSTERESIS 0.5       // (degC) range of +/- temperatures considered "close" to the target one
+#define TEMP_WINDOW     2.5       // (degC) Window around target to start the residency timer x degC early.
 
 // The minimal temperature defines the temperature below which the heater will not be enabled It is used
 // to check that the wiring to the thermistor is not broken.

@@ -1135,14 +1135,6 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							genie.WriteObject(GENIE_OBJ_VIDEO,GIF_PURGE_LOAD,0);
 						}
 					}
-					#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
-					else if(Event.reportObject.index== BUTTON_RAFT_ADVISE_ACCEPT){
-						raft_advise_accept_cancel = 1;
-					}
-					else if(Event.reportObject.index== BUTTON_RAFT_ADVISE_CANCEL){
-						raft_advise_accept_cancel = 0;
-					}
-					#endif
 					else if(Event.reportObject.index == BUTTON_PURGE_BACK  && !blocks_queued()){
 						//quickStop();
 						if (millis() >= waitPeriod_button_press){
@@ -1491,6 +1483,51 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							if(card.cardOK)
 							{
 								//doblocking = true;
+								#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
+								if(listsd.check_extract_ensure_duplication_print()){
+									if(abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) > RAFT_Z_THRESHOLD){
+									genie.WriteObject(GENIE_OBJ_FORM,FORM_RAFT_ADVISE, 0);
+									char buffer[80];
+									sprintf_P(buffer, PSTR("Info: First layer printed with %s Hotend will be %d.%1d%1d mm higher."),
+									((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0)?"left":"right"),
+									(int)abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]),(int)(abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])*10)%10, (int)(abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])*100)%10);
+									//((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0)?"right":"left"),
+									Serial.println(buffer);
+									//sprintf_P(buffer, PSTR("Info: First layer printed with"));
+									genie.WriteStr(STRING_RAFT_ADVISE_Z_OFFSET,buffer);
+									return;
+									//sprintf_P(buffer, PSTR("Info: First layer printed with %s Hotend will be %d.%1d%1d mm higher. You can avoid this compensation using gauges.\n")
+									}
+								}
+								#endif
+								if (!card.filenameIsDir){ //If the filename is a gcode we start printing
+									char cmd[30];
+									char* c;
+									card.getfilename(filepointer);
+									sprintf_P(cmd, PSTR("M23 %s"), card.filename);
+									for(c = &cmd[4]; *c; c++)
+									{
+										*c = tolower(*c);
+									}
+									enquecommand(cmd);
+									
+									
+									enquecommand_P(PSTR("M24")); // It also sends you to PRINTING screen
+									
+									screen_status="Ready...";//Write the selected SD file to all strings
+								}
+								
+							}
+						}
+						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+					}
+					#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
+					else if(Event.reportObject.index== BUTTON_RAFT_ADVISE_ACCEPT){
+						if (millis() >= waitPeriod_button_press){
+							
+							
+							if(card.cardOK)
+							{
 								
 								if (!card.filenameIsDir){ //If the filename is a gcode we start printing
 									char cmd[30];
@@ -1513,7 +1550,18 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						}
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
-					
+					else if((Event.reportObject.index == BUTTON_RAFT_ADVISE_CANCEL) || ((Event.reportObject.index == BUTTON_SDCONFIRMATION_NO) )){
+						if (millis() >= waitPeriod_button_press){
+							
+							genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FOLDER_BACK,0);
+							genie.WriteObject(GENIE_OBJ_USERIMAGES, USERIMAGE_FOLDER_FILE,0);
+							genie.WriteObject(GENIE_OBJ_FORM, FORM_SDFILES,0);
+							screen_sdcard = true;
+							FLAG_ListFilesInit = true;
+							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+						}
+					}
+					#endif
 					else if (Event.reportObject.index == BUTTON_SD_RIGHT || Event.reportObject.index == BUTTON_SD_LEFT )
 					{
 						if (millis() >= waitPeriod_button_press){
@@ -6206,20 +6254,25 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 		}
 		
 		#elif BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
-		if(abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) <=0.05){
+		if(abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) <=RAFT_Z_THRESHOLD){
 			genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_X,0);
 			if(Step_First_Start_Wizard){
 				genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_X_SKIP,1);
 			}
 			}else{
-			char offset_string[25]="";
+			char offset_string[250]="";
 			int offset_aprox;
 			offset_aprox = (int)(abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])*100.01)/5.0;
-			if ((extruder_offset[Z_AXIS][RIGHT_EXTRUDER])<0){
+			char buffer[80];
+			//sprintf_P(offset_string, PSTR("Your Sigma Z axis has been calibrated\n\nTo avoid first layer Z compensation in Mirror/Duplication Mode:\n1.Turn off the machine and install gauges \n    on %s Hotend to correct %d.%1d%1dmm\n2. Re-run a Full Calibration\n\nWarning: Hotends may be hot when turning off the machine\n "),
+			sprintf_P(offset_string, PSTR("Turn off the machine and install gauges on %s Hotend to correct %d.%1d%1dmm"),
+			((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0)?"right":"left"),
+			(int)(5*offset_aprox)/100,(int)((5*offset_aprox)/10)%10,(int)(5*offset_aprox)%10);
+			/*if ((extruder_offset[Z_AXIS][RIGHT_EXTRUDER])<0){
 				sprintf_P(offset_string, PSTR("RIGHT HOTEND %d.%1d%1d"),(int)(5*offset_aprox)/100,(int)((5*offset_aprox)/10)%10,(int)(5*offset_aprox)%10);
 				}else{
 				sprintf_P(offset_string, PSTR("LEFT HOTEND %d.%1d%1d"),(int)(5*offset_aprox)/100,(int)((5*offset_aprox)/10)%10,(int)(5*offset_aprox)%10);
-			}
+			}*/
 						
 			genie.WriteObject(GENIE_OBJ_FORM,FORM_Z_COMPENSATION,0);
 			genie.WriteStr(STRING_Z_OFFSET_BETWEEN_NOZZLES,offset_string);

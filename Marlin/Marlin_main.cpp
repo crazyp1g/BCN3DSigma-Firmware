@@ -785,7 +785,7 @@ void setup()
 	
 	
 	
-	delay(4500); //showing the splash screen
+	delay(5500); //showing the splash screen
 	
 	// loads data from EEPROM if available else uses defaults (and resets step acceleration rate)
 	//Config_RetrieveSettings();
@@ -2587,8 +2587,6 @@ void get_command()
 						current_z_raft_seen = strtod(&cmdbuffer[bufindw][strchr_pointer - cmdbuffer[bufindw] + 1], NULL);
 						if(raft_line == 1){
 							raft_z_init = current_z_raft_seen;
-							Serial.print("raft_z_init: ");
-							Serial.println(raft_z_init);
 							raft_indicator = 0;
 							}else{
 							
@@ -2601,10 +2599,8 @@ void get_command()
 				}
 				else if(raft_indicator == 6){
 					raft_indicator = 0; //Z hopping
-					Serial.println("Z hopping detected ");
 				}
 				else if(raft_indicator == 10){
-					Serial.println("New Layer detected");
 					//Z layer
 					raft_line_counter_g++;
 					serial_count = MAX_CMD_SIZE;
@@ -2617,12 +2613,6 @@ void get_command()
 					sprintf_P(cmdbuffer[bufindw], PSTR("G92 E0 Z0 R%d"), raft_line_counter_g);
 					//dtostrf((double)z_dif,6,3,&cmdbuffer[bufindw][strlen(cmdbuffer[bufindw])]);
 					cmdbuffer[bufindw][serial_count] = 0; //terminate string
-					
-					fromsd[bufindw] = true;
-					buflen += 1;
-					bufindw = (bufindw + 1)%BUFSIZE;
-					
-					serial_count = 0; //clear buffer
 					raft_indicator = 0;
 				}
 				else if(raft_indicator == 3){//only a X
@@ -7786,35 +7776,18 @@ inline void gcode_M605(){
 		dual_x_carriage_mode = DEFAULT_DUAL_X_CARRIAGE_MODE;
 	}
 	
+	switch(dual_x_carriage_mode){
+		case DXC_DUPLICATION_MODE:
+		case DXC_DUPLICATION_MODE_RAFT:
+		case DXC_DUPLICATION_MIRROR_MODE:
+		case DXC_DUPLICATION_MIRROR_MODE_RAFT:
+			home_axis_from_code(true, false, false);
+	}
 	active_extruder_parked = false;
 	extruder_duplication_enabled = false;
 	extruder_duplication_mirror_enabled = false;
 	Flag_Raft_Dual_Mode_On = false;
 	delayed_move_time = 0;
-	#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
-	if(code_seen('P')){
-		if(code_value() == 0){//raft off 0 , raft on 1
-			genie.WriteObject(GENIE_OBJ_FORM,FORM_RAFT_ADVISE, 0);
-			genie.WriteStr(STRING_RAFT_ADVISE_Z_OFFSET,abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]),2);
-			raft_advise_accept_cancel = -1;
-			while(raft_advise_accept_cancel == -1){
-				touchscreen_update();
-				manage_heater();
-			}
-			if(raft_advise_accept_cancel == 0){
-				is_on_printing_screen=false;
-				card.closefile();
-				FLAG_PrintPrintStop = true;
-				cancel_heatup = true;
-				genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
-				gif_processing_state = PROCESSING_DEFAULT;
-				}else if(raft_advise_accept_cancel == 1){
-				FLAG_PrintSettingBack = true;
-			}
-			
-		}
-	}
-	#endif
 	
 	#endif //DUAL_X_CARRIAGE
 	
@@ -8240,7 +8213,7 @@ void process_commands()
 	#ifdef ENABLE_AUTO_BED_LEVELING
 	float x_tmp, y_tmp, z_tmp, real_z;
 	#endif
-	//Serial.println(cmdbuffer[bufindr]);
+	Serial.println(cmdbuffer[bufindr]);
 	
 	if(code_seen('G'))
 	{
@@ -9169,7 +9142,7 @@ inline void dual_mode_duplication_extruder_parked(void){
 	dual_x_carriage_mode = DXC_DUPLICATION_MODE;
 	SERIAL_PROTOCOLLNPGM("Dual Mode ON");
 }
-inline void dual_mode_duplication_mirror_extruder_parked(void){
+inline void dual_mode_duplication_mirror_extruder_parked (void){
 	if(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]>0.0  && Flag_Raft_Dual_Mode_On){
 		plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 		}else{
