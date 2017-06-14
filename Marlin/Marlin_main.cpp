@@ -2599,8 +2599,10 @@ void get_command()
 				}
 				else if(raft_indicator == 6){
 					raft_indicator = 0; //Z hopping
+					Serial.println("Z hopping detected");
 				}
 				else if(raft_indicator == 10){
+					Serial.println("New layer detected");
 					//Z layer
 					raft_line_counter_g++;
 					serial_count = MAX_CMD_SIZE;
@@ -2654,10 +2656,6 @@ void get_command()
 						fileraftstart = card.getIndex()-serial_count;
 						raft_line_counter_g = 1;
 						raft_line_counter = 1;
-						/*SSerial.print("raft line: ");
-						Serial.println(raft_line);
-						erial.print("fileraftstart: ");
-						Serial.println(fileraftstart);*/
 						}
 					
 				}
@@ -7776,19 +7774,19 @@ inline void gcode_M605(){
 		dual_x_carriage_mode = DEFAULT_DUAL_X_CARRIAGE_MODE;
 	}
 	
-	switch(dual_x_carriage_mode){
-		case DXC_DUPLICATION_MODE:
-		case DXC_DUPLICATION_MODE_RAFT:
-		case DXC_DUPLICATION_MIRROR_MODE:
-		case DXC_DUPLICATION_MIRROR_MODE_RAFT:
-			home_axis_from_code(true, false, false);
-	}
 	active_extruder_parked = false;
 	extruder_duplication_enabled = false;
 	extruder_duplication_mirror_enabled = false;
 	Flag_Raft_Dual_Mode_On = false;
 	delayed_move_time = 0;
 	
+	switch(dual_x_carriage_mode){
+		case DXC_DUPLICATION_MODE:
+		case DXC_DUPLICATION_MODE_RAFT:
+		case DXC_DUPLICATION_MIRROR_MODE:
+		case DXC_DUPLICATION_MIRROR_MODE_RAFT:
+		home_axis_from_code(true, false, false);
+	}
 	#endif //DUAL_X_CARRIAGE
 	
 }
@@ -8213,7 +8211,7 @@ void process_commands()
 	#ifdef ENABLE_AUTO_BED_LEVELING
 	float x_tmp, y_tmp, z_tmp, real_z;
 	#endif
-	Serial.println(cmdbuffer[bufindr]);
+	//Serial.println(cmdbuffer[bufindr]);
 	
 	if(code_seen('G'))
 	{
@@ -9121,6 +9119,7 @@ inline void dual_mode_duplication_z_adjust_raft(void){
 		//gestion de Z
 			
 	}
+	
 }
 inline void dual_mode_duplication_extruder_parked(void){
 	// move duplicate extruder into correct duplication position.
@@ -9222,7 +9221,6 @@ void prepare_move()
 			active_extruder_parked = false;
 		}
 		else if(dual_x_carriage_mode == DXC_DUPLICATION_MODE_RAFT ){ ///Smart_Raft_duplication_mode
-			
 			if (abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) <= RAFT_Z_THRESHOLD){
 				dual_mode_duplication_extruder_parked();
 				
@@ -9306,12 +9304,12 @@ void prepare_move()
 			}
 		}
 		else if(dual_x_carriage_mode == DXC_DUPLICATION_MIRROR_MODE_RAFT ){ ///Smart_Raft_duplication_mirror_mode
-			
 			if (abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) <= RAFT_Z_THRESHOLD){
 				dual_mode_duplication_mirror_extruder_parked();
 				
 			}
 			else{
+				
 				if(extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0){ // enable first tool 0, because is further(to the bed) than tool 1
 					
 					if(((raft_z_init*(raft_line_counter-1)) >= abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])-RAFT_Z_THRESHOLD) && Flag_raft_last_line){
