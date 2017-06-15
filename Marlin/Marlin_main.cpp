@@ -1038,14 +1038,10 @@ void loop()
 }
 
 void SD_firstPrint (){
-	char cmd[30];
-	char* c;
 	card.getfilename(0);
+	char cmd[4 + strlen(card.filename) + 1]; // Room for "M23 ", filename, and null
 	sprintf_P(cmd, PSTR("M23 %s"), card.filename);
-	for(c = &cmd[4]; *c; c++)
-	{
-		*c = tolower(*c);
-	}
+	for (char *c = &cmd[4]; *c; c++) *c = tolower(*c);
 	enquecommand(cmd);
 	enquecommand_P(PSTR("M24"));
 }

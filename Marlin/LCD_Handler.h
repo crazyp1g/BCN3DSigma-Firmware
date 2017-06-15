@@ -1501,20 +1501,12 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								}
 								#endif
 								if (!card.filenameIsDir){ //If the filename is a gcode we start printing
-									char cmd[30];
-									char* c;
 									card.getfilename(filepointer);
+									char cmd[4 + strlen(card.filename) + 1]; // Room for "M23 ", filename, and null
 									sprintf_P(cmd, PSTR("M23 %s"), card.filename);
-									for(c = &cmd[4]; *c; c++)
-									{
-										*c = tolower(*c);
-									}
+									for (char *c = &cmd[4]; *c; c++) *c = tolower(*c);
 									enquecommand(cmd);
-									
-									
 									enquecommand_P(PSTR("M24")); // It also sends you to PRINTING screen
-									
-									screen_status="Ready...";//Write the selected SD file to all strings
 								}
 								
 							}
@@ -1530,20 +1522,12 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							{
 								
 								if (!card.filenameIsDir){ //If the filename is a gcode we start printing
-									char cmd[30];
-									char* c;
 									card.getfilename(filepointer);
+									char cmd[4 + strlen(card.filename) + 1]; // Room for "M23 ", filename, and null
 									sprintf_P(cmd, PSTR("M23 %s"), card.filename);
-									for(c = &cmd[4]; *c; c++)
-									{
-										*c = tolower(*c);
-									}
+									for (char *c = &cmd[4]; *c; c++) *c = tolower(*c);
 									enquecommand(cmd);
-									
-									
 									enquecommand_P(PSTR("M24")); // It also sends you to PRINTING screen
-									
-									screen_status="Ready...";//Write the selected SD file to all strings
 								}
 								
 							}
@@ -5687,8 +5671,6 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 			//genie.WriteObject(GENIE_OBJ_USERIMAGES,0,0);
 		}
 		Serial.println(buffer);
-		
-		
 	}
 	inline void ListFilesParsingProcedure(int vecto, int jint){
 		char Workdir[20];
