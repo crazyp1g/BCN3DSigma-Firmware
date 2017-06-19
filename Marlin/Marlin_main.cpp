@@ -1138,7 +1138,6 @@ void update_screen_printing(){
 		else if(screen_printing_pause_form == screen_printing_pause_form0 || (screen_printing_pause_form == screen_printing_pause_form2 )&& card.sdispaused){
 			char buffer[25];
 			
-			memset(buffer, '\0', sizeof(buffer) );
 			SERIAL_PROTOCOLPGM("PRINT SETTINGS \n");
 			genie.WriteObject(GENIE_OBJ_FORM,FORM_PRINTTING_SETTINGS_DEF,0);
 			sprintf_P(buffer, PSTR("%3d %cC"),target_temperature[0],0x00B0);
@@ -1189,7 +1188,6 @@ void update_screen_printing(){
 	}
 	if(screen_change_nozz1up){
 		char buffer[25];
-		memset(buffer, '\0', sizeof(buffer) );
 		if (target_temperature[0] < HEATER_0_MAXTEMP)
 		{
 			target_temperature[0]+=5;
@@ -1200,8 +1198,7 @@ void update_screen_printing(){
 		screen_change_nozz1up = false;
 	}
 	if(screen_change_nozz2up){
-		char buffer[25];
-		memset(buffer, '\0', sizeof(buffer) );
+		char buffer[25];;
 		if (target_temperature[1]<HEATER_1_MAXTEMP)
 		{
 			target_temperature[1]+=5;
@@ -1213,7 +1210,6 @@ void update_screen_printing(){
 	}
 	if(screen_change_bedup){
 		char buffer[25];
-		memset(buffer, '\0', sizeof(buffer) );
 		if (target_temperature_bed < BED_MAXTEMP)//MaxTemp
 		{
 			target_temperature_bed+=5;
@@ -1226,7 +1222,6 @@ void update_screen_printing(){
 	}
 	if(screen_change_speedup){
 		char buffer[25];
-		memset(buffer, '\0', sizeof(buffer) );
 		if (feedmultiply<200)
 		{
 			feedmultiply+=5;
@@ -1239,7 +1234,6 @@ void update_screen_printing(){
 	
 	if(screen_change_nozz1down){
 		char buffer[25];
-		memset(buffer, '\0', sizeof(buffer) );
 		if (target_temperature[0] > HEATER_0_MINTEMP)
 		{
 			target_temperature[0]-=5;
@@ -1252,7 +1246,6 @@ void update_screen_printing(){
 	}
 	if(screen_change_nozz2down){
 		char buffer[25];
-		memset(buffer, '\0', sizeof(buffer) );
 		if (target_temperature[1]>HEATER_1_MINTEMP)
 		{
 			target_temperature[1]-=5;
@@ -1265,7 +1258,6 @@ void update_screen_printing(){
 	}
 	if(screen_change_beddown){
 		char buffer[25];
-		memset(buffer, '\0', sizeof(buffer) );
 		if (target_temperature_bed> BED_MINTEMP)//Mintemp
 		{
 			target_temperature_bed-=5;
@@ -1278,7 +1270,6 @@ void update_screen_printing(){
 	}
 	if(screen_change_speeddown){
 		char buffer[25];
-		memset(buffer, '\0', sizeof(buffer) );
 		if (feedmultiply>50)
 		{
 			feedmultiply-=5;
@@ -1360,7 +1351,6 @@ void update_screen_printing(){
 			int tHotend=int(degHotend(0));
 			int tHotend1=int(degHotend(1));
 			char buffer[25];
-			memset(buffer, '\0', sizeof(buffer) );
 			if(!is_changing_filament){
 				sprintf_P(buffer, PSTR("%3d %cC"),tHotend,0x00B0);
 				genie.WriteStr(STRING_PURGE_LEFT_TEMP,buffer);
@@ -1380,7 +1370,7 @@ void update_screen_printing(){
 				}
 				percentage = Tfinal1-Tref1;
 				percentage = 100*(Tinstant-Tref1)/percentage;
-				sprintf(buffer, "%d%%", percentage);
+				sprintf_P(buffer, PSTR("%d%%"), percentage);
 				genie.WriteStr(STRING_CHANGE_FILAMENT_TEMPS,buffer);
 			}
 			
@@ -1449,7 +1439,6 @@ void update_screen_printing(){
 			
 			if (tHotend !=int(degHotend(0)) || FLAG_DataRefresh == true ){
 				tHotend =int(degHotend(0));
-				memset(buffer7, '\0', sizeof(buffer7) );
 				sprintf_P(buffer7, PSTR("%3d %cC"),tHotend,0x00B0);
 				if(!card.sdispaused)genie.WriteStr(STRING_PRINTING_NOZZ1,buffer7);
 				else genie.WriteStr(STRING_PRINTING_NOZZ1_PAUSE,buffer7);
@@ -1586,13 +1575,7 @@ void update_screen_noprinting(){
 			
 			if(FLAG_GifHotent0 || FLAG_GifHotent1 || FLAG_GifBed ){
 				
-				
-				if(processing_state<GIF_FRAMES_PREHEAT){
-					processing_state++;
-				}
-				else{
-					processing_state=3;
-				}
+				processing_state  = (processing_state < GIF_FRAMES_PREHEAT) ? processing_state + 1 : 3;
 				
 				if(FLAG_GifHotent0){
 					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_TEMP_LEXTR,processing_state);
@@ -1673,16 +1656,16 @@ void update_screen_noprinting(){
 					
 					if(purge_extruder_selected == 0){
 						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_INSERT,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_Retract,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_RETRACT,1);
 						}else if (purge_extruder_selected == 1){
 						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_INSERT,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_Retract,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_RETRACT,1);
 					}
 					
 					
 					}else{
 					genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_INSERT, 0);
-					genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_Retract, 0);
+					genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_RETRACT, 0);
 				}
 				
 			}
@@ -1927,12 +1910,7 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 			cancel_heatup = true;
 			
 			if (millis() >= waitPeriod_pbackhome){
-				if(processing_state<GIF_FRAMES_PROCESSING){
-					processing_state++;
-				}
-				else{
-					processing_state=0;
-				}
+				processing_state = (processing_state<GIF_FRAMES_PROCESSING) ? processing_state + 1 : 0;
 				genie.WriteObject(GENIE_OBJ_VIDEO,GIF_PROCESSING,processing_state);
 				waitPeriod_pbackhome=GIF_FRAMERATE+millis();
 			}
@@ -2576,8 +2554,9 @@ void get_command()
 			cmdbuffer[bufindw][serial_count] = 0; //terminate string
 			
 			if(get_dual_x_carriage_mode() == 5 || get_dual_x_carriage_mode() == 6){
-				
-				if(raft_indicator == 1){//valor de Z <--si valor es diferente de z_init se deja proceder
+				switch(raft_indicator){
+					
+					case 1://valor de Z <--si valor es diferente de z_init se deja proceder
 					strchr_pointer = strchr(cmdbuffer[bufindw], 'Z');//posible bug
 					if(strchr_pointer != NULL){
 						current_z_raft_seen = strtod(&cmdbuffer[bufindw][strchr_pointer - cmdbuffer[bufindw] + 1], NULL);
@@ -2592,13 +2571,27 @@ void get_command()
 						}
 					}
 					//buscando
-				}
-				else if(raft_indicator == 6){
+					break;
+					
+					case 3://only a X
+					raft_indicator = 1;
+					break;
+					
+					case 4://only a Y
+					raft_indicator = 1;
+					break;
+					
+					case 5://only a E
+					raft_indicator = 1;
+					break;
+					
+					case 6:
 					raft_indicator = 0; //Z hopping
-					Serial.println("Z hopping detected");
-				}
-				else if(raft_indicator == 10){
-					Serial.println("New layer detected");
+					SERIAL_PROTOCOLPGM("Z hopping detected");
+					break;
+					
+					case 10:
+					SERIAL_PROTOCOLPGM("New layer detected");
 					//Z layer
 					raft_line_counter_g++;
 					serial_count = MAX_CMD_SIZE;
@@ -2612,15 +2605,8 @@ void get_command()
 					//dtostrf((double)z_dif,6,3,&cmdbuffer[bufindw][strlen(cmdbuffer[bufindw])]);
 					cmdbuffer[bufindw][serial_count] = 0; //terminate string
 					raft_indicator = 0;
-				}
-				else if(raft_indicator == 3){//only a X
-					raft_indicator = 1;
-				}
-				else if(raft_indicator == 4){//only a Y
-					raft_indicator = 1;
-				}
-				else if(raft_indicator == 5){//only a E
-					raft_indicator = 1;
+					break;
+					
 				}
 			}
 			
@@ -2886,22 +2872,12 @@ static void set_bed_level_equation_3pts(float z_at_pt_1, float z_at_pt_2, float 
 
 int sentit (float dz)
 {
-	int sent;
-	if (dz > 0)
-	{
-		sent = 1;//Horari
-	}
-	else
-	{
-		sent = -1;//Antihorari
-	}
-	return sent;
+	return (dz > 0) ? 1 : -1;//Clockwise  & Counterclockwise 
 }
 
 float voltes (float dz)
 {
-	float volt = dz/PAS_M5;
-	return volt;
+		return dz/PAS_M5;
 }
 
 int aprox (float voltes)
