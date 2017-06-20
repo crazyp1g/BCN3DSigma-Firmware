@@ -1,10 +1,8 @@
 /*
- * Touch_Screen_Definitions.h
- * Here we have all the constants related to items in the LCD Screen
- * Created: 14/11/2014 13:16:59
- *  Author: Jordi Calduch (Dryrain)
- */ 
-
+	Touch_Screen_Definitions.h - Here we have all the constants related to items in the LCD Screen.
+	Last Update: 20/06/2017
+	Author: Alejandro Garcia (S3mt0x)
+*/
 
 #ifndef TOUCH_SCREEN_DEFINITIONS_H_
 #define TOUCH_SCREEN_DEFINITIONS_H_

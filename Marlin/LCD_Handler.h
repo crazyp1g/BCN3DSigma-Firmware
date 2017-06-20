@@ -1,8 +1,6 @@
 /*
-* LCD_Handler.h
-* A place to hold all interactions between LCD and printer. It is called from Marlin_main.cpp when using genie.DoEvents()
-* Created: 12/12/2014 12:48:04
-* Author: Jordi Calduch (Dryrain)
+	LCD_Handler.h - A place to hold all interactions between LCD and printer. It is called from Marlin_main.cpp when using genie.DoEvents()
+	Last Update: 20/06/2017
 */
 
 #ifdef SIGMA_TOUCH_SCREEN
