@@ -382,6 +382,7 @@ bool axis_known_position[3] = {false, false, false};
 float zprobe_zoffset;
 float bed_offset_left_screw=0.0;
 float bed_offset_right_screw=0.0;
+unsigned int bed_offset_version=0;
 
 //bools to control which kind of process are actually running
 
@@ -3681,18 +3682,14 @@ inline void gcode_G40(){
 	//1) Set temps and wait
 	setTargetHotend0(print_temp_l);
 	setTargetHotend1(print_temp_r);
-	setTargetBed(max(bed_temp_l,bed_temp_r)-5);
+	setTargetBed(max(bed_temp_l,bed_temp_r));
 	doblocking = true;
-	while (degHotend(LEFT_EXTRUDER)<(degTargetHotend(LEFT_EXTRUDER)-10) && degHotend(RIGHT_EXTRUDER)<(degTargetHotend(RIGHT_EXTRUDER)-10)&& degBed()<(max(bed_temp_l,bed_temp_r)-15)){ //Waiting to heat the extruder
+	while (degHotend(LEFT_EXTRUDER)<(degTargetHotend(LEFT_EXTRUDER)-5) && degHotend(RIGHT_EXTRUDER)<(degTargetHotend(RIGHT_EXTRUDER)-5)&& degBed()<(max(bed_temp_l,bed_temp_r)-2)){ //Waiting to heat the extruder
 		
 		manage_heater();
 		touchscreen_update();
 		if(gif_processing_state == PROCESSING_ERROR)return;
 	}
-	gif_processing_state = PROCESSING_STOP;
-	touchscreen_update();
-	genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
-	gif_processing_state = PROCESSING_TEST;
 	
 	current_position[Z_AXIS]=2;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15 , active_extruder);
@@ -3707,6 +3704,11 @@ inline void gcode_G40(){
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], INSERT_FAST_SPEED/60, active_extruder);//Retract
 	st_synchronize();
 	if(gif_processing_state == PROCESSING_ERROR)return;
+	
+	gif_processing_state = PROCESSING_STOP;
+	touchscreen_update();
+	genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+	gif_processing_state = PROCESSING_TEST;
 	float mm_second_extruder[NUM_LINES];
 	float i =  -0.5;
 	mm_second_extruder[0] = i;
@@ -3922,19 +3924,14 @@ inline void gcode_G41(){
 	//1) Set temps and wait
 	setTargetHotend0(print_temp_l);
 	setTargetHotend1(print_temp_r);
-	setTargetBed(max(bed_temp_l,bed_temp_r)-5);
+	setTargetBed(max(bed_temp_l,bed_temp_r));
 	doblocking = true;
-	while (degHotend(LEFT_EXTRUDER)<(degTargetHotend(LEFT_EXTRUDER)-10) || degHotend(RIGHT_EXTRUDER)<(degTargetHotend(RIGHT_EXTRUDER)-10) || degBed()<(max(bed_temp_l,bed_temp_r)-15)){ //Waiting to heat the extruder
+	while (degHotend(LEFT_EXTRUDER)<(degTargetHotend(LEFT_EXTRUDER)-5) || degHotend(RIGHT_EXTRUDER)<(degTargetHotend(RIGHT_EXTRUDER)-5) || degBed()<(max(bed_temp_l,bed_temp_r)-2)){ //Waiting to heat the extruder
 		
 		manage_heater();
 		touchscreen_update();
 		if(gif_processing_state == PROCESSING_ERROR)return;
 	}
-	//delay(5000);
-	gif_processing_state = PROCESSING_STOP;
-	touchscreen_update();
-	genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
-	gif_processing_state = PROCESSING_TEST;
 	//Raise for a layer of Z=0.2
 	current_position[Z_AXIS]=2;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15 , active_extruder);
@@ -3951,7 +3948,10 @@ inline void gcode_G41(){
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], INSERT_FAST_SPEED/60, active_extruder);//Retract
 	st_synchronize();
 	if(gif_processing_state == PROCESSING_ERROR)return;
-	
+	gif_processing_state = PROCESSING_STOP;
+	touchscreen_update();
+	genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+	gif_processing_state = PROCESSING_TEST;
 	float mm_second_extruder[NUM_LINES];
 	float i = -0.5;
 	mm_second_extruder[0] = i;
@@ -4621,7 +4621,7 @@ inline void gcode_G34(){
 	if (FLAG_CalibFull){
 		setTargetHotend0(print_temp_l);
 		setTargetHotend1(print_temp_r);
-		setTargetBed(max(bed_temp_l,bed_temp_r)-5);
+		setTargetBed(max(bed_temp_l,bed_temp_r));
 	}
 	
 	#if Z_MIN_PIN == -1
@@ -4800,11 +4800,21 @@ inline void gcode_G34(){
 	Serial.println(z3_1);
 	
 	
+	if((bed_offset_left_screw || bed_offset_right_screw) && bed_offset_version == 0){// Since Version 01-1.2.5, bed calibration has change in the way of how calculate the bed plane. If an user has old offset bed offset values those will be modified to the new ones.
+		// old bed calculus
+		float z_final_probe_1 = (z_at_pt_1+(z2_at_pt_1-(((z2_at_pt_2-z_at_pt_3)+(z2_at_pt_3-z_at_pt_2))/2)))/2; //Upper left, upper right
+		float z_final_probe_2 = z_at_pt_2 - ((z2_at_pt_2-z_at_pt_3)+(z2_at_pt_3-z_at_pt_2))/2 ;//(z_at_pt_2+z2_at_pt_3)/2; //Lower left, lower left
+		float z_final_probe_3 = z_at_pt_3 - ((z2_at_pt_2-z_at_pt_3)+(z2_at_pt_3-z_at_pt_2))/2 ;//(z_at_pt_3+z2_at_pt_2)/2; //lower right, lower right
+		bed_offset_left_screw = (z2_0 - (z2_0 - z2_1)/2.0 - (Zscroll_0 - (Zscroll_0 - Zscroll_1)/2.0)) - (z_final_probe_2 - z_final_probe_1 - bed_offset_left_screw);//  <- convertion
+		bed_offset_right_screw = (z3_0 - (z3_0 - z3_1)/2.0 - (Zscroll_0 - (Zscroll_0 - Zscroll_1)/2.0)) - (z_final_probe_3 - z_final_probe_1 - bed_offset_right_screw);// <- convertion
+		bed_offset_version = VERSION_NUMBER;
+		Config_StoreSettings();
+		SERIAL_PROTOCOLPGM("New offset version: ");
+		Serial.println(VERSION_NUMBER);
+	}
 	//Update zOffset. We have to take into account the 2 different probe offsets
 	//NOT NEEDED because we have to check the bed from the same position. Theorically the offsets between probes is inexistent
 	//Calculate medians
-	
-	
 	///Alejandro
 
 	float dz2 = z2_0 - (z2_0 - z2_1)/2.0 - (Zscroll_0 - (Zscroll_0 - Zscroll_1)/2.0) - bed_offset_left_screw;
@@ -4935,6 +4945,7 @@ inline void gcode_G34(){
 			touchscreen_update();
 			#ifdef SIGMA_TOUCH_SCREEN
 			printer_state = STATE_CALIBRATION;
+			genie.WriteObject(GENIE_OBJ_VIDEO,GIF_BED_CALIB_SUCCESS,0);
 			genie.WriteObject(GENIE_OBJ_FORM,FORM_CAL_WIZARD_DONE_GOOD,0);
 			gif_processing_state = PROCESSING_BED_SUCCESS;
 			#endif
@@ -7473,30 +7484,30 @@ inline void gcode_M407(){
 	#endif
 	
 }
-inline void gcode_M500(){
+inline void gcode_M500(){// Store data in EEPROM
 	Config_StoreSettings();
 }
 inline void gcode_M501(){
-	Config_RetrieveSettings();
+	Config_RetrieveSettings();// Read from EEPROM
 }
-inline void gcode_M502(){
+inline void gcode_M502(){// Reset by default. Not Calibration values and PID
 	Config_ResetDefault();
 	Config_StoreSettings();
 }
-inline void gcode_M503(){
+inline void gcode_M503(){// Show log and settings
 	Config_PrintSettings();
 }
-inline void gcode_M504(){
+inline void gcode_M504(){// Reset by default Calibration values and PID
 	Config_Reset_Calib();
 	Config_StoreSettings();
 }
-inline void gcode_M505(){
+inline void gcode_M505(){// Reset Statistics
 	int input = 0;
 	if (code_seen('P')) input = code_value();
 	Config_Reset_Statistics(input);
 	Config_StoreSettings();
 }
-inline void gcode_M506(){
+inline void gcode_M506(){//Set printer ID
 	int input0 = 0;
 	long input1 = 0;
 	int input2 = 0;
@@ -7506,7 +7517,7 @@ inline void gcode_M506(){
 	Config_Set_UISerialNumber(input0, input1, input2);
 	Config_StoreSettings();
 }
-inline void gcode_M507(){
+inline void gcode_M507(){//Check if there is a recovery ready
 	if(saved_print_flag == 1888){
 		SERIAL_PROTOCOLLNPGM("Print recovery up");
 		Config_PrintSAVESettings();
@@ -7514,7 +7525,7 @@ inline void gcode_M507(){
 		SERIAL_PROTOCOLLNPGM("Not print recovery up");
 	}
 }
-inline void gcode_M510(){
+inline void gcode_M510(){//Set Preheat Temps at L
 	int i_temp_l = 0, r_temp_l = 0 , p_temp_l = 0, b_temp_l =0;
 	if (code_seen('I')) i_temp_l = code_value();
 	if (code_seen('R')) r_temp_l = code_value();
@@ -7523,7 +7534,7 @@ inline void gcode_M510(){
 	Change_ConfigTemp_LeftHotend(i_temp_l, r_temp_l, p_temp_l, b_temp_l);
 	Config_StoreSettings();
 }
-inline void gcode_M520(){
+inline void gcode_M520(){//Set Preheat Temps at R
 	int i_temp_r = 0, r_temp_r = 0 , p_temp_r = 0, b_temp_r =0;
 	if (code_seen('I')) i_temp_r = code_value();
 	if (code_seen('R')) r_temp_r = code_value();
@@ -7532,7 +7543,7 @@ inline void gcode_M520(){
 	Change_ConfigTemp_RightHotend(i_temp_r, r_temp_r, p_temp_r, b_temp_r);
 	Config_StoreSettings();
 }
-inline void gcode_M530(){
+inline void gcode_M530(){ //Set Calibration Offset
 	float Xcalib, Ycalib, Zcalib, Zprobecalib;
 	if (code_seen('X')) Xcalib = code_value();
 	else Xcalib = extruder_offset[X_AXIS][1];
@@ -7547,11 +7558,14 @@ inline void gcode_M530(){
 }
 inline void gcode_M531(){  //Set Bed Offset screw
 	float bed_left, bed_right;
+	unsigned int version_bed;
 	if (code_seen('L')) bed_left = code_value();
 	else bed_left = bed_offset_left_screw;
 	if (code_seen('R')) bed_right = code_value();
 	else bed_right = bed_offset_right_screw;
-	Change_ConfigBed_offset(bed_left, bed_right);
+	if (code_seen('V')) version_bed = (unsigned int)code_value_long();
+	else version_bed = bed_offset_right_screw;
+	Change_ConfigBed_offset(bed_left, bed_right, version_bed);
 	Config_StoreSettings();
 }
 inline void gcode_M535(){

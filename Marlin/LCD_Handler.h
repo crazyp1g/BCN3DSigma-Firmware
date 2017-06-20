@@ -822,6 +822,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							
 							gif_processing_state = PROCESSING_STOP;
 							printer_state = STATE_LOADUNLOAD_FILAMENT;
+							genie.WriteObject(GENIE_OBJ_VIDEO,GIF_SUCCESS_FILAMENT_OK,0);
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_SUCCESS_FILAMENT,0);
 							gif_processing_state = PROCESSING_SUCCESS;
 							if (which_extruder == 0){
@@ -854,6 +855,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							home_axis_from_code(true,true,false);*/
 							setTargetHotend((float)Temp_ChangeFilament_Saved, which_extruder);
 							printer_state = STATE_LOADUNLOAD_FILAMENT;
+							genie.WriteObject(GENIE_OBJ_VIDEO,GIF_SUCCESS_FILAMENT_OK,0);
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_SUCCESS_FILAMENT,0);
 							gif_processing_state = PROCESSING_SUCCESS;
 							
@@ -1256,9 +1258,11 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					else{
 						printer_state = STATE_CALIBRATION;
+						genie.WriteObject(GENIE_OBJ_VIDEO,GIF_BED_CALIB_SUCCESS,0);
 						genie.WriteObject(GENIE_OBJ_FORM, FORM_CAL_WIZARD_DONE_GOOD, 0);
 						gif_processing_state = PROCESSING_BED_SUCCESS;
 					}
+					bed_offset_version = VERSION_NUMBER;
 					Config_StoreSettings();
 					
 					break;
@@ -1275,6 +1279,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					else{
 						printer_state = STATE_CALIBRATION;
+						genie.WriteObject(GENIE_OBJ_VIDEO,GIF_BED_CALIB_SUCCESS,0);
 						genie.WriteObject(GENIE_OBJ_FORM, FORM_CAL_WIZARD_DONE_GOOD, 0);
 						gif_processing_state = PROCESSING_BED_SUCCESS;
 					}
@@ -1282,6 +1287,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					case BUTTON_REDO_BED_CALIB:
 					printer_state = STATE_CALIBRATION;
+					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_BED_CALIB_SUCCESS,0);
 					genie.WriteObject(GENIE_OBJ_FORM, FORM_CAL_WIZARD_DONE_GOOD, 0);
 					gif_processing_state = PROCESSING_BED_SUCCESS;
 					break;
@@ -1672,6 +1678,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						SERIAL_PROTOCOL(unscalePID_d(Kd[1]));
 						gif_processing_state = PROCESSING_STOP;
 						touchscreen_update();
+						genie.WriteObject(GENIE_OBJ_VIDEO,GIF_BED_CALIB_SUCCESS,0);
 						genie.WriteObject(GENIE_OBJ_FORM, FORM_CAL_WIZARD_DONE_GOOD, 0);
 						printer_state = STATE_CALIBRATION;
 						gif_processing_state = PROCESSING_BED_SUCCESS;
@@ -2688,6 +2695,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							if(gif_processing_state == PROCESSING_ERROR)return;
 							gif_processing_state = PROCESSING_STOP;
 							printer_state = STATE_LOADUNLOAD_FILAMENT;
+							genie.WriteObject(GENIE_OBJ_VIDEO,GIF_SUCCESS_FILAMENT_OK,0);
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_SUCCESS_FILAMENT,0);
 							gif_processing_state = PROCESSING_SUCCESS;
 							if (which_extruder == 0){
@@ -4082,6 +4090,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_ADJUSTING_TEMPERATURES,0);
 						gif_processing_state = PROCESSING_ADJUSTING;
+						Calib_check_temps();
 						doblocking=true;
 						home_axis_from_code(true,true,false);
 						if(gif_processing_state == PROCESSING_ERROR)return;
@@ -4110,6 +4119,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_ADJUSTING_TEMPERATURES,0);
 						gif_processing_state = PROCESSING_ADJUSTING;
+						Calib_check_temps();
 						doblocking=true;
 						home_axis_from_code(true,true,false);
 						changeTool(0);
@@ -4131,6 +4141,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								FLAG_CalibFull = false;
 								}else{
 								printer_state = STATE_CALIBRATION;
+								genie.WriteObject(GENIE_OBJ_VIDEO,GIF_BED_CALIB_SUCCESS,0);
 								genie.WriteObject(GENIE_OBJ_FORM,FORM_CAL_WIZARD_DONE_GOOD,0);
 								gif_processing_state = PROCESSING_BED_SUCCESS;
 							}
@@ -4408,6 +4419,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						}
 						else{
 							printer_state = STATE_CALIBRATION;
+							genie.WriteObject(GENIE_OBJ_VIDEO,GIF_BED_CALIB_SUCCESS,0);
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_CAL_WIZARD_DONE_GOOD,0);
 							gif_processing_state = PROCESSING_BED_SUCCESS;
 						}
@@ -5304,17 +5316,17 @@ inline void Z_compensation_decisor(void){
 }
 inline void Calib_check_temps(void){
 	static long waitPeriod_s = millis();
-	if(degHotend(LEFT_EXTRUDER)<(degTargetHotend(LEFT_EXTRUDER)-5) || degHotend(RIGHT_EXTRUDER)<(degTargetHotend(RIGHT_EXTRUDER)-5) || degBed()<(max(bed_temp_l,bed_temp_r)-15)){
+	if(degHotend(LEFT_EXTRUDER)<(degTargetHotend(LEFT_EXTRUDER)-5) || degHotend(RIGHT_EXTRUDER)<(degTargetHotend(RIGHT_EXTRUDER)-5) || degBed()<(max(bed_temp_l,bed_temp_r)-2)){
 		int Tref0 = (int)degHotend0();
 		int Tref1 = (int)degHotend1();
 		int Trefbed = (int)degBed();
 		int Tfinal0 = (int)(degTargetHotend(LEFT_EXTRUDER)-5);
 		int Tfinal1 = (int)(degTargetHotend(RIGHT_EXTRUDER)-5);
-		int Tfinalbed = (int)(degTargetBed()-15);
+		int Tfinalbed = (int)(degTargetBed()-2);
 		long percentage = 0;
 		genie.WriteObject(GENIE_OBJ_FORM,FORM_ADJUSTING_TEMPERATURES,0);
 		gif_processing_state = PROCESSING_ADJUSTING;
-		while (degHotend(LEFT_EXTRUDER)<(degTargetHotend(LEFT_EXTRUDER)-5) || degHotend(RIGHT_EXTRUDER)<(degTargetHotend(RIGHT_EXTRUDER)-5) || degBed()<(max(bed_temp_l,bed_temp_r)-15)){ //Waiting to heat the extruder
+		while (degHotend(LEFT_EXTRUDER)<(degTargetHotend(LEFT_EXTRUDER)-5) || degHotend(RIGHT_EXTRUDER)<(degTargetHotend(RIGHT_EXTRUDER)-5) || degBed()<(max(bed_temp_l,bed_temp_r)-2)){ //Waiting to heat the extruder
 			
 			manage_heater();
 			touchscreen_update();
@@ -5356,8 +5368,8 @@ inline void Calib_check_temps(void){
 					Tinstantbed = (int)degBed();
 				}
 				
-				percentage = (long)Tfinal0+(long)Tfinal1+(long)Tfinalbed-(long)Tref0-(long)Tref1-(long)Trefbed;
-				percentage= 100*((long)Tinstanthot0+(long)Tinstanthot1+(long)Tinstantbed-(long)Tref0-(long)Tref1-(long)Trefbed)/percentage;
+				percentage = (long)Tfinal0+(long)Tfinal1+(long)Tfinalbed*5-(long)Tref0-(long)Tref1-(long)Trefbed*5;
+				percentage= 100*((long)Tinstanthot0+(long)Tinstanthot1+(long)Tinstantbed*5-(long)Tref0-(long)Tref1-(long)Trefbed*5)/percentage;
 				
 				sprintf(buffer, "%ld%%", percentage);
 				genie.WriteStr(STRING_ADJUSTING_TEMPERATURES,buffer);
@@ -5409,6 +5421,7 @@ inline void Full_calibration_Y_set(float offset){
 	manual_fine_calib_offset[1]=0.0;
 	if (!Step_First_Start_Wizard){
 		printer_state = STATE_CALIBRATION;
+		genie.WriteObject(GENIE_OBJ_VIDEO,GIF_BED_CALIB_SUCCESS,0);
 		genie.WriteObject(GENIE_OBJ_FORM,FORM_CAL_WIZARD_DONE_GOOD,0);
 		gif_processing_state = PROCESSING_BED_SUCCESS;
 		

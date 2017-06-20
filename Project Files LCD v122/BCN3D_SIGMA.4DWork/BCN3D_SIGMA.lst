@@ -5197,7 +5197,7 @@ file C:\Program Files (x86)\4D Labs\4D Workshop 4 IDE\include\Diablo16_Functions
 005191  000018        
 005192  000002        
 005193  000003        
-005194  000004  // generated 19/06/2017 12:55:57
+005194  000004  // generated 20/06/2017 12:05:54
 005195  000005        
 005196  000006        
 file C:\Program Files (x86)\4D Labs\4D Workshop 4 IDE\include\4DGL_16bitColours.fnc
@@ -5235,7 +5235,7 @@ file C:\Users\agarciamoreno\Documents\Firmware\BCN3DSigma-Firmware\Project Files
 
 005224  000012  #inherit "BCN3D_SIGMAConst.inc"
 005225  000012  #inherit "BCN3D_SIGMAConst.inc"
-005226  000001  // File generated 19/06/2017 12:55:20
+005226  000001  // File generated 20/06/2017 12:05:07
 005227  000002  // Warning! This is a generated file, any manual changes will be
 005228  000003  // lost during the next generation.
 005229  000004        
@@ -19133,7 +19133,7 @@ file C:\Program Files (x86)\4D Labs\4D Workshop 4 IDE\include\CLPrintStrings.inc
 019119  000903  //    gfx_TransparentColour(0x0020);
 019120  000904  //    gfx_Transparency(ON);
 019121  000905        
-019122  000906      gfx_ScreenMode(LANDSCAPE) ;
+019122  000906      gfx_ScreenMode(LANDSCAPE_R) ;
 019123  000907        
 019124  000908      // open image control
 019125  000909      hndl := file_LoadImageControl("BCN3D_~1.dat", "BCN3D_~1.gci", 1);
@@ -20648,8 +20648,8 @@ iVideo9                              230  0x000000e6 (const ??? 0)  (usage 3)
 IVORY                              65534  0x0000fffe (const dword)  (not used)
 KHAKI                              63281  0x0000f731 (const dword)  (not used)
 kKeyboardKeystrokes                13057  0x00003301kKeyboardKeystrokes                13057  0x00003301 (mem) word[1] (member of C:\Users\agarciamoreno\Documents\Firmware\BCN3DSigma-Firmware\Project Files LCD v122\BCN3D_SIGMA.4DWork\BCN3D_SIGMA.4DGenieS)  (not used)
-LANDSCAPE                              0  0x00000000 (const dword)  (usage 3)
-LANDSCAPE_R                            1  0x00000001 (const dword)  (not used)
+LANDSCAPE                              0  0x00000000 (const dword)  (not used)
+LANDSCAPE_R                            1  0x00000001 (const dword)  (usage 3)
 LAVENDER                           59199  0x0000e73f (const dword)  (not used)
 LAVENDERBLUSH                      65438  0x0000ff9e (const dword)  (not used)
 LAWNGREEN                          32736  0x00007fe0 (const dword)  (not used)

@@ -71,7 +71,7 @@ void Listfiles::get_lineduration(bool fromfilepoiter, char* name){
 	//Serial.println(simplify3D);
 	if(simplify3D == 0){
 		
-		memset(commandline, '\0', sizeof(commandline) );
+		memset(commandline, '\0', sizeof(commandline));
 		posi = 0;
 		serial_char='\0';
 		
