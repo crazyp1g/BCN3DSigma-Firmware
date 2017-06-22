@@ -815,7 +815,7 @@ void setup()
 	}
 	
 	
-	genie.WriteStr(STRING_VERSION,VERSION_STRING);
+	genie.WriteStr(STRING_INIT_FIRWAREVERSION,VERSION_STRING);
 	
 	while(led < 256){
 		if (millis() >= waitPeriod)
@@ -889,7 +889,7 @@ void setup()
 			}
 			setfilenames(7);
 			}else{
-			genie.WriteObject(GENIE_OBJ_FORM,FORM_MAIN_SCREEN,0);
+			genie.WriteObject(GENIE_OBJ_FORM,FORM_MAIN,0);
 			saved_print_flag = 888;
 			Config_StoreSettings();
 		}
@@ -910,7 +910,7 @@ void setup()
 		}
 		genie.WriteObject(GENIE_OBJ_FORM,FORN_FIRST_RUN_WIZARD_YESNOT,0);
 		}else{
-		genie.WriteObject(GENIE_OBJ_FORM,FORM_MAIN_SCREEN,0);
+		genie.WriteObject(GENIE_OBJ_FORM,FORM_MAIN,0);
 	}
 	
 	
@@ -1125,14 +1125,14 @@ float smartPurge_Distant(double A, double B, double T, double P, double E, int t
 void update_screen_printing(){
 	static uint32_t waitPeriod = millis();
 	
-	if(FLAG_PrintSettingRefresh){
+	if(flag_sdprinting_settings){
 		
 		if(card.sdispaused && (screen_printing_pause_form == screen_printing_pause_form1)){
 			
 			screen_printing_pause_form = screen_printing_pause_form2;
-			genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_STOP_SCREEN_PAUSE,1);
-			genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PAUSE_RESUME_PAUSE,1);
-			genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PRINT_SETTINGS_PAUSE,1);
+			genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_SDPRINTING_PAUSE_STOP,1);
+			genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_SDPRINTING_PAUSE_RESUME,1);
+			genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_SDPRINTING_PAUSE_SETTINGS,1);
 			
 			
 		}
@@ -1155,25 +1155,25 @@ void update_screen_printing(){
 			is_on_printing_screen=false;
 		}
 		
-		FLAG_PrintSettingRefresh = false;
+		flag_sdprinting_settings = false;
 	}
-	if (FLAG_PrintSettingBack){
+	if (flag_sdprinting_showdata){
 		if (screen_printing_pause_form != screen_printing_pause_form2){
-			genie.WriteObject(GENIE_OBJ_FORM,FORM_PRINTING,0);
+			genie.WriteObject(GENIE_OBJ_FORM,FORM_SDPRINTING,0);
 			is_on_printing_screen = true;
 			surfing_utilities = false;
-			genie.WriteStr(STRINGS_PRINTING_GCODE,namefilegcode);
-			FLAG_DataRefresh = true;
+			genie.WriteStr(STRING_SDPRINTING_GCODE,namefilegcode);
+			flag_sdprinting_dararefresh = true;
 		}
 		else{
-			genie.WriteObject(GENIE_OBJ_FORM,FORM_PRINTING_PAUSE,0);
+			genie.WriteObject(GENIE_OBJ_FORM,FORM_SDPRINTING_PAUSE,0);
 			is_on_printing_screen = true;
 			surfing_utilities = false;
-			genie.WriteStr(STRINGS_PRINTING_GCODE_PAUSE,namefilegcode);
-			FLAG_DataRefresh = true;
+			genie.WriteStr(STRING_SDPRINTING_PAUSE_GCODE,namefilegcode);
+			flag_sdprinting_dararefresh = true;
 		}
 		waitPeriod=5000+millis();	//Every 5s
-		FLAG_PrintSettingBack = false;
+		flag_sdprinting_showdata = false;
 		
 	}
 	if(FLAG_thermal_runaway){
@@ -1281,34 +1281,34 @@ void update_screen_printing(){
 		
 		screen_change_speeddown = false;
 	}
-	if(FLAG_PrintPrintPause){
+	if(flag_sdprinting_printpause){
 		if(!waiting_temps){
 			
 			card.pauseSDPrint();
 			SERIAL_PROTOCOLPGM("¡PAUSE! \n");
-			FLAG_PausePause = true;
+			flag_sdprinting_pausepause = true;
 			
 		}
-		FLAG_PrintPrintPause = false;
+		flag_sdprinting_printpause = false;
 		
 	}
-	if(FLAG_PrintPrintResume){
+	if(flag_sdprinting_printresume){
 		if(!waiting_temps){
 			genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
 			gif_processing_state = PROCESSING_DEFAULT;
 			card.startFileprint();
 			SERIAL_PROTOCOLPGM("¡RESUME! \n");
-			FLAG_PausePause = false;
-			FLAG_PauseResume = true;
-			if(FLAG_PauseResume){
+			flag_sdprinting_pausepause = false;
+			flag_sdprinting_pauseresume = true;
+			if(flag_sdprinting_pauseresume){
 				enquecommand_P(((PSTR("G70"))));
-				FLAG_PauseResume = false;
+				flag_sdprinting_pauseresume = false;
 				SERIAL_PROTOCOLPGM("Resume detected \n");
 			}
 		}
-		FLAG_PrintPrintResume = false;
+		flag_sdprinting_printresume = false;
 	}
-	if(FLAG_PrintPrintStop|| FLAG_PrintPrintSave){
+	if(flag_sdprinting_printstop|| flag_sdprinting_printsavejob){
 		
 		bufindw = (bufindr + 1)%BUFSIZE;
 		buflen = 1;
@@ -1323,12 +1323,12 @@ void update_screen_printing(){
 		ymmdone = 0;
 		e0mmdone = 0;
 		e1mmdone = 0;
-		if(FLAG_PrintPrintStop){
+		if(flag_sdprinting_printstop){
 			enquecommand_P(PSTR("M35"));
-			FLAG_PrintPrintStop = false;
-			}else if(FLAG_PrintPrintSave){
+			flag_sdprinting_printstop = false;
+			}else if(flag_sdprinting_printsavejob){
 			enquecommand_P(PSTR("G28 X0 Y0")); //Home X and Y
-			FLAG_PrintPrintSave = false;
+			flag_sdprinting_printsavejob = false;
 		}
 		acceleration = acceleration_old;
 		
@@ -1411,10 +1411,10 @@ void update_screen_printing(){
 			waitPeriod=2000+millis(); // Every Second
 		}
 	}
-	if(FLAG_FilamentAcceptOk && !home_made){
+	if(flag_utilities_filament_acceptok && !home_made){
 		gif_processing_state = PROCESSING_DEFAULT;
 	}
-	if(FLAG_FilamentAcceptOk && home_made && (gif_processing_state == PROCESSING_DEFAULT)){
+	if(flag_utilities_filament_acceptok && home_made && (gif_processing_state == PROCESSING_DEFAULT)){
 		gif_processing_state = PROCESSING_STOP;
 		printer_state = STATE_LOADUNLOAD_FILAMENT;
 		genie.WriteObject(GENIE_OBJ_FORM,FORM_SUCCESS_FILAMENT,0);
@@ -1438,45 +1438,45 @@ void update_screen_printing(){
 			//Edit for final TouchScreen
 			char buffer7[25];
 			
-			if (tHotend !=int(degHotend(0)) || FLAG_DataRefresh == true ){
+			if (tHotend !=int(degHotend(0)) || flag_sdprinting_dararefresh == true ){
 				tHotend =int(degHotend(0));
 				sprintf_P(buffer7, PSTR("%3d %cC"),tHotend,0x00B0);
-				if(!card.sdispaused)genie.WriteStr(STRING_PRINTING_NOZZ1,buffer7);
-				else genie.WriteStr(STRING_PRINTING_NOZZ1_PAUSE,buffer7);
+				if(!card.sdispaused)genie.WriteStr(STRING_SDPRINTING_HOTEND0,buffer7);
+				else genie.WriteStr(STRING_SDPRINTING_PAUSE_HOTEND0,buffer7);
 			}
-			if (tHotend1 !=int(degHotend(1)) || FLAG_DataRefresh == true ){
+			if (tHotend1 !=int(degHotend(1)) || flag_sdprinting_dararefresh == true ){
 				tHotend1=int(degHotend(1));
 				sprintf_P(buffer7, PSTR("%3d %cC"),tHotend1,0x00B0);
-				if(!card.sdispaused)genie.WriteStr(STRING_PRINTING_NOZZ2,buffer7);
-				else genie.WriteStr(STRING_PRINTING_NOZZ2_PAUSE,buffer7);
+				if(!card.sdispaused)genie.WriteStr(STRING_SDPRINTING_HOTEND1,buffer7);
+				else genie.WriteStr(STRING_SDPRINTING_PAUSE_HOTEND1,buffer7);
 			}
-			if (tBed !=int(degBed() + 0.5) || FLAG_DataRefresh == true ){
+			if (tBed !=int(degBed() + 0.5) || flag_sdprinting_dararefresh == true ){
 				tBed=int(degBed() + 0.5);
 				sprintf_P(buffer7, PSTR("%2d %cC"),tBed,0x00B0);
-				if(!card.sdispaused)genie.WriteStr(STRING_PRINTING_BED,buffer7);
-				else genie.WriteStr(STRING_PRINTING_BED_PAUSE,buffer7);
+				if(!card.sdispaused)genie.WriteStr(STRING_SDPRINTING_BED,buffer7);
+				else genie.WriteStr(STRING_SDPRINTING_PAUSE_BED,buffer7);
 			}
-			if (percentDone != card.percentDone() || FLAG_DataRefresh == true ){
+			if (percentDone != card.percentDone() || flag_sdprinting_dararefresh == true ){
 				percentDone = card.percentDone();
 				sprintf_P(buffer7, PSTR("% 3d %%"),card.percentDone());
-				if(!card.sdispaused)genie.WriteStr(STRING_PRINTING_PERCENT,buffer7);
-				else genie.WriteStr(STRING_PRINTING_PERCENT_PAUSE,buffer7);
+				if(!card.sdispaused)genie.WriteStr(STRING_SDPRINTING_PERCENTAGE,buffer7);
+				else genie.WriteStr(STRING_SDPRINTING_PAUSE_PERCENTAGE,buffer7);
 			}
-			if ( minuteremaining != listsd.get_minutesremaining() || FLAG_DataRefresh == true ){
+			if ( minuteremaining != listsd.get_minutesremaining() || flag_sdprinting_dararefresh == true ){
 				minuteremaining = listsd.get_minutesremaining();
 				sprintf_P(buffer7, PSTR("%d h %d m"),listsd.get_hoursremaining(), listsd.get_minutesremaining());
-				if(!card.sdispaused)genie.WriteStr(STRING_PRINTING_TIMEremaining,buffer7);
-				else genie.WriteStr(STRING_PRINTING_TIMEremaining_PAUSE,buffer7);
+				if(!card.sdispaused)genie.WriteStr(STRING_SDPRINTING_TIMEREMAINING,buffer7);
+				else genie.WriteStr(STRING_SDPRINTING_PAUSE_TIMEREMAINING,buffer7);
 			}
 			
-			if(feedmultiply != feedmultiply1 || FLAG_DataRefresh == true ){
+			if(feedmultiply != feedmultiply1 || flag_sdprinting_dararefresh == true ){
 				feedmultiply1 = feedmultiply;
 				sprintf_P(buffer7, PSTR("% 3d %%"),feedmultiply1);
-				if(!card.sdispaused)genie.WriteStr(STRINGS_PRINTING_FEED,buffer7);
-				else genie.WriteStr(STRINGS_PRINTING_FEED_PAUSE,buffer7);
+				if(!card.sdispaused)genie.WriteStr(STRING_SDPRINTING_FEED,buffer7);
+				else genie.WriteStr(STRING_SDPRINTING_PAUSE_FEED,buffer7);
 			}
 			
-			FLAG_DataRefresh = false;
+			flag_sdprinting_dararefresh = false;
 			count5s++;
 			count5s1++;
 			if (count5s == 720){ //5s * 720 = 3600s = 1h
@@ -1529,62 +1529,62 @@ void update_screen_noprinting(){
 			int tBed=(int)degBed();
 			
 			if ((tHotend <= target_temperature[0]-10 || tHotend >= target_temperature[0]+10) && target_temperature[0]!=0) {
-				FLAG_GifHotent0 = true;
+				flag_temp_gifhotent0 = true;
 				genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PREHEAT_LEXTR,0);//<GIFF
 				
 			}
 			else if(target_temperature[0]!=0){
 				genie.WriteObject(GENIE_OBJ_VIDEO,GIF_TEMP_LEXTR,GIF_FRAMES_PREHEAT+1);
-				FLAG_GifHotent0 = false;
+				flag_temp_gifhotent0 = false;
 				genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PREHEAT_LEXTR,1);//<GIFF
 			}
 			else{
-				FLAG_GifHotent0 = false;
+				flag_temp_gifhotent0 = false;
 				genie.WriteObject(GENIE_OBJ_VIDEO,GIF_TEMP_LEXTR,0);
 				genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PREHEAT_LEXTR,0);//<GIFF
 			}
 			if ((tHotend1 <= target_temperature[1]-10 || tHotend1 >= target_temperature[1]+10) && target_temperature[1]!=0)  {
-				FLAG_GifHotent1 = true;//<GIFF
+				flag_temp_gifhotent1 = true;//<GIFF
 				genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PREHEAT_REXTR,0);//<GIFF
 				
 			}
 			else if(target_temperature[1]!=0){
 				genie.WriteObject(GENIE_OBJ_VIDEO,GIF_TEMP_REXTR,GIF_FRAMES_PREHEAT+1);
-				FLAG_GifHotent1 = false;
+				flag_temp_gifhotent1 = false;
 				genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PREHEAT_REXTR,1); //<GIFF
 			}
 			else{
 				genie.WriteObject(GENIE_OBJ_VIDEO,GIF_TEMP_REXTR,0);
-				FLAG_GifHotent1 = false;
+				flag_temp_gifhotent1 = false;
 				genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PREHEAT_REXTR,0);//<GIFF
 			}
 			if (( tBed <= target_temperature_bed-10 ||  tBed >= target_temperature_bed+10) && target_temperature_bed!=0)  {
-				FLAG_GifBed = true;
+				flag_temp_gifbed = true;
 				genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PREHEAT_BED,0);//<GIFF
 				
 			}
 			else if(target_temperature_bed!=0){
 				genie.WriteObject(GENIE_OBJ_VIDEO,GIF_TEMP_BED,GIF_FRAMES_PREHEAT+2);
-				FLAG_GifBed = false;
+				flag_temp_gifbed = false;
 				genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PREHEAT_BED,1);//<GIFF
 			}
 			else{
 				genie.WriteObject(GENIE_OBJ_VIDEO,GIF_TEMP_BED,0);
-				FLAG_GifBed = false;
+				flag_temp_gifbed = false;
 				genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PREHEAT_BED,0);//<GIFF
 			}
 			
-			if(FLAG_GifHotent0 || FLAG_GifHotent1 || FLAG_GifBed ){
+			if(flag_temp_gifhotent0 || flag_temp_gifhotent1 || flag_temp_gifbed ){
 				
 				processing_state  = (processing_state < GIF_FRAMES_PREHEAT) ? processing_state + 1 : 3;
 				
-				if(FLAG_GifHotent0){
+				if(flag_temp_gifhotent0){
 					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_TEMP_LEXTR,processing_state);
 				}
-				if(FLAG_GifHotent1){
+				if(flag_temp_gifhotent1){
 					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_TEMP_REXTR,processing_state);
 				}
-				if(FLAG_GifBed){
+				if(flag_temp_gifbed){
 					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_TEMP_BED,processing_state);
 				}
 			}
@@ -1595,8 +1595,8 @@ void update_screen_noprinting(){
 	
 	if (surfing_utilities)
 	{
-		if(FLAG_PurgeSelect0){
-			FLAG_PurgeSelect0 = false;
+		if(flag_utilities_filament_purgeselect0){
+			flag_utilities_filament_purgeselect0 = false;
 			if(degHotend(purge_extruder_selected) >= target_temperature[purge_extruder_selected]-PURGE_TEMP_HYSTERESIS){
 				gif_processing_state = PROCESSING_PURGE_LOAD;
 				current_position[E_AXIS]+=PURGE_DISTANCE_INSERTED;
@@ -1606,8 +1606,8 @@ void update_screen_noprinting(){
 				genie.WriteObject(GENIE_OBJ_VIDEO,GIF_PURGE_LOAD,0);
 			}
 		}
-		if(FLAG_PurgeSelect1){
-			FLAG_PurgeSelect1 = false;
+		if(flag_utilities_filament_purgeselect1){
+			flag_utilities_filament_purgeselect1 = false;
 			if(degHotend(purge_extruder_selected) >= target_temperature[purge_extruder_selected]-PURGE_TEMP_HYSTERESIS){
 				gif_processing_state = PROCESSING_PURGE_LOAD;
 				current_position[E_AXIS]-=5;
@@ -1617,8 +1617,8 @@ void update_screen_noprinting(){
 				genie.WriteObject(GENIE_OBJ_VIDEO,GIF_PURGE_LOAD,0);
 			}
 		}
-		if(FLAG_LoadSelect0){
-			FLAG_LoadSelect0 = false;
+		if(flag_utilities_filament_purgeload){
+			flag_utilities_filament_purgeload = false;
 			if(degHotend(which_extruder) >= target_temperature[which_extruder]-PURGE_TEMP_HYSTERESIS){
 				genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_ADJUST_Load, 1);
 				current_position[E_AXIS]+=PURGE_DISTANCE_INSERTED;
@@ -1627,8 +1627,8 @@ void update_screen_noprinting(){
 				genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_ADJUST_Load, 0);
 			}
 		}
-		if(FLAG_UnloadSelect1){
-			FLAG_UnloadSelect1 = false;
+		if(flag_utilities_filament_purgeunload){
+			flag_utilities_filament_purgeunload = false;
 			if(degHotend(which_extruder) >= target_temperature[which_extruder]-PURGE_TEMP_HYSTERESIS){
 				genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_ADJUST_Unload, 1);
 				current_position[E_AXIS]-=5;
@@ -1718,9 +1718,9 @@ void update_screen_noprinting(){
 			waitPeriodno=2000+millis(); // Every Second
 		}
 	}
-	if(FLAG_ZAdjust10Up && !blocks_queued()){
+	if(flag_maintenance_zdjust10up && !blocks_queued()){
 		processing_z_set = 0;
-		FLAG_ZAdjust10Up = false;
+		flag_maintenance_zdjust10up = false;
 		current_position[Z_AXIS]-=10;
 		
 		if (home_made_Z){
@@ -1734,12 +1734,12 @@ void update_screen_noprinting(){
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], max_feedrate[Z_AXIS], active_extruder); //check speed
 		st_synchronize();
 		processing_z_set = 255;
-		FLAG_ZAdjust10Up = false;
+		flag_maintenance_zdjust10up = false;
 	}
-	if(FLAG_ZAdjust50Up && !blocks_queued()){
+	if(flag_maintenance_zdjust100up && !blocks_queued()){
 		processing_z_set = 0;
 		current_position[Z_AXIS]-=100;
-		FLAG_ZAdjust50Up= false;
+		flag_maintenance_zdjust100up= false;
 		if (home_made_Z){
 			if(current_position[Z_AXIS]< Z_MIN_POS){
 				current_position[Z_AXIS]= Z_MIN_POS;
@@ -1750,10 +1750,10 @@ void update_screen_noprinting(){
 		processing_z_set = 255;
 		
 	}
-	if(FLAG_ZAdjust10Down && !blocks_queued()){
+	if(flag_maintenance_zdjust10down && !blocks_queued()){
 		processing_z_set = 1;
 		current_position[Z_AXIS]+=10;
-		FLAG_ZAdjust10Down = false;
+		flag_maintenance_zdjust10down = false;
 		if (home_made_Z){
 			if(current_position[Z_AXIS] > Z_MAX_POS-15){
 				current_position[Z_AXIS] = Z_MAX_POS-15;
@@ -1764,10 +1764,10 @@ void update_screen_noprinting(){
 		processing_z_set = 255;
 		
 	}
-	if(FLAG_ZAdjust50Down && !blocks_queued()){
+	if(flag_maintenance_zdjust100down && !blocks_queued()){
 		processing_z_set = 1;
 		current_position[Z_AXIS]+=100;
-		FLAG_ZAdjust50Down = false;
+		flag_maintenance_zdjust100down = false;
 		if (home_made_Z){
 			
 			if(current_position[Z_AXIS] > Z_MAX_POS-15){
@@ -1779,11 +1779,11 @@ void update_screen_noprinting(){
 		processing_z_set = 255;
 		
 	}
-	if(FLAG_FilamentAcceptOk && !home_made){
+	if(flag_utilities_filament_acceptok && !home_made){
 		gif_processing_state = PROCESSING_DEFAULT;
 		
 	}
-	if(FLAG_FilamentAcceptOk && home_made && (gif_processing_state == PROCESSING_DEFAULT)){
+	if(flag_utilities_filament_acceptok && home_made && (gif_processing_state == PROCESSING_DEFAULT)){
 		gif_processing_state = PROCESSING_STOP;
 		printer_state = STATE_LOADUNLOAD_FILAMENT;
 		genie.WriteObject(GENIE_OBJ_FORM,FORM_SUCCESS_FILAMENT,0);
@@ -1795,50 +1795,50 @@ void update_screen_noprinting(){
 void update_screen_sdcard(){
 	static uint32_t waitPeriod_input_button_command = millis();
 	
-	if(FLAG_ListFilesUp){
+	if(flag_sdlist_goup){
 		ListFilesDownfunc();
-		FLAG_ListFilesUp = false;
+		flag_sdlist_goup = false;
 	}
-	if(FLAG_ListFilesDown){
+	if(flag_sdlist_godown){
 		ListFilesUpfunc();
-		FLAG_ListFilesDown = false;
+		flag_sdlist_godown = false;
 	}
-	if(FLAG_ListFilesInit){
+	if(flag_sdlist_goinit){
 		ListFileListINITSD();
-		FLAG_ListFilesInit = false;
+		flag_sdlist_goinit = false;
 	}
-	if(FLAG_ListFileEnterBackFolder){
+	if(flag_sdlist_gofolderback){
 		ListFileListENTERBACKFORLDERSD();
-		FLAG_ListFileEnterBackFolder = false;
+		flag_sdlist_gofolderback = false;
 	}
-	if(millis() >= waitPeriod_input_button_command && FLAG_FilesUpDown){
-		if(FLAG_ListFilesSelect0){
+	if(millis() >= waitPeriod_input_button_command && flag_sdlist_filesupdown){
+		if(flag_sdlist_select0){
 			ListFileSelect0();
 			waitPeriod_input_button_command = 1000 + millis();
 		}
-		else if(FLAG_ListFilesSelect1){
+		else if(flag_sdlist_select1){
 			ListFileSelect1();
 			waitPeriod_input_button_command = 1000 + millis();
 		}
-		else if(FLAG_ListFilesSelect2){
+		else if(flag_sdlist_select2){
 			ListFileSelect2();
 			waitPeriod_input_button_command = 1000 + millis();
 		}
-		else if(FLAG_ListFilesSelect3){
+		else if(flag_sdlist_select3){
 			ListFileSelect3();
 			waitPeriod_input_button_command = 1000 + millis();
 		}
-		else if(FLAG_ListFilesSelect4){
+		else if(flag_sdlist_select4){
 			ListFileSelect4();
 			waitPeriod_input_button_command = 1000 + millis();
 		}
 		
 	}
-	FLAG_ListFilesSelect0 = false;
-	FLAG_ListFilesSelect1 = false;
-	FLAG_ListFilesSelect2 = false;
-	FLAG_ListFilesSelect3 = false;
-	FLAG_ListFilesSelect4 = false;
+	flag_sdlist_select0 = false;
+	flag_sdlist_select1 = false;
+	flag_sdlist_select2 = false;
+	flag_sdlist_select3 = false;
+	flag_sdlist_select4 = false;
 }
 
 
@@ -1902,7 +1902,7 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 					processing_state_z=GIF_FRAMES_ZSET-1;
 				}
 			}
-			genie.WriteObject(GENIE_OBJ_VIDEO,GIF_Z_SET,processing_state_z);
+			genie.WriteObject(GENIE_OBJ_VIDEO,GIF_MAINTENANCE_ZADJUST,processing_state_z);
 			waitPeriod_p=GIF_FRAMERATE+millis();
 		}
 	}
@@ -1937,12 +1937,12 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 			Config_StoreSettings();
 			cancel_heatup = false;
 			if(saved_print_flag == 1888){
-				genie.WriteObject(GENIE_OBJ_FORM,FORM_SAVEJOB_SUCCESS,0);
+				genie.WriteObject(GENIE_OBJ_FORM,FORM_SDPRINTING_SAVEJOB_SUCCESS,0);
 				gif_processing_state = PROCESSING_SAVE_PRINT_SUCCESS;
 				processing_state = 0;
 				
 				}else{
-				genie.WriteObject(GENIE_OBJ_FORM,FORM_MAIN_SCREEN,0);
+				genie.WriteObject(GENIE_OBJ_FORM,FORM_MAIN,0);
 			}
 			
 		}
@@ -2113,21 +2113,21 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 				
 				if(processing_state<GIF_FRAMES_SUCCESS){
 					
-					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_SAVEJOB_SUCCESS,processing_state);
+					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_SDPRINTING_SAVEJOB_SUCCESS,processing_state);
 					processing_state++;
 				}
 				else if(processing_state == GIF_FRAMES_SUCCESS){
 					
-					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_SAVEJOB_SUCCESS,processing_state);
+					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_SDPRINTING_SAVEJOB_SUCCESS,processing_state);
 					processing_state=0;
 					gif_processing_state = PROCESSING_STOP;
 					delay(5000);
-					genie.WriteObject(GENIE_OBJ_FORM,FORM_SAVEJOB_SHUTDOWN,0);
+					genie.WriteObject(GENIE_OBJ_FORM,FORM_SDPRINTING_SAVEJOB_SHUTDOWN,0);
 					
 				}
 				else{
 					processing_state=0;
-					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_SAVEJOB_SUCCESS,processing_state);
+					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_SDPRINTING_SAVEJOB_SUCCESS,processing_state);
 				}
 				waitPeriod_p=GIF_FRAMERATE+millis();
 			}
@@ -2262,7 +2262,7 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 					surfing_utilities=false;
 					SERIAL_PROTOCOLPGM("Surfing 0 \n");
 					surfing_temps = false;
-					genie.WriteObject(GENIE_OBJ_FORM, FORM_MAIN_SCREEN, 0);
+					genie.WriteObject(GENIE_OBJ_FORM, FORM_MAIN, 0);
 				}
 				else{
 					processing_state= 0;
@@ -2490,20 +2490,20 @@ void get_command()
 		
 		
 		//*********PAUSE POSITION AND RESUME POSITION IN PROBES
-		if (FLAG_PausePause && !FLAG_PauseResume){
+		if (flag_sdprinting_pausepause && !flag_sdprinting_pauseresume){
 			
 			enquecommand_P(((PSTR("G69"))));
-			FLAG_PausePause = false;
+			flag_sdprinting_pausepause = false;
 			SERIAL_PROTOCOLPGM("pause detected \n");
 			gif_processing_state = PROCESSING_DEFAULT;
 			genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
 		}
 		
 		//****************************************************/
-		if(FLAG_SavePrintCommand){
+		if(flag_sdprinting_printsavejobcommand){
 			
 			enquecommand_P(PSTR("M33")); //Home X and Y;
-			FLAG_SavePrintCommand = false;
+			flag_sdprinting_printsavejobcommand = false;
 		}
 		#endif
 		return;
@@ -3365,7 +3365,7 @@ inline void gcode_G11(){
 inline void gcode_G28(){
 	if(card.sdprinting){
 		doblocking = true;
-		genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PAUSE_RESUME,1);
+		genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_SDPRINTING_PAUSE,1);
 	}
 	saved_doblocking = doblocking;
 	doblocking = true;
@@ -4618,7 +4618,7 @@ inline void gcode_G34(){
 	homing_feedrate[Z_AXIS]= CALIB_FEEDRATE_ZAXIS;
 	doblocking= true;
 	
-	if (FLAG_CalibFull){
+	if (flag_utilities_calibration_calibfull){
 		setTargetHotend0(print_temp_l);
 		setTargetHotend1(print_temp_r);
 		setTargetBed(max(bed_temp_l,bed_temp_r));
@@ -4650,7 +4650,7 @@ inline void gcode_G34(){
 	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 	
 	//MOVING THE EXTRUDERS TO AVOID HITTING THE CASE WHEN PROBING-------------------------
-	current_position[X_AXIS] += 10;//x_home_pos(LEFT_EXTRUDER)+15;
+	current_position[X_AXIS] += X_GAP_AVOID_COLLISION_LEFT;//x_home_pos(LEFT_EXTRUDER)+15;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200, LEFT_EXTRUDER);
 	///////st_synchronize();
 	//current_position[X_AXIS] = x_home_pos(RIGHT_EXTRUDER);
@@ -4659,14 +4659,14 @@ inline void gcode_G34(){
 	axis_is_at_home(X_AXIS); //Redoes the Max Min calculus for the right extruder
 	Serial.println(current_position[X_AXIS]);
 	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],current_position[E_AXIS]);
-	current_position[X_AXIS]-=13;
+	current_position[X_AXIS]-=X_GAP_AVOID_COLLISION_RIGHT;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200, RIGHT_EXTRUDER);
 	
 	//*********************************************************************
 	//Now we can proceed to probe the first 3 points with the left extruder
 	active_extruder=LEFT_EXTRUDER;
 	axis_is_at_home(X_AXIS);
-	current_position[X_AXIS]+=10;
+	current_position[X_AXIS]+=X_GAP_AVOID_COLLISION_LEFT;
 	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],current_position[E_AXIS]); // We are now at position
 	st_synchronize();
 	if(gif_processing_state == PROCESSING_ERROR)return;
@@ -4698,7 +4698,7 @@ inline void gcode_G34(){
 	current_position[Z_AXIS] += Z_RAISE_BETWEEN_PROBINGS;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15, LEFT_EXTRUDER);
 	
-	current_position[X_AXIS]=x_home_pos(active_extruder)+10;
+	current_position[X_AXIS]=x_home_pos(active_extruder)+X_GAP_AVOID_COLLISION_LEFT;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200, LEFT_EXTRUDER);
 	
 	st_synchronize();
@@ -4708,7 +4708,7 @@ inline void gcode_G34(){
 	
 	active_extruder=RIGHT_EXTRUDER;
 	axis_is_at_home(X_AXIS); //Redoes the Max Min calculus for the right extruder
-	current_position[X_AXIS]-=10;
+	current_position[X_AXIS]-=X_GAP_AVOID_COLLISION_RIGHT;
 	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],current_position[E_AXIS]);
 	
 	
@@ -4899,7 +4899,7 @@ inline void gcode_G34(){
 	if (aprox2==0 && aprox3==0) //If the calibration it's ok
 	{
 		
-		if (FLAG_CalibFull){
+		if (flag_utilities_calibration_calibfull){
 			
 			active_extruder = LEFT_EXTRUDER;
 			//genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
@@ -4914,6 +4914,7 @@ inline void gcode_G34(){
 			if(gif_processing_state == PROCESSING_ERROR)return;
 			enquecommand_P(PSTR("T0"));
 			gif_processing_state = PROCESSING_STOP;
+			touchscreen_update();
 			genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_ZL,0);
 			genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZL_SKIP,0);
 			if(Step_First_Start_Wizard){
@@ -4921,7 +4922,7 @@ inline void gcode_G34(){
 			}
 			
 			flag_continue_calib = true;
-		}else if(FLAG_Bed_Compensation_Mode){
+		}else if(flag_utilities_calibration_bedcomensationmode){
 			
 			active_extruder = LEFT_EXTRUDER;
 			//genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
@@ -4935,6 +4936,7 @@ inline void gcode_G34(){
 			enquecommand_P(PSTR("T0"));
 			
 			gif_processing_state = PROCESSING_STOP;
+			touchscreen_update();
 			genie.WriteObject(GENIE_OBJ_FORM,FORM_CLEAN_BED,0);
 			
 			
@@ -5021,7 +5023,7 @@ inline void gcode_G34(){
 	#endif // ENABLE_AUTO_BED_LEVELING
 
 }
-inline void gcode_G35(){
+/*inline void gcode_G35(){
 
 	home_axis_from_code(true,true,true);
 	doblocking = true;
@@ -5051,7 +5053,7 @@ inline void gcode_G35(){
 	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
 	bed_test_print_code(82.0,-220.0, 0);
 	#else
-	bed_test_print_code(192.0,-220.0);
+	bed_test_print_code(192.0,-220.0, 0);
 	#endif
 	
 	home_axis_from_code(true,true,false);
@@ -5060,7 +5062,7 @@ inline void gcode_G35(){
 
 
 	
-}
+}*/
 inline void gcode_G36()
 {
 	HeaterCooldownInactivity(false);
@@ -5070,7 +5072,7 @@ inline void gcode_G36()
 	Bed_Compensation_Lines_Selected[0] = 0;
 	Bed_Compensation_Lines_Selected[1] = 0;
 	Bed_Compensation_Lines_Selected[2] = 0;
-	FLAG_Bed_Compensation_Mode = true;
+	flag_utilities_calibration_bedcomensationmode = true;
 	setTargetHotend0(print_temp_l);
 	//setTargetHotend1(print_temp_r);
 	setTargetBed(max(bed_temp_l,bed_temp_r));
@@ -5146,13 +5148,13 @@ inline void gcode_G69(){
 	if(dual_x_carriage_mode ==DXC_DUPLICATION_MIRROR_MODE)	extruder_duplication_mirror_enabled =false;
 	
 	//*********************************//
-	FLAG_PausePause = false;
+	flag_sdprinting_pausepause = false;
 	doblocking = true;
 	gif_processing_state = PROCESSING_STOP;
-	genie.WriteObject(GENIE_OBJ_FORM,FORM_PRINTING_PAUSE,0);
+	genie.WriteObject(GENIE_OBJ_FORM,FORM_SDPRINTING_PAUSE,0);
 	screen_printing_pause_form = screen_printing_pause_form1;
-	genie.WriteStr(STRINGS_PRINTING_GCODE_PAUSE,namefilegcode);
-	FLAG_DataRefresh = true;
+	genie.WriteStr(STRING_SDPRINTING_PAUSE_GCODE,namefilegcode);
+	flag_sdprinting_dararefresh = true;
 	#endif //ENABLE_AUTO_BED_LEVELING
 }
 inline void gcode_G70(){
@@ -5223,13 +5225,13 @@ inline void gcode_G70(){
 	
 	gif_processing_state = PROCESSING_STOP;
 	screen_printing_pause_form = screen_printing_pause_form0;
-	genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_STOP_SCREEN,0);
-	genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PAUSE_RESUME,1);
-	genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PRINT_SETTINGS,0);
-	genie.WriteObject(GENIE_OBJ_FORM,FORM_PRINTING,0);
-	genie.WriteStr(STRINGS_PRINTING_GCODE,namefilegcode);
-	FLAG_DataRefresh = true;
-	FLAG_PauseResume = false;
+	genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_SDPRINTING_STOP,0);
+	genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_SDPRINTING_PAUSE,1);
+	genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_SDPRINTING_SETTINGS,0);
+	genie.WriteObject(GENIE_OBJ_FORM,FORM_SDPRINTING,0);
+	genie.WriteStr(STRING_SDPRINTING_GCODE,namefilegcode);
+	flag_sdprinting_dararefresh = true;
+	flag_sdprinting_pauseresume = false;
 	
 	#endif //ENABLE_AUTO_BED_LEVELING
 	
@@ -5594,10 +5596,10 @@ inline void gcode_M24(){
 	//st_synchronize();
 	screen_printing_pause_form = screen_printing_pause_form0;
 	#ifdef SIGMA_TOUCH_SCREEN
-	genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PAUSE_RESUME,0);
+	genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_SDPRINTING_PAUSE,0);
 	is_on_printing_screen=true;//We are entering printing screen
-	genie.WriteObject(GENIE_OBJ_FORM,FORM_PRINTING,0);
-	FLAG_DataRefresh = true;
+	genie.WriteObject(GENIE_OBJ_FORM,FORM_SDPRINTING,0);
+	flag_sdprinting_dararefresh = true;
 	
 	//char buffer[13];
 	memset(namefilegcode, '\0', sizeof(namefilegcode) );
@@ -5614,7 +5616,7 @@ inline void gcode_M24(){
 		Serial.println(namefilegcode);
 		SERIAL_PROTOCOLPGM("buffer out: ");
 		Serial.println(buffer2);
-		genie.WriteStr(STRINGS_PRINTING_GCODE,buffer2);//Printing form
+		genie.WriteStr(STRING_SDPRINTING_GCODE,buffer2);//Printing form
 		}else{
 		for (int i = 0; i<=String(card.longFilename).length(); i++)
 		{
@@ -5622,7 +5624,7 @@ inline void gcode_M24(){
 			else namefilegcode[i]=card.longFilename[i];
 		}
 		//buffer[count]='\0';
-		genie.WriteStr(STRINGS_PRINTING_GCODE,namefilegcode);//Printing form//Printing form
+		genie.WriteStr(STRING_SDPRINTING_GCODE,namefilegcode);//Printing form//Printing form
 	}
 	
 	//Serial.println((char*)prepareString(card.longFilename,12));
@@ -5718,9 +5720,9 @@ inline void gcode_M32(){
 		
 		//Rapduch
 		#ifdef SIGMA_TOUCH_SCREEN
-		genie.WriteObject(GENIE_OBJ_FORM,FORM_PRINTING,0);
-		genie.WriteStr(STRINGS_PRINTING_GCODE,namefilegcode);
-		FLAG_DataRefresh = true;
+		genie.WriteObject(GENIE_OBJ_FORM,FORM_SDPRINTING,0);
+		genie.WriteStr(STRING_SDPRINTING_GCODE,namefilegcode);
+		flag_sdprinting_dararefresh = true;
 		#endif
 	}
 	
@@ -5729,7 +5731,7 @@ inline void gcode_M32(){
 }
 inline void gcode_M33(){
 	#ifdef SDSUPPORT
-	FLAG_PrintPrintSave = true;
+	flag_sdprinting_printsavejob = true;
 	cancel_heatup = true;
 	if (card.cardOK){
 		card.closefile(true);
@@ -5889,7 +5891,7 @@ inline void gcode_M34(){
 			Serial.println(current_position[Y_AXIS]);
 			waiting_temps = false;
 			saved_print_smartpurge_flag = true;
-			genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PAUSE_RESUME,1);
+			genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_SDPRINTING_PAUSE,1);
 		}
 		#endif //SDSUPPORT
 	}
@@ -6329,7 +6331,7 @@ inline void gcode_M190(){
 	unsigned long codenum;
 	waiting_temps = true;
 	doblocking = false;
-	genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PAUSE_RESUME,1);
+	genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_SDPRINTING_PAUSE,1);
 	HeaterCooldownInactivity(false);
 	#if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
 	LCD_MESSAGEPGM(MSG_BED_HEATING);
@@ -7564,7 +7566,7 @@ inline void gcode_M531(){  //Set Bed Offset screw
 	if (code_seen('R')) bed_right = code_value();
 	else bed_right = bed_offset_right_screw;
 	if (code_seen('V')) version_bed = (unsigned int)code_value_long();
-	else version_bed = bed_offset_right_screw;
+	else version_bed = VERSION_NUMBER;
 	Change_ConfigBed_offset(bed_left, bed_right, version_bed);
 	Config_StoreSettings();
 }
@@ -8260,10 +8262,10 @@ void process_commands()
 			case 34:
 			gcode_G34();
 			break;
-			
+			/*
 			case 35:
 			gcode_G35();
-			break;
+			break;*/
 			
 			case 36:
 			gcode_G36();
@@ -10058,7 +10060,7 @@ void bed_test_print_code(float x_offset, float y_offset, int zline){
 	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
 	current_position[X_AXIS] = NOZZLE_PARK_DISTANCE_BED_X0 + 118 + x_offset;
 	#else
-	current_position[X_AXIS] = NOZZLE_PARK_DISTANCE_BED_X0 + 118 + x_offset + X_OFFSET_CALIB_PROCEDURES;
+	current_position[X_AXIS] = NOZZLE_PARK_DISTANCE_BED_X0 + 118 + x_offset + X_OFFSET_BEDCOMPENSATION_PROCEDURE;
 	#endif
 	current_position[Z_AXIS] = 0.2;
 	plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],200,active_extruder);
@@ -10076,7 +10078,7 @@ void bed_test_print_code(float x_offset, float y_offset, int zline){
 	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
 	current_position[X_AXIS] = NOZZLE_PARK_DISTANCE_BED_X0 + 92 + x_offset;
 	#else
-	current_position[X_AXIS] = NOZZLE_PARK_DISTANCE_BED_X0 + 92 + x_offset + X_OFFSET_CALIB_PROCEDURES;
+	current_position[X_AXIS] = NOZZLE_PARK_DISTANCE_BED_X0 + 92 + x_offset + X_OFFSET_BEDCOMPENSATION_PROCEDURE;
 	#endif
 	current_position[E_AXIS] += extrusion_multiplier(118-92);
 	plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],40,active_extruder);
@@ -10089,7 +10091,7 @@ void bed_test_print_code(float x_offset, float y_offset, int zline){
 	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
 	current_position[X_AXIS] = NOZZLE_PARK_DISTANCE_BED_X0 + 118 + x_offset;
 	#else
-	current_position[X_AXIS] = NOZZLE_PARK_DISTANCE_BED_X0 + 118 + x_offset + X_OFFSET_CALIB_PROCEDURES;
+	current_position[X_AXIS] = NOZZLE_PARK_DISTANCE_BED_X0 + 118 + x_offset + X_OFFSET_BEDCOMPENSATION_PROCEDURE;
 	#endif
 	current_position[E_AXIS] += extrusion_multiplier(118-92);
 	plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],40,active_extruder);
@@ -10113,7 +10115,7 @@ void bed_test_print_code(float x_offset, float y_offset, int zline){
 	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
 	current_position[X_AXIS] = initial_x_pos;
 	#else
-	current_position[X_AXIS] = initial_x_pos + X_OFFSET_CALIB_PROCEDURES;
+	current_position[X_AXIS] = initial_x_pos + X_OFFSET_BEDCOMPENSATION_PROCEDURE;
 	#endif
 	current_position[Y_AXIS] = initial_y_pos;
 	current_position[Z_AXIS]= initial_z_pos;
@@ -10138,7 +10140,7 @@ void bed_test_print_code(float x_offset, float y_offset, int zline){
 			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
 			current_position[X_AXIS] = initial_x_pos+(distance_x*i);
 			#else
-			current_position[X_AXIS] = initial_x_pos+(distance_x*i) + X_OFFSET_CALIB_PROCEDURES;
+			current_position[X_AXIS] = initial_x_pos+(distance_x*i) + X_OFFSET_BEDCOMPENSATION_PROCEDURE;
 			#endif
 			current_position[Y_AXIS] = initial_y_pos;
 			current_position[Z_AXIS]-= 0.1;

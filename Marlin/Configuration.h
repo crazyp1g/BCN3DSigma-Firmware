@@ -113,11 +113,11 @@
 #endif
 
 #ifndef BCN3D_PRINTER
-	#define BCN3D_PRINTER BCN3D_SIGMA_PRINTER
+	#define BCN3D_PRINTER BCN3D_SIGMAX_PRINTER
 #endif
 
 #ifndef BCN3D_SCREEN_VERSION
-	#define BCN3D_SCREEN_VERSION BCN3D_SIGMA_PRINTER
+	#define BCN3D_SCREEN_VERSION BCN3D_SIGMAX_PRINTER
 #endif
 
 #if MOTHERBOARD == MEGATRONICS_V3
@@ -513,7 +513,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 		#define X_MAX_POS 305.6//312 //Distance between extruders
 	#endif
 	#if BCN3D_PRINTER == BCN3D_SIGMAX_PRINTER
-		#define X_MAX_POS 503.9//312 //Distance between extruders
+		#define X_MAX_POS 526.5//312 //Distance between extruders
 	#endif
 	//#define X_MAX_POS 210 //Bed X
 	#define X_MIN_POS 0
@@ -712,7 +712,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 	#define BOWDEN_LENGTH 875
 #endif
 #if BCN3D_PRINTER == BCN3D_SIGMAX_PRINTER
-	#define BOWDEN_LENGTH 1025
+	#define BOWDEN_LENGTH 1057
 #endif
 #define EXTRUDER_LENGTH 50
 #define INSERT_FAST_SPEED 5000	
@@ -735,7 +735,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 		#define Z_SIGMA_HOME_X_POINT 58
 	#endif
 	#if BCN3D_PRINTER == BCN3D_SIGMAX_PRINTER
-		#define Z_SIGMA_HOME_X_POINT 51
+		#define Z_SIGMA_HOME_X_POINT 58
 	#endif
 	#define Z_SIGMA_HOME_Y_POINT 150
 	
@@ -805,33 +805,40 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 		#define X_SIGMA_PROBE_3_RIGHT_EXTR 55
 		#define Y_SIGMA_PROBE_3_RIGHT_EXTR 10
 		//#define Y_SIGMA_PROBE_3_RIGHT_EXTR 10
+		
+		#define X_GAP_AVOID_COLLISION_LEFT	10
+		#define X_GAP_AVOID_COLLISION_RIGHT	13
+		
 	#endif
 	#if BCN3D_PRINTER == BCN3D_SIGMAX_PRINTER
 		//Left extruder probe point
-		#define X_SIGMA_PROBE_1_LEFT_EXTR 52
+		#define X_SIGMA_PROBE_1_LEFT_EXTR 57.5
 		#define Y_SIGMA_PROBE_1_LEFT_EXTR 265
 		//#define Y_SIGMA_PROBE_1_LEFT_EXTR 275
 	
-		#define X_SIGMA_PROBE_2_LEFT_EXTR 52
+		#define X_SIGMA_PROBE_2_LEFT_EXTR 57.5
 		#define Y_SIGMA_PROBE_2_LEFT_EXTR 10
 		//#define Y_SIGMA_PROBE_2_LEFT_EXTR 10
 	
-		#define X_SIGMA_PROBE_3_LEFT_EXTR 458 //254
+		#define X_SIGMA_PROBE_3_LEFT_EXTR 470 //254
 		#define Y_SIGMA_PROBE_3_LEFT_EXTR 10
 		//#define Y_SIGMA_PROBE_3_LEFT_EXTR 10
 	
 		//Right extruder probe point
-		#define X_SIGMA_PROBE_1_RIGHT_EXTR 458//254
+		#define X_SIGMA_PROBE_1_RIGHT_EXTR 470//254
 		#define Y_SIGMA_PROBE_1_RIGHT_EXTR 265
 		//#define Y_SIGMA_PROBE_1_RIGHT_EXTR 275
 	
-		#define X_SIGMA_PROBE_2_RIGHT_EXTR 458 ///254
+		#define X_SIGMA_PROBE_2_RIGHT_EXTR 470 ///254
 		#define Y_SIGMA_PROBE_2_RIGHT_EXTR 10
 		//#define Y_SIGMA_PROBE_2_RIGHT_EXTR 10
 	
-		#define X_SIGMA_PROBE_3_RIGHT_EXTR 52
+		#define X_SIGMA_PROBE_3_RIGHT_EXTR 57.5
 		#define Y_SIGMA_PROBE_3_RIGHT_EXTR 10
 		//#define Y_SIGMA_PROBE_3_RIGHT_EXTR 10
+		
+		#define X_GAP_AVOID_COLLISION_LEFT	14.5
+		#define X_GAP_AVOID_COLLISION_RIGHT	19.5
 	#endif
 #endif
 
@@ -853,17 +860,17 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 		#define CARGOL_3_Y 19
 	#elif BCN3D_PRINTER == BCN3D_SIGMAX_PRINTER
 		//Screw positions on BED for
-		#define CARGOL_1_X  156
+		#define CARGOL_1_X  263.5
 		//#define CARGOL_1_X  104;
-		#define CARGOL_1_Y  276
+		#define CARGOL_1_Y  272.5
 
-		#define CARGOL_2_X  70
+		#define CARGOL_2_X  86
 		//#define CARGOL_2_X  17;
-		#define CARGOL_2_Y  25
+		#define CARGOL_2_Y  19
 
-		#define CARGOL_3_X  245
+		#define CARGOL_3_X  441
 		//#define CARGOL_3_X  192;
-		#define CARGOL_3_Y  25
+		#define CARGOL_3_Y  19
 	#endif
 	// -END BED calibration WIZARD
 #endif // ENABLE_AUTO_BED_LEVELING
@@ -876,7 +883,8 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 	#define X_CALIB_STARTING_X 117.5
 	#define X_CALIB_STARTING_Y 99.5
 	#if BCN3D_PRINTER == BCN3D_SIGMAX_PRINTER
-		#define X_OFFSET_CALIB_PROCEDURES 100
+		#define X_OFFSET_CALIB_PROCEDURES 109
+		#define X_OFFSET_BEDCOMPENSATION_PROCEDURE 102
 	#endif
 #endif
 
@@ -910,7 +918,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 	#define PRINTER_BED_X_SIZE	210.0
 #endif
 #if BCN3D_PRINTER == BCN3D_SIGMAX_PRINTER
-	#define NOZZLE_PARK_DISTANCE_BED_X0	43
+	#define NOZZLE_PARK_DISTANCE_BED_X0	54.5
 	#define NOZZLE_PARK_DISTANCE_BED_Y0	-2.5
 	#define PRINTER_BED_X_SIZE	420.0
 #endif
