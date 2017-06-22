@@ -188,6 +188,7 @@ void Config_StoreSettings()
 	EEPROM_WRITE_VAR(i,saved_dual_x_carriage_mode);
 	EEPROM_WRITE_VAR(i,saved_duplicate_extruder_x_offset);
 	EEPROM_WRITE_VAR(i,Flag_fanSpeed_mirror);
+	EEPROM_WRITE_VAR(i,bed_offset_version);
 	#endif
 	char ver2[4]=EEPROM_VERSION;
 	i=EEPROM_OFFSET;
@@ -289,6 +290,7 @@ void Config_PrintSettings()
 	SERIAL_ECHO_START;
 	SERIAL_ECHOPAIR(" Bed left screw ",bed_offset_left_screw);
 	SERIAL_ECHOPAIR(" Bed right screw " ,bed_offset_right_screw);
+	SERIAL_ECHOPAIR(" Version " ,(unsigned long)bed_offset_version);
 	SERIAL_ECHOLN("");
 	
 	SERIAL_ECHO_START;
@@ -514,6 +516,7 @@ void Config_RetrieveSettings()
 		EEPROM_READ_VAR(i,saved_dual_x_carriage_mode);
 		EEPROM_READ_VAR(i,saved_duplicate_extruder_x_offset);
 		EEPROM_READ_VAR(i,saved_Flag_fanSpeed_mirror);
+		EEPROM_READ_VAR(i,bed_offset_version);
 		#endif RECOVERY_PRINT
 		// Call updatePID (similar to when we have processed M301)
 		updatePID();
@@ -523,12 +526,15 @@ void Config_RetrieveSettings()
 			UI_SerialID1 = 0;
 			UI_SerialID2 = 0;
 		}
-		if (bed_offset_left_screw <= -1.0 || bed_offset_left_screw >= 1.0 || bed_offset_right_screw >= 1.0 || bed_offset_right_screw <= -1.0){
+		if (abs(bed_offset_left_screw)>= 1.0 ||abs(bed_offset_right_screw) >= 1.0){
 			bed_offset_left_screw = 0.0;
 			bed_offset_right_screw = 0.0;
 			}else if(isnan(bed_offset_left_screw) || isnan(bed_offset_right_screw)  ){
 			bed_offset_left_screw = 0.0;
 			bed_offset_right_screw = 0.0;
+		}
+		if(bed_offset_version > 1000 || isnan(bed_offset_version)){
+			bed_offset_version = 0;
 		}
 		if(isnan(manual_fine_calib_offset[0]) || isnan(manual_fine_calib_offset[1])  || isnan(manual_fine_calib_offset [2]) || isnan(manual_fine_calib_offset[3]))
 		{
@@ -788,14 +794,16 @@ void Change_ConfigCalibration(float Xcalib, float Ycalib, float Zcalib, float Zp
 	zprobe_zoffset= Zprobecalib;
 	
 }
-void Change_ConfigBed_offset(float bed_left, float bed_right){
+void Change_ConfigBed_offset(float bed_left, float bed_right, unsigned int version){
 	
-	if (bed_left <= -1.0 || bed_left >= 1.0 || bed_right >= 1.0 || bed_right <= -1.0){
+	if (abs(bed_left >= 1.0) || abs(bed_right >= 1.0)){
 		bed_offset_left_screw = bed_offset_left_screw;
 		bed_offset_right_screw = bed_offset_right_screw;
+		bed_offset_version = bed_offset_version;
 		}else{
 		bed_offset_left_screw = bed_left;
 		bed_offset_right_screw = bed_right;
+		bed_offset_version = version;
 	}
 	
 	

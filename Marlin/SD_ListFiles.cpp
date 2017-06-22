@@ -1,6 +1,8 @@
-//
-//
-//
+/*
+	SD_ListFiles.cpp - A class that manages the parsing of time printing duration, filament consumption and if an gcode is a duplication print.
+	Last Update: 20/06/2017
+	Author: Alejandro Garcia (S3mt0x)
+*/
 
 #include "SD_ListFiles.h"
 
@@ -71,7 +73,7 @@ void Listfiles::get_lineduration(bool fromfilepoiter, char* name){
 	//Serial.println(simplify3D);
 	if(simplify3D == 0){
 		
-		memset(commandline, '\0', sizeof(commandline) );
+		memset(commandline, '\0', sizeof(commandline));
 		posi = 0;
 		serial_char='\0';
 		
