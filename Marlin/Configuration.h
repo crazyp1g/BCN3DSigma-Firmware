@@ -28,7 +28,7 @@
 //get the hw and fw version to Cura-BCN3D and update the new firmware
 
 #define VERSION_STRING  "01-1.2.5RC"
-#define BUILD_DATE  "|M06.22"
+#define BUILD_DATE  "|M06.23"
 #define VERSION_NUMBER  125
 //#define BUILD_DATE  " "
 #define UI_SerialID  "At Bottom Sticker"
@@ -113,11 +113,11 @@
 #endif
 
 #ifndef BCN3D_PRINTER
-	#define BCN3D_PRINTER BCN3D_SIGMA_PRINTER
+	#define BCN3D_PRINTER BCN3D_SIGMAX_PRINTER
 #endif
 
 #ifndef BCN3D_SCREEN_VERSION
-	#define BCN3D_SCREEN_VERSION BCN3D_SIGMA_PRINTER
+	#define BCN3D_SCREEN_VERSION BCN3D_SIGMAX_PRINTER
 #endif
 
 #if MOTHERBOARD == MEGATRONICS_V3
@@ -513,7 +513,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 		#define X_MAX_POS 305.6//312 //Distance between extruders
 	#endif
 	#if BCN3D_PRINTER == BCN3D_SIGMAX_PRINTER
-		#define X_MAX_POS 526.5//312 //Distance between extruders
+		#define X_MAX_POS 526.7//312 //Distance between extruders
 	#endif
 	//#define X_MAX_POS 210 //Bed X
 	#define X_MIN_POS 0
@@ -712,7 +712,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 	#define BOWDEN_LENGTH 875
 #endif
 #if BCN3D_PRINTER == BCN3D_SIGMAX_PRINTER
-	#define BOWDEN_LENGTH 1057
+	#define BOWDEN_LENGTH 1000
 #endif
 #define EXTRUDER_LENGTH 50
 #define INSERT_FAST_SPEED 5000	
@@ -770,11 +770,11 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 	#if MOTHERBOARD == BCN3D_BOARD
 		#define X_SIGMA_PROBE_OFFSET_FROM_EXTRUDER  17.05//20
 		#define Y_SIGMA_PROBE_OFFSET_FROM_EXTRUDER	22.2
-		#define Z_SIGMA_PROBE_OFFSET_FROM_EXTRUDER  2//2.80//3.4 //It is negative, it is compensated
+		#define Z_SIGMA_PROBE_OFFSET_FROM_EXTRUDER  2.35//2.80//3.4 //It is negative, it is compensated
 		
 		#define X_SIGMA_SECOND_PROBE_OFFSET_FROM_EXTRUDER	-13.4
 		#define Y_SIGMA_SECOND_PROBE_OFFSET_FROM_EXTRUDER	22.2
-		#define Z_SIGMA_SECOND_PROBE_OFFSET_FROM_EXTRUDER	2//2.90
+		#define Z_SIGMA_SECOND_PROBE_OFFSET_FROM_EXTRUDER	2.35//2.90
 		
 	#endif
 	
