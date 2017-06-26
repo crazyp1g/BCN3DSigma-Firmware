@@ -895,12 +895,12 @@ void setup()
 		}
 		
 		}else if (FLAG_First_Start_Wizard==1888){
-		genie.WriteObject(GENIE_OBJ_FORM,FORN_FIRST_RUN_WIZARD_INIT,0);
+		genie.WriteObject(GENIE_OBJ_FORM,FORN_SETUPASSISTANT_INIT,0);
 		int j = 0;
 		while ( j<GIF_FRAMES_INIT_FIRST_RUN){
 			if (millis() >= waitPeriod){
 				
-				genie.WriteObject(GENIE_OBJ_VIDEO,GIF_FIRST_RUN_WIZARD_INIT,j);
+				genie.WriteObject(GENIE_OBJ_VIDEO,GIF_SETUPASSISTANT_INIT,j);
 				j+=1;
 				waitPeriod = GIF_FRAMERATE+millis();	//Every 5s
 			}
@@ -908,7 +908,7 @@ void setup()
 			
 			
 		}
-		genie.WriteObject(GENIE_OBJ_FORM,FORN_FIRST_RUN_WIZARD_YESNOT,0);
+		genie.WriteObject(GENIE_OBJ_FORM,FORN_SETUPASSISTANT_YESNOT,0);
 		}else{
 		genie.WriteObject(GENIE_OBJ_FORM,FORM_MAIN,0);
 	}
@@ -1140,15 +1140,15 @@ void update_screen_printing(){
 			char buffer[25];
 			
 			SERIAL_PROTOCOLPGM("PRINT SETTINGS \n");
-			genie.WriteObject(GENIE_OBJ_FORM,FORM_PRINTTING_SETTINGS_DEF,0);
+			genie.WriteObject(GENIE_OBJ_FORM,FORM_SDPRINTTING_SETINGS,0);
 			sprintf_P(buffer, PSTR("%3d %cC"),target_temperature[0],0x00B0);
-			genie.WriteStr(STRING_PS_LEFT_TEMP,buffer);
+			genie.WriteStr(STRING_SDPRINTTING_SETINGS_LEFT,buffer);
 			sprintf_P(buffer, PSTR("%3d %cC"),target_temperature[1],0x00B0);
-			genie.WriteStr(STRING_PS_RIGHT_TEMP,buffer);
+			genie.WriteStr(STRING_SDPRINTTING_SETINGS_RIGHT,buffer);
 			sprintf_P(buffer, PSTR("%3d %cC"),target_temperature_bed,0x00B0);
-			genie.WriteStr(STRING_PS_BED_TEMP,buffer);
+			genie.WriteStr(STRING_SDPRINTTING_SETINGS_BED,buffer);
 			sprintf(buffer, "%3d %%",feedmultiply);
-			genie.WriteStr(STRING_PS_SPEED,buffer);
+			genie.WriteStr(STRING_SDPRINTING_SETTINGS_SPEED,buffer);
 			
 			
 			waitPeriod=5000+millis();	//Every 5s
@@ -1193,7 +1193,7 @@ void update_screen_printing(){
 		{
 			target_temperature[0]+=5;
 			sprintf_P(buffer, PSTR("%3d %cC"),target_temperature[0],0x00B0);
-			genie.WriteStr(STRING_PS_LEFT_TEMP,buffer);
+			genie.WriteStr(STRING_SDPRINTTING_SETINGS_LEFT,buffer);
 			
 		}
 		screen_change_nozz1up = false;
@@ -1204,7 +1204,7 @@ void update_screen_printing(){
 		{
 			target_temperature[1]+=5;
 			sprintf_P(buffer, PSTR("%3d %cC"),target_temperature[1],0x00B0);
-			genie.WriteStr(STRING_PS_RIGHT_TEMP,buffer);
+			genie.WriteStr(STRING_SDPRINTTING_SETINGS_RIGHT,buffer);
 			
 		}
 		screen_change_nozz2up = false;
@@ -1215,7 +1215,7 @@ void update_screen_printing(){
 		{
 			target_temperature_bed+=5;
 			sprintf_P(buffer, PSTR("%3d %cC"),target_temperature_bed,0x00B0);
-			genie.WriteStr(STRING_PS_BED_TEMP,buffer);
+			genie.WriteStr(STRING_SDPRINTTING_SETINGS_BED,buffer);
 			
 		}
 		
@@ -1227,7 +1227,7 @@ void update_screen_printing(){
 		{
 			feedmultiply+=5;
 			sprintf(buffer, "%3d %%",feedmultiply);
-			genie.WriteStr(STRING_PS_SPEED,buffer);
+			genie.WriteStr(STRING_SDPRINTING_SETTINGS_SPEED,buffer);
 			
 		}
 		screen_change_speedup = false;
@@ -1239,7 +1239,7 @@ void update_screen_printing(){
 		{
 			target_temperature[0]-=5;
 			sprintf_P(buffer, PSTR("%3d %cC"),target_temperature[0],0x00B0);
-			genie.WriteStr(STRING_PS_LEFT_TEMP,buffer);
+			genie.WriteStr(STRING_SDPRINTTING_SETINGS_LEFT,buffer);
 			
 		}
 		
@@ -1251,7 +1251,7 @@ void update_screen_printing(){
 		{
 			target_temperature[1]-=5;
 			sprintf_P(buffer, PSTR("%3d %cC"),target_temperature[1],0x00B0);
-			genie.WriteStr(STRING_PS_RIGHT_TEMP,buffer);
+			genie.WriteStr(STRING_SDPRINTTING_SETINGS_RIGHT,buffer);
 			
 		}
 		
@@ -1263,7 +1263,7 @@ void update_screen_printing(){
 		{
 			target_temperature_bed-=5;
 			sprintf_P(buffer, PSTR("%3d %cC"),target_temperature_bed,0x00B0);
-			genie.WriteStr(STRING_PS_BED_TEMP,buffer);
+			genie.WriteStr(STRING_SDPRINTTING_SETINGS_BED,buffer);
 			
 		}
 		
@@ -1275,7 +1275,7 @@ void update_screen_printing(){
 		{
 			feedmultiply-=5;
 			sprintf(buffer, "%3d %%",feedmultiply);
-			genie.WriteStr(STRING_PS_SPEED,buffer);
+			genie.WriteStr(STRING_SDPRINTING_SETTINGS_SPEED,buffer);
 			
 		}
 		
@@ -2003,21 +2003,21 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 			
 			break;
 			
-			case PROCESSING_NYLON_TEMPS:
+			case PROCESSING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS:
 			
 			if (millis() >= waitPeriod_p){
 				
 				if(processing_state<GIF_FRAMES_NYLONTEMPS){
-					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_NYLON_TEMPS,processing_state);
+					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,processing_state);
 					processing_state++;
 				}
 				else if(processing_state == GIF_FRAMES_NYLONTEMPS){
-					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_NYLON_TEMPS,processing_state);
+					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,processing_state);
 					processing_state = 0;
 				}
 				else{
 					processing_state=0;
-					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_NYLON_TEMPS,processing_state);
+					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,processing_state);
 				}
 				
 				waitPeriod_p=GIF_FRAMERATE+millis();
@@ -2123,21 +2123,21 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 			break;
 			
 			
-			case PROCESSING_NYLON_STEP3:
+			case PROCESSING_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP3:
 			
 			if (millis() >= waitPeriod_p){
 				
 				if(processing_state<GIF_FRAMES_NYLONSTEP3){
-					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_NYLON_STEP3,processing_state);
+					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP3,processing_state);
 					processing_state++;
 				}
 				if(processing_state == GIF_FRAMES_NYLONSTEP3){
-					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_NYLON_STEP3,processing_state);
+					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP3,processing_state);
 					processing_state=0;
 				}
 				else{
 					processing_state=0;
-					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_NYLON_STEP3,processing_state);
+					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP3,processing_state);
 				}
 				waitPeriod_p=GIF_FRAMERATE+millis();
 			}
@@ -2169,22 +2169,22 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 			break;
 			
 			
-			case PROCESSING_NYLON_STEP4:
+			case PROCESSING_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP4:
 			
 			if (millis() >= waitPeriod_p){
 				
 				if(processing_state<GIF_FRAMES_SUCCESS){
-					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_NYLON_STEP4,processing_state);
+					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP4,processing_state);
 					processing_state++;
 				}
 				else if(processing_state < GIF_FRAMES_SUCCESS){
-					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_NYLON_STEP4,processing_state);
+					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP4,processing_state);
 					processing_state=0;
 					gif_processing_state = PROCESSING_STOP;
 				}
 				else{
 					processing_state=0;
-					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_NYLON_STEP4,processing_state);
+					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP4,processing_state);
 				}
 				
 				waitPeriod_p=GIF_FRAMERATE+millis();
@@ -2224,12 +2224,12 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 				
 				if(processing_state<GIF_FRAMES_SUCCESS){
 					
-					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_FIRST_RUN_WIZARD_SUCCESS,processing_state);
+					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_SETUPASSISTANT_SUCCESS,processing_state);
 					processing_state++;
 				}
 				else if (processing_state == GIF_FRAMES_SUCCESS){
 					
-					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_FIRST_RUN_WIZARD_SUCCESS,processing_state);
+					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_SETUPASSISTANT_SUCCESS,processing_state);
 					processing_state=0;
 					gif_processing_state = PROCESSING_STOP;
 					delay(5000);
@@ -2254,7 +2254,7 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 				}
 				else{
 					processing_state= 0;
-					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_FIRST_RUN_WIZARD_SUCCESS,processing_state);
+					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_SETUPASSISTANT_SUCCESS,processing_state);
 				}
 				
 				waitPeriod_p=GIF_FRAMERATE+millis();

@@ -142,7 +142,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_PRINT_SET_BACK:
+					case BUTTON_SDPRINTTING_SETINGS_BACK:
 					if (millis() >= waitPeriod_button_press){
 						
 						flag_sdprinting_showdata = true;
@@ -369,35 +369,35 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					//*****Printing Settings*****
 					#pragma region Printing Settings
 					
-					case  BUTTON_PRINT_SET_SPEED_UP:
+					case  BUTTON_SDPRINTTING_SETINGS_SPEED_UP:
 					screen_change_speedup = true;
 					break;
 					
-					case BUTTON_PRINT_SET_SPEED_DOWN:
+					case BUTTON_SDPRINTTING_SETINGS_SPEED_DOWN:
 					screen_change_speeddown = true;
 					break;
 					
-					case BUTTON_PRINT_SET_NOZZ1_UP:
+					case BUTTON_SDPRINTTING_SETINGS_LEFT_UP:
 					screen_change_nozz1up = true;
 					break;
 					
-					case BUTTON_PRINT_SET_NOZZ1_DOWN:
+					case BUTTON_SDPRINTTING_SETINGS_LEFT_DOWN:
 					screen_change_nozz1down = true;
 					break;
 					
-					case BUTTON_PRINT_SET_NOZZ2_UP:
+					case BUTTON_SDPRINTTING_SETINGS_RIGHT_UP:
 					screen_change_nozz2up = true;
 					break;
 					
-					case BUTTON_PRINT_SET_NOZZ2_DOWN:
+					case BUTTON_SDPRINTTING_SETINGS_RIGHT_DOWN:
 					screen_change_nozz2down = true;
 					break;
 					
-					case BUTTON_PRINT_SET_BED_UP:
+					case BUTTON_SDPRINTTING_SETINGS_BED_UP:
 					screen_change_bedup = true;
 					break;
 					
-					case BUTTON_PRINT_SET_BED_DOWN:
+					case BUTTON_SDPRINTTING_SETINGS_BED_DOWN:
 					screen_change_beddown = true;
 					break;
 					
@@ -1865,7 +1865,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							st_synchronize();
 							if(gif_processing_state == PROCESSING_ERROR)return;
 							gif_processing_state = PROCESSING_STOP;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_STEP0,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP0,0);
 							
 						}
 						
@@ -2705,11 +2705,11 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						}
 					}
 					break;
-					case BUTTON_NYLON_STEP0:
+					case BUTTON_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP0:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_TEMPS,0);
-						gif_processing_state = PROCESSING_NYLON_TEMPS;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,0);
+						gif_processing_state = PROCESSING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS;
 						int Tref = (int)degHotend(which_extruder);
 						int Tfinal = (int)(degTargetHotend(which_extruder)-NYLON_TEMP_HYSTERESIS);
 						int percentage = 0;
@@ -2728,7 +2728,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								percentage = Tfinal-Tref;
 								percentage = 100*(Tinstant-Tref)/percentage;
 								sprintf(buffer, "%d%%", percentage);
-								genie.WriteStr(STRING_NYLON_TEMPS,buffer);
+								genie.WriteStr(STRING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,buffer);
 								waitPeriod_s=2000+millis();
 							}
 							manage_heater();
@@ -2737,19 +2737,19 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						}
 						gif_processing_state = PROCESSING_STOP;
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_STEP2,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP2,0);
 						
 					}
 					break;
-					case BUTTON_NYLON_STEP2:
+					case BUTTON_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP2:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						setTargetHotend(0.0,which_extruder);
 						if(which_extruder == 0)digitalWrite(FAN_PIN, 1);
 						else digitalWrite(FAN2_PIN, 1);
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_STEP3,0);
-						//gif_processing_state = PROCESSING_NYLON_TEMPS;
-						gif_processing_state = PROCESSING_NYLON_STEP3;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP3,0);
+						//gif_processing_state = PROCESSING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS;
+						gif_processing_state = PROCESSING_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP3;
 						int Tref = (int)degHotend(which_extruder);
 						int Tfinal = 160;
 						int percentage = 0;
@@ -2769,7 +2769,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								percentage = ((Tref-Tfinal)-(Tinstant-Tfinal))*100;
 								percentage = percentage/(Tref-Tfinal);
 								sprintf(buffer, "%d%%", percentage);
-								genie.WriteStr(STRING_NYLON_STEP3,buffer);
+								genie.WriteStr(STRING_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP3,buffer);
 								waitPeriod_s=2000+millis();
 							}
 							manage_heater();
@@ -2780,27 +2780,27 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						fanSpeed=255;
 						printer_state = STATE_NYLONCLEANING;
 						#if BCN3D_SCREEN_VERSION
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_NYLON_STEP4,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP4,1);
 						#endif
 						
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_STEP4,0);
-						gif_processing_state = PROCESSING_NYLON_STEP4;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP4,0);
+						gif_processing_state = PROCESSING_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP4;
 					}
 					break;
 					#if BCN3D_SCREEN_VERSION == BCN3D_SIGMA_PRINTER
-					case BUTTON_NYLON_STEP4:
+					case BUTTON_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP4:
 					if(printer_state == STATE_NYLONCLEANING){
 						if (millis() >= waitPeriod_button_press){
 							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 							#if BCN3D_SCREEN_VERSION
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_NYLON_STEP4,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP4,0);
 							#endif
 							if(which_extruder == 0)digitalWrite(FAN_PIN, 1);
 							else digitalWrite(FAN2_PIN, 1);
 							
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_TEMPS,0);
-							gif_processing_state = PROCESSING_NYLON_TEMPS;
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,0);
+							gif_processing_state = PROCESSING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS;
 							int Tref = (int)degHotend(which_extruder);
 							int Tfinal = NYLON_TEMP_COOLDOWN_THRESHOLD;
 							int percentage = 0;
@@ -2819,7 +2819,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 									percentage = ((Tref-Tfinal)-(Tinstant-Tfinal))*90; //<<<<<<<<<<<<<  0% TO 90%
 									percentage = percentage/(Tref-Tfinal);
 									sprintf(buffer, "%d%%", percentage);
-									genie.WriteStr(STRING_NYLON_TEMPS,buffer);
+									genie.WriteStr(STRING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,buffer);
 									waitPeriod_s=2000+millis();
 								}
 								//previous_millis_cmd = millis();
@@ -2853,7 +2853,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 									percentage = Tfinal-Tref;
 									percentage = 90+ 10*(Tinstant-Tref)/percentage;//<<<<<<<<<<<<<  90% TO 100%
 									sprintf(buffer, "%d%%", percentage);
-									genie.WriteStr(STRING_NYLON_TEMPS,buffer);
+									genie.WriteStr(STRING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,buffer);
 									waitPeriod_s=2000+millis();
 								}
 								manage_heater();
@@ -2862,28 +2862,28 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								
 							}
 							gif_processing_state = PROCESSING_STOP;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_STEP5,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP5,0);
 							printer_state = STATE_NONE;
 						}
 					}
 					break;
 					#endif
-					case BUTTON_NYLON_STEP5:
+					case BUTTON_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP5:
 					if (millis() >= waitPeriod_button_press){
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_STEP6,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP6,0);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_NYLON_REPEAT:
+					case BUTTON_UTILITIES_MAINTENANCE_NYLONCLEANING_REPEAT:
 					
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						setTargetHotend(NYLON_TEMP_HEATUP_THRESHOLD,which_extruder);
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_TEMPS,0);
-						gif_processing_state = PROCESSING_NYLON_TEMPS;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,0);
+						gif_processing_state = PROCESSING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS;
 						int Tref = (int)degHotend(which_extruder);
 						int Tfinal = (int)(degTargetHotend(which_extruder)-NYLON_TEMP_HYSTERESIS);
 						int percentage = 0;
@@ -2894,7 +2894,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								percentage = Tfinal-Tref;
 								percentage = 100*((int)degHotend(which_extruder)-Tref)/percentage;
 								sprintf(buffer, "%d%%", percentage);
-								genie.WriteStr(STRING_NYLON_TEMPS,buffer);
+								genie.WriteStr(STRING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,buffer);
 								waitPeriod_s=2000+millis();
 							}
 							manage_heater();
@@ -2903,11 +2903,11 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						}
 						gif_processing_state = PROCESSING_STOP;
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_STEP2,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP2,0);
 					}
 					break;
 					
-					case BUTTON_NYLON_SUCCESS:
+					case BUTTON_UTILITIES_MAINTENANCE_NYLONCLEANING_SUCCESS:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						doblocking = false;
@@ -3026,17 +3026,17 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						calib_value_selected = 0;
 						sprintf(buffer, "0.000");
 						
-						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_MANUAL_FINE_CALIB,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_ZR,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_ZL,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_X,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_Y,0);
-						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_RIGHT,0);
-						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_LEFT,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_UP,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_DOWN,1);
-						genie.WriteObject(GENIE_OBJ_FORM, FORM_MANUAL_FINE_CALIB,0);
-						genie.WriteStr(STRING_MANUAL_FINE_CALIB,manual_fine_calib_offset[0],3);
+						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_UTILITIES_CALIBRATION_MANUAL,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_ZR,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_ZL,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_X,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_Y,0);
+						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_RIGHT,0);
+						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_LEFT,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_UP,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_DOWN,1);
+						genie.WriteObject(GENIE_OBJ_FORM, FORM_UTILITIES_CALIBRATION_MANUAL,0);
+						genie.WriteStr(STRING_UTILITIES_CALIBRATION_MANUAL,manual_fine_calib_offset[0],3);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON2;
 					}
 					break;
@@ -3197,7 +3197,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 									enquecommand_P((PSTR("T0")));
 									SERIAL_PROTOCOLPGM("Filament Inserted/Removed, going to Calib \n");
 									
-									genie.WriteObject(GENIE_OBJ_FORM,FORN_FIRST_RUN_WIZARD_STEP_2,0);
+									genie.WriteObject(GENIE_OBJ_FORM,FORN_SETUPASSISTANT_STEP_2,0);
 									which_extruder = 0;
 								}
 							}
@@ -3229,7 +3229,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								st_synchronize();
 								if(gif_processing_state == PROCESSING_ERROR)return;
 								gif_processing_state = PROCESSING_STOP;
-								genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_STEP0,0);
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP0,0);
 							}
 							flag_utilities_filament_acceptok = false;
 							printer_state = STATE_NONE;
@@ -3240,13 +3240,13 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						if (millis() >= waitPeriod_button_press){
 							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 							#if BCN3D_SCREEN_VERSION
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_NYLON_STEP4,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP4,0);
 							#endif
 							if(which_extruder == 0)digitalWrite(FAN_PIN, 1);
 							else digitalWrite(FAN2_PIN, 1);
 							
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_TEMPS,0);
-							gif_processing_state = PROCESSING_NYLON_TEMPS;
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,0);
+							gif_processing_state = PROCESSING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS;
 							int Tref = (int)degHotend(which_extruder);
 							int Tfinal = NYLON_TEMP_COOLDOWN_THRESHOLD;
 							int percentage = 0;
@@ -3265,7 +3265,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 									percentage = ((Tref-Tfinal)-(Tinstant-Tfinal))*90; //<<<<<<<<<<<<<  0% TO 90%
 									percentage = percentage/(Tref-Tfinal);
 									sprintf(buffer, "%d%%", percentage);
-									genie.WriteStr(STRING_NYLON_TEMPS,buffer);
+									genie.WriteStr(STRING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,buffer);
 									waitPeriod_s=2000+millis();
 								}
 								//previous_millis_cmd = millis();
@@ -3299,7 +3299,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 									percentage = Tfinal-Tref;
 									percentage = 90+ 10*(Tinstant-Tref)/percentage;//<<<<<<<<<<<<<  90% TO 100%
 									sprintf(buffer, "%d%%", percentage);
-									genie.WriteStr(STRING_NYLON_TEMPS,buffer);
+									genie.WriteStr(STRING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,buffer);
 									waitPeriod_s=2000+millis();
 								}
 								manage_heater();
@@ -3308,7 +3308,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								
 							}
 							gif_processing_state = PROCESSING_STOP;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_STEP5,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP5,0);
 							printer_state = STATE_NONE;
 						}
 					}
@@ -4063,7 +4063,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						if (millis() >= waitPeriod_button_press){
 							
 							if(Step_First_Start_Wizard){
-								genie.WriteObject(GENIE_OBJ_FORM,FORN_FIRST_RUN_WIZARD_SUCCESS,0);
+								genie.WriteObject(GENIE_OBJ_FORM,FORN_SETUPASSISTANT_SUCCESS,0);
 								gif_processing_state = PROCESSING_SUCCESS_FIRST_RUN;
 								FLAG_First_Start_Wizard = 888;
 								Step_First_Start_Wizard = false;
@@ -4108,7 +4108,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					#pragma region Manual Fine Calibration
 					
-					case BUTTON_MANUAL_FINE_CALIB_BACK:
+					case BUTTON_UTILITIES_CALIBRATION_MANUAL_BACK:
 					if (millis() >= waitPeriod_button_press){
 						
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION,0);
@@ -4121,7 +4121,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_MANUAL_FINE_CALIB_MENU:
+					case BUTTON_UTILITIES_CALIBRATION_MANUAL_MENU:
 					if (millis() >= waitPeriod_button_press){
 						
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_MAIN,0);
@@ -4138,93 +4138,93 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_MANUAL_FINE_CALIB_OK:
+					case BUTTON_UTILITIES_CALIBRATION_MANUAL_OK:
 					if (millis() >= waitPeriod_button_press){
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_MANUALFINECALIB_SAVE,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_MANUAL_SAVE,0);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_MANUAL_FINE_CALIB_X:
+					case BUTTON_UTILITIES_CALIBRATION_MANUAL_X:
 					if (millis() >= waitPeriod_button_press){
 						
 						calib_value_selected = 0;
-						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_MANUAL_FINE_CALIB,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_ZR,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_ZL,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_X,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_Y,0);
-						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_RIGHT,0);
-						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_LEFT,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_UP,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_DOWN,1);
+						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_UTILITIES_CALIBRATION_MANUAL,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_ZR,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_ZL,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_X,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_Y,0);
+						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_RIGHT,0);
+						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_LEFT,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_UP,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_DOWN,1);
 						value = 0.0;
 						value = manual_fine_calib_offset[calib_value_selected] + offset_calib_manu[calib_value_selected];
-						genie.WriteStr(STRING_MANUAL_FINE_CALIB,value,3);
+						genie.WriteStr(STRING_UTILITIES_CALIBRATION_MANUAL,value,3);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_MANUAL_FINE_CALIB_Y:
+					case BUTTON_UTILITIES_CALIBRATION_MANUAL_Y:
 					if (millis() >= waitPeriod_button_press){
 						
 						calib_value_selected = 1;
-						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_MANUAL_FINE_CALIB,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_ZR,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_ZL,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_X,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_Y,1);
-						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_RIGHT,1);
-						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_LEFT,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_UP,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_DOWN,0);
+						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_UTILITIES_CALIBRATION_MANUAL,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_ZR,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_ZL,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_X,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_Y,1);
+						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_RIGHT,1);
+						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_LEFT,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_UP,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_DOWN,0);
 						value = 0.0;
 						value = manual_fine_calib_offset[calib_value_selected] + offset_calib_manu[calib_value_selected];
-						genie.WriteStr(STRING_MANUAL_FINE_CALIB,value,3);
+						genie.WriteStr(STRING_UTILITIES_CALIBRATION_MANUAL,value,3);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_MANUAL_FINE_CALIB_ZL:
+					case BUTTON_UTILITIES_CALIBRATION_MANUAL_ZL:
 					if (millis() >= waitPeriod_button_press){
 						
 						calib_value_selected = 2;
-						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_MANUAL_FINE_CALIB,2);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_ZR,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_ZL,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_X,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_Y,0);
-						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_RIGHT,1);
-						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_LEFT,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_UP,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_DOWN,0);
+						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_UTILITIES_CALIBRATION_MANUAL,2);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_ZR,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_ZL,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_X,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_Y,0);
+						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_RIGHT,1);
+						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_LEFT,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_UP,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_DOWN,0);
 						value = 0.0;
 						value = manual_fine_calib_offset[calib_value_selected] + offset_calib_manu[calib_value_selected];
-						genie.WriteStr(STRING_MANUAL_FINE_CALIB,value,3);
+						genie.WriteStr(STRING_UTILITIES_CALIBRATION_MANUAL,value,3);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_MANUAL_FINE_CALIB_ZR:
+					case BUTTON_UTILITIES_CALIBRATION_MANUAL_ZR:
 					if (millis() >= waitPeriod_button_press){
 						calib_value_selected = 3;
-						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_MANUAL_FINE_CALIB,2);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_ZR,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_ZL,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_X,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_Y,0);
-						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_RIGHT,1);
-						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_LEFT,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_UP,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_DOWN,0);
+						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_UTILITIES_CALIBRATION_MANUAL,2);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_ZR,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_ZL,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_X,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_Y,0);
+						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_RIGHT,1);
+						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_LEFT,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_UP,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_DOWN,0);
 						value = 0.0;
 						value = manual_fine_calib_offset[calib_value_selected] + offset_calib_manu[calib_value_selected];
-						genie.WriteStr(STRING_MANUAL_FINE_CALIB,value,3);
+						genie.WriteStr(STRING_UTILITIES_CALIBRATION_MANUAL,value,3);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_MANUAL_FINE_CALIB_UP:
+					case BUTTON_UTILITIES_CALIBRATION_MANUAL_UP:
 					
 					value = 0.0;
 					
@@ -4235,10 +4235,10 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						if(offset_calib_manu[calib_value_selected] < 0.200) offset_calib_manu[calib_value_selected] += 0.025;
 					}
 					value = offset_calib_manu[calib_value_selected]+manual_fine_calib_offset[calib_value_selected];
-					genie.WriteStr(STRING_MANUAL_FINE_CALIB,value,3);
+					genie.WriteStr(STRING_UTILITIES_CALIBRATION_MANUAL,value,3);
 					break;
 					
-					case BUTTON_MANUAL_FINE_CALIB_DOWN:
+					case BUTTON_UTILITIES_CALIBRATION_MANUAL_DOWN:
 					value = 0.0;
 					
 					if(calib_value_selected == 1 || calib_value_selected == 0){
@@ -4249,10 +4249,10 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					value = offset_calib_manu[calib_value_selected]+manual_fine_calib_offset[calib_value_selected];
 					
-					genie.WriteStr(STRING_MANUAL_FINE_CALIB,value,3);
+					genie.WriteStr(STRING_UTILITIES_CALIBRATION_MANUAL,value,3);
 					break;
 					
-					case BUTTON_UTILITIES_CALIBRATION_MANUALFINECALIB_SAVE_OK:
+					case BUTTON_UTILITIES_CALIBRATION_MANUAL_SAVE_OK:
 					if (millis() >= waitPeriod_button_press){
 						
 						manual_fine_calib_offset[0] += offset_calib_manu[0];
@@ -4276,7 +4276,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_UTILITIES_CALIBRATION_MANUALFINECALIB_SAVE_NOT:
+					case BUTTON_UTILITIES_CALIBRATION_MANUAL_SAVE_NOT:
 					if (millis() >= waitPeriod_button_press){
 						
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION,0);
@@ -4390,19 +4390,19 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					#pragma endregion Info Screens
 					
 					#pragma region Setup Assistant
-					case BUTTON_FIRST_RUN_WIZARD_YES:
+					case BUTTON_SETUPASSISTANT_YES:
 					if (millis() >= waitPeriod_button_press){
 						
 						surfing_utilities = true;
 						Step_First_Start_Wizard = true;
-						genie.WriteObject(GENIE_OBJ_FORM,FORN_FIRST_RUN_WIZARD_STEP_1,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORN_SETUPASSISTANT_STEP_1,0);
 						Config_ResetDefault();
 						Config_StoreSettings();
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_FIRST_RUN_WIZARD_SKIP:
+					case BUTTON_SETUPASSISTANT_SKIP:
 					if (millis() >= waitPeriod_button_press){
 						
 						FLAG_First_Start_Wizard = 888;
@@ -4413,7 +4413,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_FIRST_RUN_WIZARD_STEP_NEXT_1:
+					case BUTTON_SETUPASSISTANT_STEP_NEXT_1:
 					if (millis() >= waitPeriod_button_press){
 						
 						which_extruder = 0;
@@ -4432,7 +4432,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_FIRST_RUN_WIZARD_STEP_NEXT_2:
+					case BUTTON_SETUPASSISTANT_STEP_NEXT_2:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON2;
 						
@@ -4451,16 +4451,16 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_SETUP_ASSISTANT:
+					case BUTTON_INFO_SETUPASSISTANT:
 					if (millis() >= waitPeriod_button_press){
-						genie.WriteObject(GENIE_OBJ_VIDEO,GIF_FIRST_RUN_WIZARD_INIT,0);
-						genie.WriteObject(GENIE_OBJ_FORM,FORN_FIRST_RUN_WIZARD_INIT,0);
+						genie.WriteObject(GENIE_OBJ_VIDEO,GIF_SETUPASSISTANT_INIT,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORN_SETUPASSISTANT_INIT,0);
 						int j = 0;
 						static uint32_t waitPeriod = millis(); //Processing back home
 						while ( j<GIF_FRAMES_INIT_FIRST_RUN){
 							if (millis() >= waitPeriod){
 								
-								genie.WriteObject(GENIE_OBJ_VIDEO,GIF_FIRST_RUN_WIZARD_INIT,j);
+								genie.WriteObject(GENIE_OBJ_VIDEO,GIF_SETUPASSISTANT_INIT,j);
 								j+=1;
 								waitPeriod = GIF_FRAMERATE+millis();	//Every 5s
 							}
@@ -4468,7 +4468,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							
 							
 						}
-						genie.WriteObject(GENIE_OBJ_FORM,FORN_FIRST_RUN_WIZARD_YESNOT,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORN_SETUPASSISTANT_YESNOT,0);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
@@ -5348,7 +5348,7 @@ inline void Full_calibration_Y_set(float offset){
 		
 		
 		}else{
-		genie.WriteObject(GENIE_OBJ_FORM,FORN_FIRST_RUN_WIZARD_SUCCESS,0);
+		genie.WriteObject(GENIE_OBJ_FORM,FORN_SETUPASSISTANT_SUCCESS,0);
 		gif_processing_state = PROCESSING_SUCCESS_FIRST_RUN;
 		FLAG_First_Start_Wizard = 888;
 		Step_First_Start_Wizard = false;
