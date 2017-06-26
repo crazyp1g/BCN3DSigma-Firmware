@@ -142,7 +142,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_PRINT_SET_BACK:
+					case BUTTON_SDPRINTTING_SETINGS_BACK:
 					if (millis() >= waitPeriod_button_press){
 						
 						flag_sdprinting_showdata = true;
@@ -187,7 +187,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						card.closefile();
 						flag_sdprinting_printstop = true;
 						cancel_heatup = true;
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 						gif_processing_state = PROCESSING_DEFAULT;
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
@@ -223,7 +223,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						
 						if (millis() >= waitPeriod_button_press){
 							
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_SAVEPRINT_SURE_ASK,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_SDPRINTING_SAVEPRINT_SURE,0);
 							
 							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						}
@@ -231,7 +231,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_SAVEPRINT_SURE_ASK_NOT:
+					case BUTTON_SDPRINTING_SAVEPRINT_SURE_NOT:
 					
 					if(!waiting_temps){
 						
@@ -243,7 +243,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_SAVEPRINT_SURE_ASK_OK:
+					case BUTTON_SDPRINTING_SAVEPRINT_SURE_OK:
 					
 					if(!waiting_temps){
 						
@@ -257,7 +257,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								
 								card.sdprinting = false;
 								card.sdispaused = true;
-								genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 								gif_processing_state = PROCESSING_DEFAULT;
 								flag_sdprinting_printsavejobcommand = true;
 								
@@ -336,25 +336,25 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						else if(screen_printing_pause_form == screen_printing_pause_form2){
 							if (millis() >= waitPeriod_button_press){
 								
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_INSERT,0);
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_RETRACT,0);
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_TEMP_UP,0);
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_TEMP_DOWN,0);
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_MENU,1);
-								genie.WriteObject(GENIE_OBJ_FORM,FORM_PURGE,0);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_LOAD,0);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_UNLOAD,0);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_TEMPUP,0);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_TEMPDOWN,0);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_MENU,1);
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_PURGE,0);
 								surfing_utilities = true;
 								purge_extruder_selected = -1;
 								SERIAL_PROTOCOLPGM("Enter in purge mode \n");
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_LEFT,0);
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_RIGHT,0);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT0,0);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT1,0);
 								
 								char buffer[256];
 								sprintf_P(buffer, PSTR("%3d %cC"),int(degHotend(0)),0x00B0);
-								genie.WriteStr(STRING_PURGE_LEFT_TEMP,buffer);	Serial.println(buffer);
+								genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_LEFTTARGET,buffer);	Serial.println(buffer);
 								sprintf_P(buffer, PSTR("%3d %cC"),int(degHotend(1)),0x00B0);
-								genie.WriteStr(STRING_PURGE_RIGHT_TEMP,buffer);	Serial.println(buffer);
+								genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_RIGHTTARGET,buffer);	Serial.println(buffer);
 								sprintf_P(buffer, PSTR("%3d %cC"),0,0x00B0);
-								genie.WriteStr(STRING_PURGE_SELECTED,buffer);	Serial.println(buffer);
+								genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_SELECTEDTEMP,buffer);	Serial.println(buffer);
 								
 								is_on_printing_screen = false;
 								waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
@@ -369,35 +369,35 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					//*****Printing Settings*****
 					#pragma region Printing Settings
 					
-					case  BUTTON_PRINT_SET_SPEED_UP:
+					case  BUTTON_SDPRINTTING_SETINGS_SPEED_UP:
 					screen_change_speedup = true;
 					break;
 					
-					case BUTTON_PRINT_SET_SPEED_DOWN:
+					case BUTTON_SDPRINTTING_SETINGS_SPEED_DOWN:
 					screen_change_speeddown = true;
 					break;
 					
-					case BUTTON_PRINT_SET_NOZZ1_UP:
+					case BUTTON_SDPRINTTING_SETINGS_LEFT_UP:
 					screen_change_nozz1up = true;
 					break;
 					
-					case BUTTON_PRINT_SET_NOZZ1_DOWN:
+					case BUTTON_SDPRINTTING_SETINGS_LEFT_DOWN:
 					screen_change_nozz1down = true;
 					break;
 					
-					case BUTTON_PRINT_SET_NOZZ2_UP:
+					case BUTTON_SDPRINTTING_SETINGS_RIGHT_UP:
 					screen_change_nozz2up = true;
 					break;
 					
-					case BUTTON_PRINT_SET_NOZZ2_DOWN:
+					case BUTTON_SDPRINTTING_SETINGS_RIGHT_DOWN:
 					screen_change_nozz2down = true;
 					break;
 					
-					case BUTTON_PRINT_SET_BED_UP:
+					case BUTTON_SDPRINTTING_SETINGS_BED_UP:
 					screen_change_bedup = true;
 					break;
 					
-					case BUTTON_PRINT_SET_BED_DOWN:
+					case BUTTON_SDPRINTTING_SETINGS_BED_DOWN:
 					screen_change_beddown = true;
 					break;
 					
@@ -428,9 +428,9 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						
 						if (Event.reportObject.index == BUTTON_UTILITIES_FILAMENT_LOAD) filament_mode = 'I'; //Insert Mode
 						else if (Event.reportObject.index == BUTTON_UTILITIES_FILAMENT_UNLOAD) filament_mode = 'R'; //Remove Mode
-						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE2, 0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE1, 0);
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_SELECT_EXTRUDER,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT1, 0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT0, 0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_LOAD,0);
 						which_extruder = -1;
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
@@ -457,7 +457,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						if(which_extruder == 0) setTargetHotend(max(remove_temp_l,old_remove_temp_l),which_extruder);
 						else setTargetHotend(max(remove_temp_r,old_remove_temp_r),which_extruder);
 						gif_processing_state = PROCESSING_DEFAULT;
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_UNLOAD_MENU,0);
 						
 						current_position[Z_AXIS]=Z_MAX_POS-15;
@@ -472,8 +472,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						
 						touchscreen_update();
 						
-						genie.WriteStr(STRING_CHANGE_FILAMENT_TEMPS,"0%");
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_CHANGE_FILAMENT_TEMPS,0);
+						genie.WriteStr(STRING_UTILITIES_FILAMENT_CHANGEFILAMENT_TEMPS,"0%");
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_CHANGEFILAMENT_TEMPS,0);
 						Tref1 = (int)degHotend(which_extruder);
 						Tfinal1 = (int)degTargetHotend(which_extruder);
 						
@@ -486,13 +486,13 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_PLA:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_PLA:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						
 						if (which_extruder == 1) // Need to pause
 						{
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							print_temp_r = PLA_PRINT_TEMP;
 							insert_temp_r = PLA_INSERT_TEMP;
 							remove_temp_r = PLA_REMOVE_TEMP;
@@ -501,13 +501,13 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							Config_StoreSettings();
 							setTargetHotend1(print_temp_r);
 							insertmetod();
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_SELECT_EXTRUDER_MENU,0);
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FILAMENT_BACK,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_MENU,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_BACK,0);
 							
 						}
 						else if(which_extruder == 0){
 							
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							print_temp_l = PLA_PRINT_TEMP;
 							insert_temp_l = PLA_INSERT_TEMP;
 							remove_temp_l = PLA_REMOVE_TEMP;
@@ -516,19 +516,19 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							Config_StoreSettings();
 							setTargetHotend0(print_temp_l);
 							insertmetod();
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_SELECT_EXTRUDER_MENU,0);
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FILAMENT_BACK,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_MENU,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_BACK,0);
 						}
 					}
 					
 					break;
-					case BUTTON_ABS:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_ABS:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						
 						if (which_extruder == 1) // Need to pause
 						{
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							
 							
 							print_temp_r = ABS_PRINT_TEMP;
@@ -539,11 +539,11 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							Config_StoreSettings();
 							setTargetHotend1(print_temp_r);
 							insertmetod();
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_SELECT_EXTRUDER_MENU,0);
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FILAMENT_BACK,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_MENU,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_BACK,0);
 						}
 						else if(which_extruder == 0){
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							
 							print_temp_l = ABS_PRINT_TEMP;
 							insert_temp_l = ABS_INSERT_TEMP;
@@ -553,19 +553,19 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							Config_StoreSettings();
 							setTargetHotend0(print_temp_l);
 							insertmetod();
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_SELECT_EXTRUDER_MENU,0);
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FILAMENT_BACK,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_MENU,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_BACK,0);
 						}
 					}
 					
 					break;
-					case BUTTON_PVA:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_PVA:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						
 						if (which_extruder == 1) // Need to pause
 						{
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							
 							
 							print_temp_r = PVA_PRINT_TEMP;
@@ -576,11 +576,11 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							Config_StoreSettings();
 							setTargetHotend1(print_temp_r);
 							insertmetod();
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_SELECT_EXTRUDER_MENU,0);
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FILAMENT_BACK,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_MENU,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_BACK,0);
 						}
 						else if(which_extruder == 0){
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							
 							print_temp_l = PVA_PRINT_TEMP;
 							insert_temp_l = PVA_INSERT_TEMP;
@@ -590,126 +590,126 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							Config_StoreSettings();
 							setTargetHotend0(print_temp_l);
 							insertmetod();
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_SELECT_EXTRUDER_MENU,0);
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FILAMENT_BACK,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_MENU,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_BACK,0);
 						}
 					}
 					break;
 					
 					//CUSTOM MATERIAL BUTTONS
-					case BUTTON_CUST:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM:
 					if (millis() >= waitPeriod_button_press){
 						
 						if (which_extruder == 1 || which_extruder == 0) // Need to pause
 						{
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_CUSTOM_MATERIAL,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_LOAD_CUSTOM,0);
 							char buffer[10];
 							char buffer1[10];
 							char buffer2[10];
 							char buffer3[256];
 							sprintf(buffer, "%d %cC",custom_insert_temp,0x00B0);
-							genie.WriteStr(STRING_CUSTOM_INSERT,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_LOAD	,buffer);
 							sprintf(buffer1, "%d %cC",custom_remove_temp,0x00B0);
-							genie.WriteStr(STRING_CUSTOM_REMOVE,buffer1);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_UNLOAD,buffer1);
 							sprintf(buffer2, "%d %cC",custom_print_temp,0x00B0);
-							genie.WriteStr(STRING_CUSTOM_PRINT,buffer2);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_PRINT,buffer2);
 							sprintf(buffer3, "%d %cC",custom_bed_temp,0x00B0);
-							genie.WriteStr(STRING_CUSTOM_BED,buffer3);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_BED,buffer3);
 							
 							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						}
 					}
 					break;
 					
-					case BUTTON_CUSTOM_BACK:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM_BACK:
 					if (millis() >= waitPeriod_button_press){
 						
 						
 						/*genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE2, 0);
 						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE1, 0);*/
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_SELECT_EXTRUDER,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_LOAD,0);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						//which_extruder = -1;
 					}
 					break;
 					
-					case BUTTON_CUSTOM_INS_LESS:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM_INS_LESS:
 					if (custom_insert_temp > 0){
 						char buffer[256];
 						custom_insert_temp -= 10;
 						sprintf(buffer, "%1d %cC",custom_insert_temp,0x00B0);
-						genie.WriteStr(STRING_CUSTOM_INSERT,buffer);
+						genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_LOAD	,buffer);
 					}
 					break;
 					
-					case BUTTON_CUSTOM_INS_MORE:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM_INS_MORE:
 					if (custom_insert_temp < HEATER_0_MAXTEMP-5){
 						char buffer[256];
 						custom_insert_temp += 10;
 						sprintf(buffer, "%1d %cC",custom_insert_temp,0x00B0);
-						genie.WriteStr(STRING_CUSTOM_INSERT,buffer);
+						genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_LOAD	,buffer);
 					}
 					break;
 					
-					case BUTTON_CUSTOM_REM_LESS:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM_REM_LESS:
 					if (custom_remove_temp > 0){
 						char buffer[256];
 						custom_remove_temp -= 10;
 						sprintf(buffer, "%1d %cC",custom_remove_temp,0x00B0);
-						genie.WriteStr(STRING_CUSTOM_REMOVE,buffer);
+						genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_UNLOAD,buffer);
 					}
 					break;
 					
-					case BUTTON_CUSTOM_REM_MORE:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM_REM_MORE:
 					if (custom_remove_temp < HEATER_0_MAXTEMP-5){
 						char buffer[256];
 						custom_remove_temp += 10;
 						sprintf(buffer, "%1d %cC",custom_remove_temp,0x00B0);
-						genie.WriteStr(STRING_CUSTOM_REMOVE,buffer);
+						genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_UNLOAD,buffer);
 					}
 					break;
 					
-					case BUTTON_CUSTOM_PRINT_LESS:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM_PRINT_LESS:
 					if (custom_print_temp > 0){
 						char buffer[256];
 						custom_print_temp -= 10;
 						sprintf(buffer, "%1d %cC",custom_print_temp,0x00B0);
-						genie.WriteStr(STRING_CUSTOM_PRINT,buffer);
+						genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_PRINT,buffer);
 					}
 					break;
 					
-					case BUTTON_CUSTOM_PRINT_MORE:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM_PRINT_MORE:
 					if (custom_print_temp < HEATER_0_MAXTEMP-5){
 						char buffer[256];
 						custom_print_temp += 10;
 						sprintf(buffer, "%1d %cC",custom_print_temp,0x00B0);
-						genie.WriteStr(STRING_CUSTOM_PRINT,buffer);
+						genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_PRINT,buffer);
 					}
 					break;
 					
-					case BUTTON_CUSTOM_BED_LESS:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM_BED_LESS:
 					if (custom_bed_temp > 0){
 						char buffer[256];
 						custom_bed_temp -= 10;
 						sprintf(buffer, "%1d %cC",custom_bed_temp,0x00B0);
-						genie.WriteStr(STRING_CUSTOM_BED,buffer);
+						genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_BED,buffer);
 					}
 					break;
-					case BUTTON_CUSTOM_BED_MORE:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM_BED_MORE:
 					if (custom_bed_temp < BED_MAXTEMP -5){
 						char buffer[256];
 						custom_bed_temp += 10;
 						sprintf(buffer, "%1d %cC",custom_bed_temp,0x00B0);
-						genie.WriteStr(STRING_CUSTOM_BED,buffer);
+						genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_BED,buffer);
 					}
 					break;
 					
-					case BUTTON_CUSTOM_ACCEPT:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM_ACCEPT:
 					
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 						if(which_extruder == 0){
 							if (custom_print_temp <= HEATER_0_MAXTEMP) print_temp_l = custom_print_temp;
 							else print_temp_l = HEATER_0_MAXTEMP;
@@ -734,18 +734,18 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						}
 						Config_StoreSettings();
 						insertmetod();
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_SELECT_EXTRUDER_MENU,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FILAMENT_BACK,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_MENU,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_BACK,0);
 					}
 					break;
 					
-					case BUTTON_MOVE_TO_LOADFILAMENT:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_HANDS:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						
 						//ATTENTION : Order here is important
-						genie.WriteStr(STRING_CHANGE_FILAMENT_TEMPS,"0%");
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_CHANGE_FILAMENT_TEMPS,0);
+						genie.WriteStr(STRING_UTILITIES_FILAMENT_CHANGEFILAMENT_TEMPS,"0%");
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_CHANGEFILAMENT_TEMPS,0);
 						//genie.WriteStr(STRING_ADVISE_FILAMENT,"");
 						//genie.WriteStr(STRING_ADVISE_FILAMENT,"Insert the filament until you feel it stops, \n then while you keep inserting around \n 10 mm of filament, press the clip");
 						gif_processing_state = PROCESSING_CHANGE_FILAMENT_TEMPS;
@@ -775,14 +775,14 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					break;
 					
 					
-					case BUTTON_LOADFILAMENT:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_KEEPPUSHING_NEXT:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						
 						if (filament_mode =='I')
 						{ //Inserting...
 							gif_processing_state = PROCESSING_DEFAULT;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							//delay(850);
 							SERIAL_PROTOCOLPGM("Inserting :   \n");
 							current_position[E_AXIS] += 30;//Extra extrusion at low feedrate
@@ -799,13 +799,13 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							st_synchronize();
 							if(gif_processing_state == PROCESSING_ERROR)return;
 							gif_processing_state = PROCESSING_STOP;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_ADJUST_FILAMENT,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_ADJUST,0);
 						}
 					}
 					break;
 					
 					
-					case BUTTON_UNLOADFILAMENT:
+					case BUTTON_UTILITIES_FILAMENT_UNLOAD_ROLLTHESPOOL_NEXT:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						
@@ -813,7 +813,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						if (filament_mode =='R')
 						{ //Removing...
 							gif_processing_state = PROCESSING_DEFAULT;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							current_position[E_AXIS] -= (BOWDEN_LENGTH + EXTRUDER_LENGTH + 100);//Extra extrusion at fast feedrate
 							plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS],  INSERT_FAST_SPEED/60, which_extruder);
 							st_synchronize();
@@ -822,8 +822,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							
 							gif_processing_state = PROCESSING_STOP;
 							printer_state = STATE_LOADUNLOAD_FILAMENT;
-							genie.WriteObject(GENIE_OBJ_VIDEO,GIF_SUCCESS_FILAMENT_OK,0);
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_SUCCESS_FILAMENT,0);
+							genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_FILAMENT_SUCCESS,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_SUCCESS,0);
 							gif_processing_state = PROCESSING_SUCCESS;
 							if (which_extruder == 0){
 								old_insert_temp_l = insert_temp_l;
@@ -842,7 +842,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					
 					#pragma region AdjustFilament
-					case BUTTON_ACCEPT_ADJUST:
+					case BUTTON_UTILITIES_FILAMENT_ADJUST_ACCEPT:
 					
 					if(!flag_utilities_filament_acceptok)
 					{
@@ -855,15 +855,15 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							home_axis_from_code(true,true,false);*/
 							setTargetHotend((float)Temp_ChangeFilament_Saved, which_extruder);
 							printer_state = STATE_LOADUNLOAD_FILAMENT;
-							genie.WriteObject(GENIE_OBJ_VIDEO,GIF_SUCCESS_FILAMENT_OK,0);
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_SUCCESS_FILAMENT,0);
+							genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_FILAMENT_SUCCESS,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_SUCCESS,0);
 							gif_processing_state = PROCESSING_SUCCESS;
 							
 						}
 					}
 					break;
 					
-					case BUTTON_ADJUST_Load:
+					case BUTTON_UTILITIES_FILAMENT_ADJUST_LOAD:
 					if(!flag_utilities_filament_acceptok){
 						if (millis() >= waitPeriod_button_press){
 							//Adjusting the filament with a Retract Up
@@ -878,7 +878,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_ADJUST_Unload:
+					case BUTTON_UTILITIES_FILAMENT_ADJUST_UNLOAD:
 					if(!flag_utilities_filament_acceptok){
 						//Adjusting the filament with a purge Down
 						if (millis() >= waitPeriod_button_press){
@@ -896,25 +896,25 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					#pragma region PURGEpause
 					
 					//****************PURGE BUTTONS******
-					case BUTTON_PURGE_LEFT:
+					case BUTTON_UTILITIES_FILAMENT_PURGE_SELECT0:
 					if (!blocks_queued()){
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_INSERT,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_RETRACT,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_TEMP_UP,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_TEMP_DOWN,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_LOAD,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_UNLOAD,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_TEMPUP,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_TEMPDOWN,1);
 						if (purge_extruder_selected == 1){
 							purge_extruder_selected = 0;
 							if(target_temperature[0] == 0){
 								setTargetHotend0(print_temp_l);
 							}
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_LEFT,1);
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_RIGHT,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT0,1);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT1,0);
 							char buffer[256];
 							sprintf(buffer, "%d %cC",target_temperature[0],0x00B0);
-							genie.WriteStr(STRING_PURGE_SELECTED,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_SELECTEDTEMP,buffer);
 							Serial.println(buffer);
 							sprintf_P(buffer, PSTR("%3d %cC"),int(degHotend(0)),0x00B0);
-							genie.WriteStr(STRING_PURGE_LEFT_TEMP,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_LEFTTARGET,buffer);
 						}
 						else{
 							char buffer[256];
@@ -922,53 +922,53 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							if(target_temperature[0] == 0){
 								setTargetHotend0(print_temp_l);
 							}
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_LEFT,1);
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_RIGHT,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT0,1);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT1,0);
 							sprintf_P(buffer, PSTR("%3d %cC"),target_temperature[0],0x00B0);
-							genie.WriteStr(STRING_PURGE_SELECTED,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_SELECTEDTEMP,buffer);
 							sprintf_P(buffer, PSTR("%3d %cC"),int(degHotend(0)),0x00B0);
-							genie.WriteStr(STRING_PURGE_LEFT_TEMP,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_LEFTTARGET,buffer);
 						}
 					}
 					break;
 					
-					case BUTTON_PURGE_RIGHT:
+					case BUTTON_UTILITIES_FILAMENT_PURGE_SELECT1:
 					if (!blocks_queued()){
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_INSERT,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_RETRACT,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_TEMP_UP,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_TEMP_DOWN,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_LOAD,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_UNLOAD,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_TEMPUP,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_TEMPDOWN,1);
 						if (purge_extruder_selected == 0){
 							purge_extruder_selected = 1;
 							if(target_temperature[1] == 0){
 								setTargetHotend1(print_temp_r);
 							}
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_LEFT,0);
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_RIGHT,1);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT0,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT1,1);
 							char buffer[256];
 							sprintf_P(buffer, PSTR("%3d %cC"),target_temperature[1],0x00B0);
-							genie.WriteStr(STRING_PURGE_SELECTED,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_SELECTEDTEMP,buffer);
 							Serial.println(buffer);
 							sprintf_P(buffer, PSTR("%3d %cC"),int(degHotend(1)),0x00B0);
-							genie.WriteStr(STRING_PURGE_RIGHT_TEMP,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_RIGHTTARGET,buffer);
 						}
 						else{
 							purge_extruder_selected = 1;
 							if(target_temperature[1] == 0){
 								setTargetHotend1(print_temp_r);
 							}
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_LEFT,0);
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_RIGHT,1);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT0,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT1,1);
 							char buffer[256];
 							sprintf_P(buffer, PSTR("%3d %cC"),target_temperature[1],0x00B0);
-							genie.WriteStr(STRING_PURGE_SELECTED,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_SELECTEDTEMP,buffer);
 							sprintf_P(buffer, PSTR("%3d %cC"),int(degHotend(1)),0x00B0);
-							genie.WriteStr(STRING_PURGE_RIGHT_TEMP,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_RIGHTTARGET,buffer);
 						}
 					}
 					break;
 					
-					case BUTTON_PURGE_TEMP_UP:
+					case BUTTON_UTILITIES_FILAMENT_PURGE_TEMPUP:
 					if(purge_extruder_selected != -1){
 						
 						if (target_temperature[purge_extruder_selected] < HEATER_0_MAXTEMP){
@@ -977,12 +977,12 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							setTargetHotend1(target_temperature[1]);
 							char buffer[256];
 							sprintf_P(buffer, PSTR("%3d %cC"),int(target_temperature[purge_extruder_selected]),0x00B0);
-							genie.WriteStr(STRING_PURGE_SELECTED,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_SELECTEDTEMP,buffer);
 						}
 					}
 					break;
 					
-					case BUTTON_PURGE_TEMP_DOWN:
+					case BUTTON_UTILITIES_FILAMENT_PURGE_TEMPDOWN:
 					if(purge_extruder_selected != -1){
 						if (target_temperature[purge_extruder_selected] > 0){
 							target_temperature[purge_extruder_selected] -= 5;
@@ -990,13 +990,13 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							setTargetHotend1(target_temperature[1]);
 							char buffer[256];
 							sprintf_P(buffer, PSTR("%3d %cC"),int(target_temperature[purge_extruder_selected]),0x00B0);
-							genie.WriteStr(STRING_PURGE_SELECTED,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_SELECTEDTEMP,buffer);
 						}
 					}
 					break;
 					//***MOVING
 					
-					case BUTTON_PURGE_RETRACT:
+					case BUTTON_UTILITIES_FILAMENT_PURGE_UNLOAD:
 					if(purge_extruder_selected != -1 && !blocks_queued()){
 						
 						if(degHotend(purge_extruder_selected) >= target_temperature[purge_extruder_selected]-PURGE_TEMP_HYSTERESIS){
@@ -1006,12 +1006,12 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							st_synchronize();
 							if(gif_processing_state == PROCESSING_ERROR)return;
 							gif_processing_state = PROCESSING_STOP;
-							genie.WriteObject(GENIE_OBJ_VIDEO,GIF_PURGE_LOAD,0);
+							genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_FILAMENT_PURGE,0);
 						}
 					}
 					break;
 					
-					case BUTTON_PURGE_INSERT:
+					case BUTTON_UTILITIES_FILAMENT_PURGE_LOAD:
 					if(purge_extruder_selected != -1 && !blocks_queued()){
 						
 						if(degHotend(purge_extruder_selected) >= target_temperature[purge_extruder_selected]-PURGE_TEMP_HYSTERESIS){
@@ -1021,12 +1021,12 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							st_synchronize();
 							if(gif_processing_state == PROCESSING_ERROR)return;
 							gif_processing_state = PROCESSING_STOP;
-							genie.WriteObject(GENIE_OBJ_VIDEO,GIF_PURGE_LOAD,0);
+							genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_FILAMENT_PURGE,0);
 						}
 					}
 					break;
 					
-					case BUTTON_PURGE_BACK:
+					case BUTTON_UTILITIES_FILAMENT_PURGE_BACK:
 					if(!blocks_queued()){
 						//quickStop();
 						if (millis() >= waitPeriod_button_press){
@@ -1046,7 +1046,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					//************************************
 					#pragma endregion PURGEpause
 					#pragma region SuccessScreensPrint
-					case BUTTON_SUCCESS_FILAMENT_OK:
+					case BUTTON_UTILITIES_FILAMENT_SUCCESS:
 					if (printer_state == STATE_LOADUNLOAD_FILAMENT)
 					{
 						if (millis() >= waitPeriod_button_press){
@@ -1061,28 +1061,28 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								
 								filament_mode = 'I';
 								if(which_extruder ==  1){
-									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE2, 1);
-									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE1, 0);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT1, 1);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT0, 0);
 								}
 								else{
-									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE2, 0);
-									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE1, 1);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT1, 0);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT0, 1);
 								}
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_SELECT_EXTRUDER_MENU,1);
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FILAMENT_BACK,1);
-								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_PLA, 1);
-								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_ABS, 1);
-								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_PVA, 1);
-								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_CUST, 1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_MENU,1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_BACK,1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_PLA, 1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_ABS, 1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_PVA, 1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM, 1);
 								
-								genie.WriteObject(GENIE_OBJ_FORM,FORM_SELECT_EXTRUDER,0);
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_LOAD,0);
 								//which_extruder = -1;
 							}
 							else if (filament_mode == 'I')
 							{
 								
 								gif_processing_state = PROCESSING_DEFAULT;
-								genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 								current_position[Y_AXIS] = saved_position[Y_AXIS];
 								plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Y_AXIS]/60, active_extruder);//Purge
 								st_synchronize();
@@ -1157,7 +1157,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 				int8_t vuitensR = 0;
 				switch(Event.reportObject.index){
 					
-					case BUTTON_Z_LEFT_SELECT1:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL_SELECT1:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						Bed_Compensation_Set_Lines(-2);
@@ -1165,7 +1165,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_Z_LEFT_SELECT2:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL_SELECT2:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						Bed_Compensation_Set_Lines(-1);
@@ -1173,7 +1173,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_Z_LEFT_SELECT3:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL_SELECT3:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						Bed_Compensation_Set_Lines(0);
@@ -1181,7 +1181,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_Z_LEFT_SELECT4:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL_SELECT4:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						Bed_Compensation_Set_Lines(1);
@@ -1189,77 +1189,77 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_Z_LEFT_SELECT5:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL_SELECT5:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						Bed_Compensation_Set_Lines(2);
 						
 					}
-					case BUTTON_REDO_Z_1:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDOZL_BEST1:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						Bed_Compensation_Redo_Lines(-3);
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_LEFT_Z_TEST,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL,0);
 					}
 					break;
 					
-					case BUTTON_REDO_Z_5:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDOZL_BEST5:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						Bed_Compensation_Redo_Lines(3);
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_LEFT_Z_TEST,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL,0);
 					}
 					break;
 					
-					case BUTTON_REDO_Z:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDOZL:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						Bed_Compensation_Redo_Lines(0);
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_LEFT_Z_TEST,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL,0);
 					}
 					break;
 					
-					case BUTTON_CLEAN_BED:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 						gif_processing_state = PROCESSING_DEFAULT;
 						home_axis_from_code(true,true,true);
 						Calib_check_temps();
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
 						gif_processing_state = PROCESSING_TEST;
 						bed_test_print_code(0, 0, 0);
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_LEFT_Z_TEST,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL,0);
 						gif_processing_state = PROCESSING_STOP;
 					}
 					break;
 					
-					case BUTTON_INFO_TURN_SCREWS_FIRST:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBBED_ADJUSTSCREWASKFIRST_NEXT:
 					gif_processing_state = PROCESSING_STOP;
-					genie.WriteObject(GENIE_OBJ_FORM,FORM_CALIB_BED_SCREW2,0);
+					genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBBED_SCREW2,0);
 					vuitensL = Bed_Compensation_Lines_Selected[1]-Bed_Compensation_Lines_Selected[0];
 					vuitensR = Bed_Compensation_Lines_Selected[2]-Bed_Compensation_Lines_Selected[0];
 					bed_offset_left_screw = -0.1*vuitensL;
 					bed_offset_right_screw = -0.1*vuitensR;
 					if(vuitensL != 0){
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_CALIB_BED_SCREW2,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBBED_SCREW2,0);
 						if(vuitensL < 0){
 							vuitensL = abs(vuitensL) + 8;
 						}
-						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_SCREW2,vuitensL);
+						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_UTILITIES_CALIBRATION_CALIBBED_SCREW2,vuitensL);
 						
 					}
 					else if(vuitensR != 0){
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_CALIB_BED_SCREW3,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBBED_SCREW3,0);
 						if(vuitensR < 0){
 							vuitensR = abs(vuitensR) + 8;
 						}
-						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_SCREW3,vuitensR);
+						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_UTILITIES_CALIBRATION_CALIBBED_SCREW3,vuitensR);
 					}
 					else{
 						printer_state = STATE_CALIBRATION;
-						genie.WriteObject(GENIE_OBJ_VIDEO,GIF_BED_CALIB_SUCCESS,0);
-						genie.WriteObject(GENIE_OBJ_FORM, FORM_CAL_WIZARD_DONE_GOOD, 0);
+						genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_CALIBRATION_SUCCESS,0);
+						genie.WriteObject(GENIE_OBJ_FORM, FORM_UTILITIES_CALIBRATION_SUCCESS, 0);
 						gif_processing_state = PROCESSING_BED_SUCCESS;
 					}
 					bed_offset_version = VERSION_NUMBER;
@@ -1267,32 +1267,32 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					break;
 					
-					case BUTTON_BED_CALIB_SW3:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBBED_SCREW2_NEXT:
 					vuitensR = 0;
 					vuitensR = Bed_Compensation_Lines_Selected[2]-Bed_Compensation_Lines_Selected[0];
 					if(vuitensR != 0){
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_CALIB_BED_SCREW3,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBBED_SCREW3,0);
 						if(vuitensR < 0){
 							vuitensR = abs(vuitensR) + 8;
 						}
-						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_SCREW3,vuitensR);
+						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_UTILITIES_CALIBRATION_CALIBBED_SCREW3,vuitensR);
 					}
 					else{
 						printer_state = STATE_CALIBRATION;
-						genie.WriteObject(GENIE_OBJ_VIDEO,GIF_BED_CALIB_SUCCESS,0);
-						genie.WriteObject(GENIE_OBJ_FORM, FORM_CAL_WIZARD_DONE_GOOD, 0);
+						genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_CALIBRATION_SUCCESS,0);
+						genie.WriteObject(GENIE_OBJ_FORM, FORM_UTILITIES_CALIBRATION_SUCCESS, 0);
 						gif_processing_state = PROCESSING_BED_SUCCESS;
 					}
 					break;
 					
-					case BUTTON_REDO_BED_CALIB:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBBED_SCREW3_NEXT:
 					printer_state = STATE_CALIBRATION;
-					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_BED_CALIB_SUCCESS,0);
-					genie.WriteObject(GENIE_OBJ_FORM, FORM_CAL_WIZARD_DONE_GOOD, 0);
+					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_CALIBRATION_SUCCESS,0);
+					genie.WriteObject(GENIE_OBJ_FORM, FORM_UTILITIES_CALIBRATION_SUCCESS, 0);
 					gif_processing_state = PROCESSING_BED_SUCCESS;
 					break;
 					
-					case BUTTON_BED_CALIB_SUCCESS:
+					case BUTTON_UTILITIES_CALIBRATION_SUCCESS:
 					if(printer_state == STATE_CALIBRATION)
 					{
 						Bed_Compensation_state = 0;
@@ -1479,7 +1479,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					case BUTTON_MAIN_TEMPS:
 					if (millis() >= waitPeriod_button_press){
-						genie.WriteObject(GENIE_OBJ_FORM, FORM_TEMP_MENU, 0);
+						genie.WriteObject(GENIE_OBJ_FORM, FORM_TEMP, 0);
 						HeaterCooldownInactivity(false);
 						int tHotend=target_temperature[0];
 						int tHotend1=target_temperature[1];
@@ -1494,7 +1494,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_PREHEAT_BACK:
+					case BUTTON_TEMP_BACK:
 					if (millis() >= waitPeriod_button_press){
 						screen_sdcard = false;
 						surfing_utilities=false;
@@ -1506,7 +1506,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_PREHEAT_LEXTR:
+					case BUTTON_TEMP_LEXTR:
 					tHotend=target_temperature[0];
 					if(tHotend != 0){
 						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PREHEAT_LEXTR,0); //<GIFF
@@ -1519,7 +1519,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					flag_temp_gifhotent0 = false;
 					break;
 					
-					case BUTTON_PREHEAT_REXTR:
+					case BUTTON_TEMP_REXTR:
 					tHotend1=target_temperature[1];
 					if(tHotend1 != 0)
 					{
@@ -1533,7 +1533,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					flag_temp_gifhotent1 = false;
 					break;
 					
-					case BUTTON_PREHEAT_BED:
+					case BUTTON_TEMP_BED:
 					tBed=target_temperature_bed;
 					if(tBed != 0){
 						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PREHEAT_BED,0); //<GIFF
@@ -1614,7 +1614,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							saved_print_flag = 888;
 							Config_StoreSettings();
 						}
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 						gif_processing_state = PROCESSING_DEFAULT;
 						if(home_made_Z){
 							home_axis_from_code(true,true,false);
@@ -1673,8 +1673,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						SERIAL_PROTOCOL(unscalePID_d(Kd[1]));
 						gif_processing_state = PROCESSING_STOP;
 						touchscreen_update();
-						genie.WriteObject(GENIE_OBJ_VIDEO,GIF_BED_CALIB_SUCCESS,0);
-						genie.WriteObject(GENIE_OBJ_FORM, FORM_CAL_WIZARD_DONE_GOOD, 0);
+						genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_CALIBRATION_SUCCESS,0);
+						genie.WriteObject(GENIE_OBJ_FORM, FORM_UTILITIES_CALIBRATION_SUCCESS, 0);
 						printer_state = STATE_CALIBRATION;
 						gif_processing_state = PROCESSING_BED_SUCCESS;
 						
@@ -1782,7 +1782,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							
 							doblocking = true;
 							gif_processing_state = PROCESSING_DEFAULT;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							
 							if (home_made_Z){
 								home_axis_from_code(true,true,false);
@@ -1801,8 +1801,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							
 							gif_processing_state = PROCESSING_STOP;
 							touchscreen_update();
-							genie.WriteStr(STRING_CHANGE_FILAMENT_TEMPS,"0%");
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_CHANGE_FILAMENT_TEMPS,0);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_CHANGEFILAMENT_TEMPS,"0%");
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_CHANGEFILAMENT_TEMPS,0);
 							Tref1 = (int)degHotend(which_extruder);
 							Tfinal1 = (int)degTargetHotend(which_extruder);
 							
@@ -1828,7 +1828,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							doblocking = true;
 							setTargetHotend(NYLON_TEMP_HEATUP_THRESHOLD,which_extruder);
 							gif_processing_state = PROCESSING_DEFAULT;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							
 							if (home_made_Z){
 								home_axis_from_code(true,true,false);
@@ -1865,7 +1865,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							st_synchronize();
 							if(gif_processing_state == PROCESSING_ERROR)return;
 							gif_processing_state = PROCESSING_STOP;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_STEP0,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP0,0);
 							
 						}
 						
@@ -1937,48 +1937,48 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					#pragma region PURGE
 					//****************PURGE BUTTONS******
-					case BUTTON_PURGE_LEFT:
+					case BUTTON_UTILITIES_FILAMENT_PURGE_SELECT0:
 					if (millis() >= waitPeriod_button_press){
 						
 						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_INSERT,1);
 						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_Retract,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_TEMP_UP,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_TEMP_DOWN,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_TEMPUP,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_TEMPDOWN,1);
 						if (purge_extruder_selected == 1){
 							purge_extruder_selected = 0;
 							if(target_temperature[0] == 0){
 								setTargetHotend0(print_temp_l);
 							}
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_LEFT,1);
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_RIGHT,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT0,1);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT1,0);
 							sprintf(buffer, "%d %cC",target_temperature[0],0x00B0);
-							genie.WriteStr(STRING_PURGE_SELECTED,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_SELECTEDTEMP,buffer);
 							Serial.println(buffer);
 							sprintf_P(buffer, PSTR("%3d %cC"),int(degHotend(0)),0x00B0);
-							genie.WriteStr(STRING_PURGE_LEFT_TEMP,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_LEFTTARGET,buffer);
 						}
 						else{
 							purge_extruder_selected = 0;
 							if(target_temperature[0] == 0){
 								setTargetHotend0(print_temp_l);
 							}
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_LEFT,1);
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_RIGHT,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT0,1);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT1,0);
 							sprintf(buffer, "%d %cC",target_temperature[0],0x00B0);
-							genie.WriteStr(STRING_PURGE_SELECTED,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_SELECTEDTEMP,buffer);
 							sprintf_P(buffer, PSTR("%3d %cC"),int(degHotend(0)),0x00B0);
-							genie.WriteStr(STRING_PURGE_LEFT_TEMP,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_LEFTTARGET,buffer);
 						}
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
-					case BUTTON_PURGE_RIGHT:
+					case BUTTON_UTILITIES_FILAMENT_PURGE_SELECT1:
 					if (millis() >= waitPeriod_button_press){
 						
 						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_INSERT,1);
 						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_Retract,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_TEMP_UP,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_TEMP_DOWN,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_TEMPUP,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_TEMPDOWN,1);
 						if (purge_extruder_selected == 0){
 							purge_extruder_selected = 1;
 							
@@ -1986,55 +1986,55 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								setTargetHotend1(print_temp_r);
 							}
 							
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_LEFT,0);
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_RIGHT,1);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT0,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT1,1);
 							sprintf_P(buffer, PSTR("%3d %cC"),target_temperature[1],0x00B0);
-							genie.WriteStr(STRING_PURGE_SELECTED,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_SELECTEDTEMP,buffer);
 							Serial.println(buffer);
 							sprintf_P(buffer, PSTR("%3d %cC"),int(degHotend(1)),0x00B0);
-							genie.WriteStr(STRING_PURGE_RIGHT_TEMP,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_RIGHTTARGET,buffer);
 						}
 						else{
 							purge_extruder_selected = 1;
 							if(target_temperature[1] == 0){
 								setTargetHotend1(print_temp_r);
 							}
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_LEFT,0);
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_RIGHT,1);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT0,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT1,1);
 							sprintf_P(buffer, PSTR("%3d %cC"),target_temperature[1],0x00B0);
-							genie.WriteStr(STRING_PURGE_SELECTED,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_SELECTEDTEMP,buffer);
 							sprintf_P(buffer, PSTR("%3d %cC"),int(degHotend(1)),0x00B0);
-							genie.WriteStr(STRING_PURGE_RIGHT_TEMP,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_RIGHTTARGET,buffer);
 						}
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_PURGE_TEMP_UP:
+					case BUTTON_UTILITIES_FILAMENT_PURGE_TEMPUP:
 					if(purge_extruder_selected != -1){
 						if (target_temperature[purge_extruder_selected] < HEATER_0_MAXTEMP){
 							target_temperature[purge_extruder_selected] += 5;
 							setTargetHotend0(target_temperature[0]);
 							setTargetHotend1(target_temperature[1]);
 							sprintf_P(buffer, PSTR("%3d %cC"),int(target_temperature[purge_extruder_selected]),0x00B0);
-							genie.WriteStr(STRING_PURGE_SELECTED,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_SELECTEDTEMP,buffer);
 						}
 					}
 					break;
 					
-					case BUTTON_PURGE_TEMP_DOWN:
+					case BUTTON_UTILITIES_FILAMENT_PURGE_TEMPDOWN:
 					if(purge_extruder_selected != -1){
 						if (target_temperature[purge_extruder_selected] > 0){
 							target_temperature[purge_extruder_selected] -= 5;
 							setTargetHotend0(target_temperature[0]);
 							setTargetHotend1(target_temperature[1]);
 							sprintf_P(buffer, PSTR("%3d %cC"),int(target_temperature[purge_extruder_selected]),0x00B0);
-							genie.WriteStr(STRING_PURGE_SELECTED,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_SELECTEDTEMP,buffer);
 						}
 					}
 					break;
 					
-					case BUTTON_PURGE_INSERT:
+					case BUTTON_UTILITIES_FILAMENT_PURGE_LOAD:
 					if(purge_extruder_selected != -1){
 						if(!blocks_queued()){
 							flag_utilities_filament_purgeselect0 = 1;
@@ -2044,7 +2044,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_PURGE_RETRACT:
+					case BUTTON_UTILITIES_FILAMENT_PURGE_UNLOAD:
 					if(purge_extruder_selected != -1){
 						if(!blocks_queued()){
 							flag_utilities_filament_purgeselect1 = 1;
@@ -2057,32 +2057,32 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					case BUTTON_UTILITIES_FILAMENT_PURGE:
 					if (millis() >= waitPeriod_button_press){
 						
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_INSERT,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_RETRACT,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_TEMP_UP,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_TEMP_DOWN,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_MENU,0);
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_PURGE,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_LOAD,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_UNLOAD,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_TEMPUP,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_TEMPDOWN,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_MENU,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_PURGE,0);
 						
 						purge_extruder_selected = -1;
 						SERIAL_PROTOCOLPGM("Enter in purge mode \n");
 						/*setTargetHotend0(print_temp_l);
 						setTargetHotend1(print_temp_r);*/
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_LEFT,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_RIGHT,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT0,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT1,0);
 						
 						sprintf_P(buffer, PSTR("%3d %cC"),int(degHotend(0)),0x00B0);
-						genie.WriteStr(STRING_PURGE_LEFT_TEMP,buffer);	Serial.println(buffer);
+						genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_LEFTTARGET,buffer);	Serial.println(buffer);
 						sprintf_P(buffer, PSTR("%3d %cC"),int(degHotend(1)),0x00B0);
-						genie.WriteStr(STRING_PURGE_RIGHT_TEMP,buffer);	Serial.println(buffer);
+						genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_RIGHTTARGET,buffer);	Serial.println(buffer);
 						sprintf_P(buffer, PSTR("%3d %cC"),0,0x00B0);
-						genie.WriteStr(STRING_PURGE_SELECTED,buffer);	Serial.println(buffer);
+						genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_SELECTEDTEMP,buffer);	Serial.println(buffer);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					
 					break;
 					
-					case BUTTON_PURGE_BACK:
+					case BUTTON_UTILITIES_FILAMENT_PURGE_BACK:
 					if (millis() >= waitPeriod_button_press){
 						
 						quickStop();
@@ -2095,7 +2095,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_PURGE_MENU:
+					case BUTTON_UTILITIES_FILAMENT_PURGE_MENU:
 					if (millis() >= waitPeriod_button_press){
 						
 						quickStop();
@@ -2140,17 +2140,16 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
 						
 						}*/
-						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE2, 0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE1, 0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT1, 0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT0, 0);
 						
-						//genie.WriteObject(GENIE_OBJ_IMAGE, IMAG_MATERIALS, -1);
 						
-						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_PLA, 0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_ABS, 0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_PVA, 0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_CUST, 0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_PLA, 0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_ABS, 0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_PVA, 0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM, 0);
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_SELECT_EXTRUDER,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_LOAD,0);
 						which_extruder = -1;
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
@@ -2175,7 +2174,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						if(which_extruder == 0) setTargetHotend(max(remove_temp_l,old_remove_temp_l),which_extruder);
 						else setTargetHotend(max(remove_temp_r,old_remove_temp_r),which_extruder);
 						gif_processing_state = PROCESSING_DEFAULT;
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 						
 						if (home_made_Z){
 							home_axis_from_code(true,true,false);
@@ -2194,8 +2193,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						
 						gif_processing_state = PROCESSING_STOP;
 						touchscreen_update();
-						genie.WriteStr(STRING_CHANGE_FILAMENT_TEMPS,"0%");
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_CHANGE_FILAMENT_TEMPS,0);
+						genie.WriteStr(STRING_UTILITIES_FILAMENT_CHANGEFILAMENT_TEMPS,"0%");
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_CHANGEFILAMENT_TEMPS,0);
 						Tref1 = (int)degHotend(which_extruder);
 						Tfinal1 = (int)degTargetHotend(which_extruder);
 						touchscreen_update();
@@ -2208,7 +2207,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					break;
 					
-					case BUTTON_FILAMENT_BACK:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_BACK:
 					if (!Step_First_Start_Wizard){
 						if (millis() >= waitPeriod_button_press){
 							
@@ -2239,7 +2238,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 
 					break;
 					
-					case BUTTON_SELECT_EXTRUDER_MENU:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_MENU:
 					if(!Step_First_Start_Wizard){
 						if (millis() >= waitPeriod_button_press){
 							
@@ -2253,12 +2252,12 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 
-					case BUTTON_FILAMENT_NOZZLE1:
-					case BUTTON_FILAMENT_NOZZLE2:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_SELECT0:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_SELECT1:
 					if(!Step_First_Start_Wizard){
 						if (millis() >= waitPeriod_button_press){
 							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
-							if (Event.reportObject.index == BUTTON_FILAMENT_NOZZLE1) //Left Nozzle
+							if (Event.reportObject.index == BUTTON_UTILITIES_FILAMENT_LOAD_SELECT0) //Left Nozzle
 							{
 								
 								which_extruder=0;
@@ -2271,20 +2270,20 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							}
 							if (filament_mode == 'I') {
 								if (which_extruder == 0){
-									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE1, 1);
-									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE2, 0);
-									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_PLA, 1);
-									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_ABS, 1);
-									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_PVA, 1);
-									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_CUST, 1);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT0, 1);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT1, 0);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_PLA, 1);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_ABS, 1);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_PVA, 1);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM, 1);
 								}
 								else{
-									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE2, 1);
-									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE1, 0);
-									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_PLA, 1);
-									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_ABS, 1);
-									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_PVA, 1);
-									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_CUST, 1);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT1, 1);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT0, 0);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_PLA, 1);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_ABS, 1);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_PVA, 1);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM, 1);
 								}
 							}
 							
@@ -2295,7 +2294,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								if(which_extruder == 0) setTargetHotend(max(remove_temp_l,old_remove_temp_l),which_extruder);
 								else setTargetHotend(max(remove_temp_r,old_remove_temp_r),which_extruder);
 								gif_processing_state = PROCESSING_DEFAULT;
-								genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 								
 								if (home_made_Z){
 									home_axis_from_code(true,true,false);
@@ -2316,8 +2315,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								gif_processing_state = PROCESSING_STOP;
 								
 								//genie.WriteObject(GENIE_OBJ_USERIMAGES,10,1);
-								genie.WriteStr(STRING_CHANGE_FILAMENT_TEMPS,"0%");
-								genie.WriteObject(GENIE_OBJ_FORM,FORM_CHANGE_FILAMENT_TEMPS,0);
+								genie.WriteStr(STRING_UTILITIES_FILAMENT_CHANGEFILAMENT_TEMPS,"0%");
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_CHANGEFILAMENT_TEMPS,0);
 								Tref1 = (int)degHotend(which_extruder);
 								Tfinal1 = (int)degTargetHotend(which_extruder);
 								/****************************************************/
@@ -2343,13 +2342,13 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						}
 					}
 					break;
-					case BUTTON_PLA:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_PLA:
 					if (millis() >= waitPeriod_button_press){
 						
 						saved_print_flag = 888;
 						if (which_extruder == 1) // Need to pause
 						{
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							
 							
 							print_temp_r = PLA_PRINT_TEMP;
@@ -2362,7 +2361,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							insertmetod();
 						}
 						else if(which_extruder == 0){
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							
 							print_temp_l = PLA_PRINT_TEMP;
 							insert_temp_l = PLA_INSERT_TEMP;
@@ -2378,13 +2377,13 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_ABS:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_ABS:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						saved_print_flag = 888;
 						if (which_extruder == 1) // Need to pause
 						{
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							
 							
 							print_temp_r = ABS_PRINT_TEMP;
@@ -2397,7 +2396,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							insertmetod();
 						}
 						else if(which_extruder == 0){
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							
 							print_temp_l = ABS_PRINT_TEMP;
 							insert_temp_l = ABS_INSERT_TEMP;
@@ -2412,13 +2411,13 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						
 					}
 					break;
-					case BUTTON_PVA:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_PVA:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						saved_print_flag = 888;
 						if (which_extruder == 1) // Need to pause
 						{
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							
 							
 							print_temp_r = PVA_PRINT_TEMP;
@@ -2431,7 +2430,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							insertmetod();
 						}
 						else if(which_extruder == 0){
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							
 							print_temp_l = PVA_PRINT_TEMP;
 							insert_temp_l = PVA_INSERT_TEMP;
@@ -2447,7 +2446,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					break;
 					
 					//CUSTOM MATERIAL BUTTONS
-					case BUTTON_CUST:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM:
 					if (millis() >= waitPeriod_button_press){
 						
 						if (which_extruder == 1 || which_extruder == 0) // Need to pause
@@ -2456,131 +2455,131 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								//genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_CUSTOM_MENU, 1);
 							}
 							
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_CUSTOM_MATERIAL,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_LOAD_CUSTOM,0);
 							
 							
 							sprintf(buffer, "%d %cC",custom_insert_temp,0x00B0);
-							genie.WriteStr(STRING_CUSTOM_INSERT,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_LOAD	,buffer);
 							sprintf(buffer, "%d %cC",custom_remove_temp,0x00B0);
-							genie.WriteStr(STRING_CUSTOM_REMOVE,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_UNLOAD,buffer);
 							sprintf(buffer, "%d %cC",custom_print_temp,0x00B0);
-							genie.WriteStr(STRING_CUSTOM_PRINT,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_PRINT,buffer);
 							sprintf(buffer, "%d %cC",custom_bed_temp,0x00B0);
-							genie.WriteStr(STRING_CUSTOM_BED,buffer);
+							genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_BED,buffer);
 						}
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_CUSTOM_BACK:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM_BACK:
 					if (millis() >= waitPeriod_button_press){
 						
 						if(Step_First_Start_Wizard){
 							if(which_extruder == 0){
-								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE2, 0);
-								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE1, 1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT1, 0);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT0, 1);
 								
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_SELECT_EXTRUDER_MENU,1);
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FILAMENT_BACK,1);
-								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_PLA, 1);
-								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_ABS, 1);
-								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_PVA, 1);
-								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_CUST, 1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_MENU,1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_BACK,1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_PLA, 1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_ABS, 1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_PVA, 1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM, 1);
 								}else if (which_extruder == 1){
-								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE2, 1);
-								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE1, 0);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT1, 1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT0, 0);
 								
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_SELECT_EXTRUDER_MENU,1);
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FILAMENT_BACK,1);
-								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_PLA, 1);
-								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_ABS, 1);
-								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_PVA, 1);
-								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_CUST, 1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_MENU,1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_BACK,1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_PLA, 1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_ABS, 1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_PVA, 1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM, 1);
 							}
 							
 							}else{
-							genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE2, 0);
-							genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE1, 0);
-							genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_PLA, 0);
-							genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_ABS, 0);
-							genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_PVA, 0);
-							genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_CUST, 0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT1, 0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT0, 0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_PLA, 0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_ABS, 0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_PVA, 0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM, 0);
 							
 							
 							which_extruder = -1;
 						}
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_SELECT_EXTRUDER,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_LOAD,0);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_CUSTOM_INS_LESS:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM_INS_LESS:
 					if (custom_insert_temp > 0){
 						custom_insert_temp -= 10;
 						sprintf(buffer, "%1d %cC",custom_insert_temp,0x00B0);
-						genie.WriteStr(STRING_CUSTOM_INSERT,buffer);
+						genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_LOAD	,buffer);
 					}
 					break;
 					
-					case BUTTON_CUSTOM_INS_MORE:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM_INS_MORE:
 					if (custom_insert_temp < HEATER_0_MAXTEMP-5){
 						custom_insert_temp += 10;
 						sprintf(buffer, "%1d %cC",custom_insert_temp,0x00B0);
-						genie.WriteStr(STRING_CUSTOM_INSERT,buffer);
+						genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_LOAD	,buffer);
 					}
 					break;
 					
-					case BUTTON_CUSTOM_REM_LESS:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM_REM_LESS:
 					if (custom_remove_temp > 0){
 						custom_remove_temp -= 10;
 						sprintf(buffer, "%1d %cC",custom_remove_temp,0x00B0);
-						genie.WriteStr(STRING_CUSTOM_REMOVE,buffer);
+						genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_UNLOAD,buffer);
 					}
 					break;
 					
-					case BUTTON_CUSTOM_REM_MORE:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM_REM_MORE:
 					if (custom_remove_temp < HEATER_0_MAXTEMP-5){
 						custom_remove_temp += 10;
 						sprintf(buffer, "%1d %cC",custom_remove_temp,0x00B0);
-						genie.WriteStr(STRING_CUSTOM_REMOVE,buffer);
+						genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_UNLOAD,buffer);
 					}
 					break;
 					
-					case BUTTON_CUSTOM_PRINT_LESS:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM_PRINT_LESS:
 					if (custom_print_temp > 0){
 						custom_print_temp -= 10;
 						sprintf(buffer, "%1d %cC",custom_print_temp,0x00B0);
-						genie.WriteStr(STRING_CUSTOM_PRINT,buffer);
+						genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_PRINT,buffer);
 					}
 					break;
 					
-					case BUTTON_CUSTOM_PRINT_MORE:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM_PRINT_MORE:
 					if (custom_print_temp < HEATER_0_MAXTEMP-5){
 						custom_print_temp += 10;
 						sprintf(buffer, "%1d %cC",custom_print_temp,0x00B0);
-						genie.WriteStr(STRING_CUSTOM_PRINT,buffer);
+						genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_PRINT,buffer);
 					}
 					break;
-					case BUTTON_CUSTOM_BED_LESS:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM_BED_LESS:
 					if (custom_bed_temp > 0){
 						custom_bed_temp -= 10;
 						sprintf(buffer, "%1d %cC",custom_bed_temp,0x00B0);
-						genie.WriteStr(STRING_CUSTOM_BED,buffer);
+						genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_BED,buffer);
 					}
 					break;
 					
-					case BUTTON_CUSTOM_BED_MORE:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM_BED_MORE:
 					if (custom_bed_temp < BED_MAXTEMP -5){
 						custom_bed_temp += 10;
 						sprintf(buffer, "%1d %cC",custom_bed_temp,0x00B0);
-						genie.WriteStr(STRING_CUSTOM_BED,buffer);
+						genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_BED,buffer);
 					}
 					break;
 					
-					case BUTTON_CUSTOM_ACCEPT:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM_ACCEPT:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 						saved_print_flag = 888;
 						if(which_extruder == 0){
 							if (custom_print_temp <= HEATER_0_MAXTEMP) print_temp_l = custom_print_temp;
@@ -2609,12 +2608,12 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_MOVE_TO_LOADFILAMENT:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_HANDS:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						//ATTENTION : Order here is important
-						genie.WriteStr(STRING_CHANGE_FILAMENT_TEMPS,"0%");
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_CHANGE_FILAMENT_TEMPS,0);
+						genie.WriteStr(STRING_UTILITIES_FILAMENT_CHANGEFILAMENT_TEMPS,"0%");
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_CHANGEFILAMENT_TEMPS,0);
 						Tref1 = (int)degHotend(which_extruder);
 						Tfinal1 = (int)degTargetHotend(which_extruder);
 						//genie.WriteStr(STRING_ADVISE_FILAMENT,"");
@@ -2639,13 +2638,13 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_LOADFILAMENT:
+					case BUTTON_UTILITIES_FILAMENT_LOAD_KEEPPUSHING_NEXT:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						if (filament_mode =='I')
 						{ //Inserting...
 							gif_processing_state = PROCESSING_DEFAULT;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							delay(850);
 							#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
 							current_position[X_AXIS] = 155;
@@ -2669,19 +2668,19 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							
 							if(gif_processing_state == PROCESSING_ERROR)return;
 							gif_processing_state = PROCESSING_STOP;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_ADJUST_FILAMENT,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_ADJUST,0);
 						}
 					}
 					break;
 					
 					
-					case BUTTON_UNLOADFILAMENT:
+					case BUTTON_UTILITIES_FILAMENT_UNLOAD_ROLLTHESPOOL_NEXT:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						if (filament_mode =='R')
 						{ //Removing...
 							gif_processing_state = PROCESSING_DEFAULT;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							current_position[E_AXIS] -= (BOWDEN_LENGTH + EXTRUDER_LENGTH + 100);//Extra extrusion at fast feedrate
 							plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS],  INSERT_FAST_SPEED/60, which_extruder);
 							previous_state = FORM_UTILITIES_FILAMENT;
@@ -2690,8 +2689,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							if(gif_processing_state == PROCESSING_ERROR)return;
 							gif_processing_state = PROCESSING_STOP;
 							printer_state = STATE_LOADUNLOAD_FILAMENT;
-							genie.WriteObject(GENIE_OBJ_VIDEO,GIF_SUCCESS_FILAMENT_OK,0);
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_SUCCESS_FILAMENT,0);
+							genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_FILAMENT_SUCCESS,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_SUCCESS,0);
 							gif_processing_state = PROCESSING_SUCCESS;
 							if (which_extruder == 0){
 								old_insert_temp_l = insert_temp_l;
@@ -2706,11 +2705,11 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						}
 					}
 					break;
-					case BUTTON_NYLON_STEP0:
+					case BUTTON_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP0:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_TEMPS,0);
-						gif_processing_state = PROCESSING_NYLON_TEMPS;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,0);
+						gif_processing_state = PROCESSING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS;
 						int Tref = (int)degHotend(which_extruder);
 						int Tfinal = (int)(degTargetHotend(which_extruder)-NYLON_TEMP_HYSTERESIS);
 						int percentage = 0;
@@ -2729,7 +2728,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								percentage = Tfinal-Tref;
 								percentage = 100*(Tinstant-Tref)/percentage;
 								sprintf(buffer, "%d%%", percentage);
-								genie.WriteStr(STRING_NYLON_TEMPS,buffer);
+								genie.WriteStr(STRING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,buffer);
 								waitPeriod_s=2000+millis();
 							}
 							manage_heater();
@@ -2738,19 +2737,19 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						}
 						gif_processing_state = PROCESSING_STOP;
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_STEP2,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP2,0);
 						
 					}
 					break;
-					case BUTTON_NYLON_STEP2:
+					case BUTTON_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP2:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						setTargetHotend(0.0,which_extruder);
 						if(which_extruder == 0)digitalWrite(FAN_PIN, 1);
 						else digitalWrite(FAN2_PIN, 1);
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_STEP3,0);
-						//gif_processing_state = PROCESSING_NYLON_TEMPS;
-						gif_processing_state = PROCESSING_NYLON_STEP3;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP3,0);
+						//gif_processing_state = PROCESSING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS;
+						gif_processing_state = PROCESSING_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP3;
 						int Tref = (int)degHotend(which_extruder);
 						int Tfinal = 160;
 						int percentage = 0;
@@ -2770,7 +2769,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								percentage = ((Tref-Tfinal)-(Tinstant-Tfinal))*100;
 								percentage = percentage/(Tref-Tfinal);
 								sprintf(buffer, "%d%%", percentage);
-								genie.WriteStr(STRING_NYLON_STEP3,buffer);
+								genie.WriteStr(STRING_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP3,buffer);
 								waitPeriod_s=2000+millis();
 							}
 							manage_heater();
@@ -2781,27 +2780,27 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						fanSpeed=255;
 						printer_state = STATE_NYLONCLEANING;
 						#if BCN3D_SCREEN_VERSION
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_NYLON_STEP4,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP4,1);
 						#endif
 						
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_STEP4,0);
-						gif_processing_state = PROCESSING_NYLON_STEP4;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP4,0);
+						gif_processing_state = PROCESSING_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP4;
 					}
 					break;
 					#if BCN3D_SCREEN_VERSION == BCN3D_SIGMA_PRINTER
-					case BUTTON_NYLON_STEP4:
+					case BUTTON_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP4:
 					if(printer_state == STATE_NYLONCLEANING){
 						if (millis() >= waitPeriod_button_press){
 							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 							#if BCN3D_SCREEN_VERSION
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_NYLON_STEP4,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP4,0);
 							#endif
 							if(which_extruder == 0)digitalWrite(FAN_PIN, 1);
 							else digitalWrite(FAN2_PIN, 1);
 							
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_TEMPS,0);
-							gif_processing_state = PROCESSING_NYLON_TEMPS;
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,0);
+							gif_processing_state = PROCESSING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS;
 							int Tref = (int)degHotend(which_extruder);
 							int Tfinal = NYLON_TEMP_COOLDOWN_THRESHOLD;
 							int percentage = 0;
@@ -2820,7 +2819,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 									percentage = ((Tref-Tfinal)-(Tinstant-Tfinal))*90; //<<<<<<<<<<<<<  0% TO 90%
 									percentage = percentage/(Tref-Tfinal);
 									sprintf(buffer, "%d%%", percentage);
-									genie.WriteStr(STRING_NYLON_TEMPS,buffer);
+									genie.WriteStr(STRING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,buffer);
 									waitPeriod_s=2000+millis();
 								}
 								//previous_millis_cmd = millis();
@@ -2854,7 +2853,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 									percentage = Tfinal-Tref;
 									percentage = 90+ 10*(Tinstant-Tref)/percentage;//<<<<<<<<<<<<<  90% TO 100%
 									sprintf(buffer, "%d%%", percentage);
-									genie.WriteStr(STRING_NYLON_TEMPS,buffer);
+									genie.WriteStr(STRING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,buffer);
 									waitPeriod_s=2000+millis();
 								}
 								manage_heater();
@@ -2863,28 +2862,28 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								
 							}
 							gif_processing_state = PROCESSING_STOP;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_STEP5,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP5,0);
 							printer_state = STATE_NONE;
 						}
 					}
 					break;
 					#endif
-					case BUTTON_NYLON_STEP5:
+					case BUTTON_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP5:
 					if (millis() >= waitPeriod_button_press){
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_STEP6,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP6,0);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_NYLON_REPEAT:
+					case BUTTON_UTILITIES_MAINTENANCE_NYLONCLEANING_REPEAT:
 					
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						setTargetHotend(NYLON_TEMP_HEATUP_THRESHOLD,which_extruder);
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_TEMPS,0);
-						gif_processing_state = PROCESSING_NYLON_TEMPS;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,0);
+						gif_processing_state = PROCESSING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS;
 						int Tref = (int)degHotend(which_extruder);
 						int Tfinal = (int)(degTargetHotend(which_extruder)-NYLON_TEMP_HYSTERESIS);
 						int percentage = 0;
@@ -2895,7 +2894,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								percentage = Tfinal-Tref;
 								percentage = 100*((int)degHotend(which_extruder)-Tref)/percentage;
 								sprintf(buffer, "%d%%", percentage);
-								genie.WriteStr(STRING_NYLON_TEMPS,buffer);
+								genie.WriteStr(STRING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,buffer);
 								waitPeriod_s=2000+millis();
 							}
 							manage_heater();
@@ -2904,18 +2903,18 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						}
 						gif_processing_state = PROCESSING_STOP;
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_STEP2,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP2,0);
 					}
 					break;
 					
-					case BUTTON_NYLON_SUCCESS:
+					case BUTTON_UTILITIES_MAINTENANCE_NYLONCLEANING_SUCCESS:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						doblocking = false;
 						setTargetHotend0(0);
 						setTargetHotend1(0);
 						HeaterCooldownInactivity(true);
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 						gif_processing_state = PROCESSING_DEFAULT;
 						home_axis_from_code(true, true, false);
 						gif_processing_state == PROCESSING_STOP;
@@ -2928,13 +2927,13 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					//*****AdjustFilament******
 					#pragma region AdjustFilament
-					case BUTTON_ACCEPT_ADJUST:
+					case BUTTON_UTILITIES_FILAMENT_ADJUST_ACCEPT:
 					if(!flag_utilities_filament_acceptok){
 						if (millis() >= waitPeriod_button_press){
 							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 							if(blocks_queued()) quickStop();
 							
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							flag_utilities_filament_acceptok = true;
 							home_made = false;
 							gif_processing_state = PROCESSING_DEFAULT;
@@ -2945,7 +2944,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_ADJUST_Load:
+					case BUTTON_UTILITIES_FILAMENT_ADJUST_LOAD:
 					if(!flag_utilities_filament_acceptok){
 						if(!blocks_queued()){
 							flag_utilities_filament_purgeload = 1;
@@ -2956,7 +2955,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_ADJUST_Unload:
+					case BUTTON_UTILITIES_FILAMENT_ADJUST_UNLOAD:
 					if(!flag_utilities_filament_acceptok){
 						if(!blocks_queued()){
 							flag_utilities_filament_purgeunload = 1;
@@ -2968,7 +2967,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					#pragma endregion AdjustFilament
 					
 					//Extruder Calibrations-------------------------------------------------
-					case BUTTON_CAL_FULL:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON2;
 						bed_calibration_times = 0;
@@ -2983,7 +2982,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						
 						//enquecommand_P(PSTR("T0"));
 						if(!flag_utilities_calibration_calibbeddone){  //Do g34
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							gif_processing_state = PROCESSING_DEFAULT;
 							doblocking= true;
 							home_axis_from_code(true,true,true);
@@ -2997,7 +2996,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						else{
 							
 							active_extruder = LEFT_EXTRUDER;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							gif_processing_state = PROCESSING_DEFAULT;
 							setTargetHotend0(print_temp_l);
 							setTargetHotend1(print_temp_r);
@@ -3009,15 +3008,15 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							if(gif_processing_state == PROCESSING_ERROR)return;
 							enquecommand_P(PSTR("T0"));
 							gif_processing_state = PROCESSING_STOP;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_ZL,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBZL,0);
 							if(Step_First_Start_Wizard){
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZL_SKIP,1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBZL_SKIP,1);
 							}
 							
 						}
 					}
 					break;
-					case BUTTON_MANUAL_FINE_CALIB:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBMANUALFINE:
 					if (millis() >= waitPeriod_button_press){
 						
 						offset_calib_manu[0]=0.0;
@@ -3027,17 +3026,17 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						calib_value_selected = 0;
 						sprintf(buffer, "0.000");
 						
-						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_MANUAL_FINE_CALIB,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_ZR,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_ZL,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_X,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_Y,0);
-						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_RIGHT,0);
-						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_LEFT,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_UP,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_DOWN,1);
-						genie.WriteObject(GENIE_OBJ_FORM, FORM_MANUAL_FINE_CALIB,0);
-						genie.WriteStr(STRING_MANUAL_FINE_CALIB,manual_fine_calib_offset[0],3);
+						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_UTILITIES_CALIBRATION_MANUAL,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_ZR,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_ZL,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_X,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_Y,0);
+						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_RIGHT,0);
+						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_LEFT,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_UP,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_DOWN,1);
+						genie.WriteObject(GENIE_OBJ_FORM, FORM_UTILITIES_CALIBRATION_MANUAL,0);
+						genie.WriteStr(STRING_UTILITIES_CALIBRATION_MANUAL,manual_fine_calib_offset[0],3);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON2;
 					}
 					break;
@@ -3045,7 +3044,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					//*****Bed Calibration*****
 					#pragma region Bed Calibration
-					case BUTTON_Z_CAL_WIZARD:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBBED:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON2;
 						if(saved_print_flag==1888){
@@ -3054,55 +3053,55 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						}
 						gif_processing_state = PROCESSING_DEFAULT;
 						doblocking = true;
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 						bed_calibration_times = 0;
 						flag_utilities_calibration_calibfull = false;
 						home_axis_from_code(true,true,true);
 						enquecommand_P(PSTR("G34"));	//Start BED Calibration Wizard
 						changeTool(0);
-						previous_state = FORM_CALIBRATION;
+						previous_state = FORM_UTILITIES_CALIBRATION;
 					}
 					break;
 					
-					case BUTTON_REDO_BED_CALIB:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBBED_SCREW3_NEXT:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON2;
 						gif_processing_state = PROCESSING_DEFAULT;
 						doblocking = true;
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 						home_axis_from_code(true,true,false);
 						changeTool(0);
 						enquecommand_P((PSTR("G34")));
-						previous_state = FORM_CALIBRATION;
+						previous_state = FORM_UTILITIES_CALIBRATION;
 						flag_utilities_calibration_calibbeddone = true;
 					}
 					break;
 					
 					
-					case BUTTON_BED_CALIB_SW3:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBBED_SCREW2_NEXT:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON2;
 						if (vuitens3!=0){
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_CALIB_BED_SCREW3,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBBED_SCREW3,0);
 							sprintf(buffer, " %d / 8",vuitens3); //Printing how to calibrate on screen
 							//genie.WriteStr(STRING_BED_SCREW3,buffer);
-							if (sentit3>0){genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_SCREW3,vuitens3);} //The direction is inverted in Sigma's bed screws
-							else{genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_SCREW3,vuitens3+8);}
+							if (sentit3>0){genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_UTILITIES_CALIBRATION_CALIBBED_SCREW3,vuitens3);} //The direction is inverted in Sigma's bed screws
+							else{genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_UTILITIES_CALIBRATION_CALIBBED_SCREW3,vuitens3+8);}
 							}else{
 							gif_processing_state = PROCESSING_DEFAULT;
 							doblocking = true;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							home_axis_from_code(true,true,false);
 							changeTool(0);
 							enquecommand_P((PSTR("G34")));
-							previous_state = FORM_CALIBRATION;
+							previous_state = FORM_UTILITIES_CALIBRATION;
 							
 							flag_utilities_calibration_calibbeddone = true;
 						}
 					}
 					break;
-					case BUTTON_INFO_TURN_SCREWS:
-					case BUTTON_INFO_TURN_SCREWS_FIRST:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBBED_ADJUSTSCREWASK_NEXT:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBBED_ADJUSTSCREWASKFIRST_NEXT:
 					if (millis() >= waitPeriod_button_press){
 						
 						gif_processing_state = PROCESSING_STOP;
@@ -3118,20 +3117,20 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						}*/
 						if (vuitens2!= 0){
 							SERIAL_PROTOCOLPGM("Jump over screw1 \n");
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_CALIB_BED_SCREW2,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBBED_SCREW2,0);
 							sprintf(buffer, " %d / 8",vuitens2); //Printing how to calibrate on screen
 							//genie.WriteStr(STRING_BED_SCREW2,buffer);
-							if (vuitens3==0) genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_BED_CALIB_SW3,0);
-							if (sentit2>0){genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_SCREW2,vuitens2);} //The direction is inverted in Sigma's bed screws
-							else{genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_SCREW2,vuitens2+8);}
+							if (vuitens3==0) genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_CALIBBED_SCREW2_NEXT,0);
+							if (sentit2>0){genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_UTILITIES_CALIBRATION_CALIBBED_SCREW2,vuitens2);} //The direction is inverted in Sigma's bed screws
+							else{genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_UTILITIES_CALIBRATION_CALIBBED_SCREW2,vuitens2+8);}
 						}
 						else if (vuitens3!= 0){
 							SERIAL_PROTOCOLPGM("Jump over screw1 and screw2 \n");
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_CALIB_BED_SCREW3,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBBED_SCREW3,0);
 							sprintf(buffer, " %d / 8",vuitens3); //Printing how to calibrate on screen
 							//genie.WriteStr(STRING_BED_SCREW3,buffer);
-							if (sentit3>0){genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_SCREW3,vuitens3);} //The direction is inverted in Sigma's bed screws
-							else{genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_SCREW3,vuitens3+8);}
+							if (sentit3>0){genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_UTILITIES_CALIBRATION_CALIBBED_SCREW3,vuitens3);} //The direction is inverted in Sigma's bed screws
+							else{genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_UTILITIES_CALIBRATION_CALIBBED_SCREW3,vuitens3+8);}
 						}
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
@@ -3140,7 +3139,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					#pragma endregion Bed Calibration
 					//*****Success Screens*****
 					#pragma region SuccessScreens
-					case BUTTON_BED_CALIB_SUCCESS: // or BUTTON_SUCCESS_FILAMENT_OK
+					case BUTTON_UTILITIES_CALIBRATION_SUCCESS: // or BUTTON_SUCCESS_FILAMENT_OK
 					if (printer_state == STATE_CALIBRATION){
 						if (millis() >= waitPeriod_button_press){
 							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
@@ -3152,7 +3151,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							else{
 								
 								//enquecommand_P((PSTR("G28 X0 Y0")));
-								genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 								gif_processing_state = PROCESSING_DEFAULT;
 								setTargetHotend0(0);
 								setTargetHotend1(0);
@@ -3164,7 +3163,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								SERIAL_PROTOCOLPGM("Calibration Successful, going back to main menu \n");
 								gif_processing_state = PROCESSING_STOP;
 								
-								genie.WriteObject(GENIE_OBJ_FORM,FORM_CALIBRATION,0);
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION,0);
 								
 								flag_utilities_calibration_calibbeddone = true;
 								
@@ -3182,15 +3181,15 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								if(which_extruder == 0){
 									enquecommand_P((PSTR("T0")));
 									SERIAL_PROTOCOLPGM("Filament Inserted/Removed, going to the next extruder \n");
-									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE2, 1);
-									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE1, 0);
-									genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_SELECT_EXTRUDER_MENU,1);
-									genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FILAMENT_BACK,1);
-									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_PLA, 1);
-									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_ABS, 1);
-									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_PVA, 1);
-									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_CUST, 1);
-									genie.WriteObject(GENIE_OBJ_FORM,FORM_SELECT_EXTRUDER,0);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT1, 1);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT0, 0);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_MENU,1);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_BACK,1);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_PLA, 1);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_ABS, 1);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_PVA, 1);
+									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM, 1);
+									genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_LOAD,0);
 									
 									which_extruder = 1;
 								}
@@ -3198,7 +3197,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 									enquecommand_P((PSTR("T0")));
 									SERIAL_PROTOCOLPGM("Filament Inserted/Removed, going to Calib \n");
 									
-									genie.WriteObject(GENIE_OBJ_FORM,FORN_FIRST_RUN_WIZARD_STEP_2,0);
+									genie.WriteObject(GENIE_OBJ_FORM,FORN_SETUPASSISTANT_STEP_2,0);
 									which_extruder = 0;
 								}
 							}
@@ -3224,13 +3223,13 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								current_position[X_AXIS] = 155 + 100;
 								#endif
 								doblocking = true;
-								genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 								gif_processing_state = PROCESSING_DEFAULT;
 								plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_TRAVEL_SPEED*1.5,which_extruder);
 								st_synchronize();
 								if(gif_processing_state == PROCESSING_ERROR)return;
 								gif_processing_state = PROCESSING_STOP;
-								genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_STEP0,0);
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP0,0);
 							}
 							flag_utilities_filament_acceptok = false;
 							printer_state = STATE_NONE;
@@ -3241,13 +3240,13 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						if (millis() >= waitPeriod_button_press){
 							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 							#if BCN3D_SCREEN_VERSION
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_NYLON_STEP4,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP4,0);
 							#endif
 							if(which_extruder == 0)digitalWrite(FAN_PIN, 1);
 							else digitalWrite(FAN2_PIN, 1);
 							
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_TEMPS,0);
-							gif_processing_state = PROCESSING_NYLON_TEMPS;
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,0);
+							gif_processing_state = PROCESSING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS;
 							int Tref = (int)degHotend(which_extruder);
 							int Tfinal = NYLON_TEMP_COOLDOWN_THRESHOLD;
 							int percentage = 0;
@@ -3266,7 +3265,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 									percentage = ((Tref-Tfinal)-(Tinstant-Tfinal))*90; //<<<<<<<<<<<<<  0% TO 90%
 									percentage = percentage/(Tref-Tfinal);
 									sprintf(buffer, "%d%%", percentage);
-									genie.WriteStr(STRING_NYLON_TEMPS,buffer);
+									genie.WriteStr(STRING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,buffer);
 									waitPeriod_s=2000+millis();
 								}
 								//previous_millis_cmd = millis();
@@ -3300,7 +3299,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 									percentage = Tfinal-Tref;
 									percentage = 90+ 10*(Tinstant-Tref)/percentage;//<<<<<<<<<<<<<  90% TO 100%
 									sprintf(buffer, "%d%%", percentage);
-									genie.WriteStr(STRING_NYLON_TEMPS,buffer);
+									genie.WriteStr(STRING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,buffer);
 									waitPeriod_s=2000+millis();
 								}
 								manage_heater();
@@ -3309,7 +3308,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								
 							}
 							gif_processing_state = PROCESSING_STOP;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_NYLON_STEP5,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP5,0);
 							printer_state = STATE_NONE;
 						}
 					}
@@ -3319,70 +3318,70 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					//***** Calibration XYZ *****
 					#pragma region CalibrationsXYZ
-					case BUTTON_X_LINE_SELECT1:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSX_SELECT1:
 					if (millis() >= waitPeriod_button_press){
 						Full_calibration_X_set(0.5);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_X_LINE_SELECT2:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSX_SELECT2:
 					if (millis() >= waitPeriod_button_press){
 						Full_calibration_X_set(0.4);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_X_LINE_SELECT3:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSX_SELECT3:
 					if (millis() >= waitPeriod_button_press){
 						Full_calibration_X_set(0.3);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_X_LINE_SELECT4:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSX_SELECT4:
 					if (millis() >= waitPeriod_button_press){
 						Full_calibration_X_set(0.2);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_X_LINE_SELECT5:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSX_SELECT5:
 					if (millis() >= waitPeriod_button_press){
 						Full_calibration_X_set(0.1);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_X_LINE_SELECT6:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSX_SELECT6:
 					if (millis() >= waitPeriod_button_press){
 						Full_calibration_X_set(0);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_X_LINE_SELECT7:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSX_SELECT7:
 					if (millis() >= waitPeriod_button_press){
 						Full_calibration_X_set(-0.1);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_X_LINE_SELECT8:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSX_SELECT8:
 					if (millis() >= waitPeriod_button_press){
 						Full_calibration_X_set(-0.2);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_X_LINE_SELECT9:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSX_SELECT9:
 					if (millis() >= waitPeriod_button_press){
 						Full_calibration_X_set(-0.3);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_X_LINE_SELECT10:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSX_SELECT10:
 					if (millis() >= waitPeriod_button_press){
 						Full_calibration_X_set(-0.4);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
@@ -3392,7 +3391,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDO_X_LEFT:
 					if (millis() >= waitPeriod_button_press){
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_CLEAN_BED,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
 						redo_source = 1;
 						float calculus = extruder_offset[X_AXIS][1] + 0.5;
 						SERIAL_PROTOCOLPGM("Calculus:  ");
@@ -3406,7 +3405,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDO_X_RIGHT:
 					if (millis() >= waitPeriod_button_press){
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_CLEAN_BED,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
 						
 						redo_source = 1;
 						float calculus = extruder_offset[X_AXIS][1] -0.4;
@@ -3421,13 +3420,13 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDO_X:
 					if (millis() >= waitPeriod_button_press){
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_CLEAN_BED,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
 						redo_source = 1;
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_Y_LINE_SELECT1:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSY_SELECT1:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						Full_calibration_Y_set(0.5);
@@ -3435,73 +3434,73 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_Y_LINE_SELECT2:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSY_SELECT2:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						Full_calibration_Y_set(0.4);
 					}
 					break;
 					
-					case BUTTON_Y_LINE_SELECT3:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSY_SELECT3:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						Full_calibration_Y_set(0.3);
 					}
 					break;
 					
-					case BUTTON_Y_LINE_SELECT4:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSY_SELECT4:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						Full_calibration_Y_set(0.2);
 					}
 					break;
 					
-					case BUTTON_Y_LINE_SELECT5:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSY_SELECT5:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						Full_calibration_Y_set(0.1);
 					}
 					break;
 					
-					case BUTTON_Y_LINE_SELECT6:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSY_SELECT6:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						Full_calibration_Y_set(0);
 					}
 					break;
 					
-					case BUTTON_Y_LINE_SELECT7:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSY_SELECT7:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						Full_calibration_Y_set(-0.1);
 					}
 					break;
 					
-					case BUTTON_Y_LINE_SELECT8:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSY_SELECT8:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						Full_calibration_Y_set(-0.2);
 					}
 					break;
 					
-					case BUTTON_Y_LINE_SELECT9:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSY_SELECT9:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						Full_calibration_Y_set(-0.3);
 					}
 					break;
 					
-					case BUTTON_Y_LINE_SELECT10:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSY_SELECT10:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						Full_calibration_Y_set(-0.4);
 					}
 					break;
 					
-					case BUTTON_REDO_UP_CAB:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDO_Y_UP:
 					if (millis() >= waitPeriod_button_press){
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_CLEAN_BED,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
 						redo_source = 2;
 						float calculus = extruder_offset[Y_AXIS][1] + 0.5;
 						SERIAL_PROTOCOLPGM("Calculus:  ");
@@ -3512,10 +3511,10 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_REDO_DOWN_CAB:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDO_Y_DOWN:
 					if (millis() >= waitPeriod_button_press){
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_CLEAN_BED,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
 						redo_source = 2;
 						float calculus = extruder_offset[Y_AXIS][1] -0.4;
 						SERIAL_PROTOCOLPGM("Calculus:  ");
@@ -3526,15 +3525,15 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_REDO_Y_CAB:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDO_Y:
 					if (millis() >= waitPeriod_button_press){
 						redo_source = 2;
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_CLEAN_BED,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_Z_CALIB_Z1_Down:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_CALIBZL_DOWN:
 					if (millis() >= waitPeriod_button_press){
 						
 						feedrate = homing_feedrate[Z_AXIS];
@@ -3546,7 +3545,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_Z_CALIB_Z1_Up:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_CALIBZL_UP:
 					if (millis() >= waitPeriod_button_press){
 						feedrate = homing_feedrate[Z_AXIS];
 						if (current_position[Z_AXIS]>-1.5) current_position[Z_AXIS] -= 0.05; //Max down is Z=-0.5
@@ -3558,7 +3557,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_Z_CALIB_Z1_OK:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_CALIBZL_ACCEPT:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						gif_processing_state = PROCESSING_STOP;
@@ -3595,7 +3594,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						gif_processing_state = PROCESSING_STOP;
 						//delay(6000);
 						touchscreen_update();
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
 						gif_processing_state = PROCESSING_TEST;
 						home_axis_from_code(false,true,true);
 						if(gif_processing_state == PROCESSING_ERROR)return;
@@ -3605,7 +3604,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_Z_CALIB_Z2_Down:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_CALIBZR_DOWN:
 					feedrate = homing_feedrate[Z_AXIS];
 					current_position[Z_AXIS] += 0.05;
 					plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate/60, active_extruder);
@@ -3613,7 +3612,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					Serial.println(current_position[Z_AXIS]);
 					break;
 					
-					case BUTTON_Z_CALIB_Z2_Up:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_CALIBZR_UP:
 					feedrate = homing_feedrate[Z_AXIS];
 					if (current_position[Z_AXIS]>-1.5) current_position[Z_AXIS] -= 0.05;  //Max down is Z=-0.5
 					plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate/60, active_extruder);
@@ -3621,7 +3620,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					Serial.println(current_position[Z_AXIS]);
 					break;
 					
-					case BUTTON_Z_CALIB_Z2_OK:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_CALIBZR_ACCEPT:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						gif_processing_state = PROCESSING_STOP;
@@ -3654,7 +3653,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						
 						gif_processing_state = PROCESSING_STOP;
 						touchscreen_update();
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
 						gif_processing_state = PROCESSING_TEST;
 						home_axis_from_code(false,true,true);
 						if(gif_processing_state == PROCESSING_ERROR)return;
@@ -3663,66 +3662,75 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						if(gif_processing_state == PROCESSING_ERROR)return;
 					}
 					break;
-					
-					case BUTTON_REDO_LEFT:
-					case BUTTON_REDO_RIGHT:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL_REDO:
 					if (millis() >= waitPeriod_button_press){
 						
-						genie.WriteObject(GENIE_OBJ_FORM, FORM_REDO_Z_TEST,0);
+						genie.WriteObject(GENIE_OBJ_FORM, FORM_UTILITIES_CALIBRATION_CALIBFULL_REDOZL,0);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_Z_LEFT_SELECT1:
+					break;
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZR_REDO:
+					if (millis() >= waitPeriod_button_press){
+						
+						genie.WriteObject(GENIE_OBJ_FORM, FORM_UTILITIES_CALIBRATION_CALIBFULL_REDOZR,0);
+						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+					}
+					break;
+					
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL_SELECT1:
 					if (millis() >= waitPeriod_button_press){
 						Full_calibration_ZL_set(0.05);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_Z_LEFT_SELECT2:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL_SELECT2:
 					if (millis() >= waitPeriod_button_press){
 						Full_calibration_ZL_set(0);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_Z_LEFT_SELECT3:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL_SELECT3:
 					if (millis() >= waitPeriod_button_press){
 						Full_calibration_ZL_set(-0.05);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_Z_LEFT_SELECT4:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL_SELECT4:
 					if (millis() >= waitPeriod_button_press){
 						Full_calibration_ZL_set(-0.1);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_Z_LEFT_SELECT5:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL_SELECT5:
 					if (millis() >= waitPeriod_button_press){
 						Full_calibration_ZL_set(-0.15);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_RECALIBRATE_Z:
+					
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDOZL_RECALIBRATE:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDOZR_RECALIBRATE:
 					if (millis() >= waitPeriod_button_press){
 						redo_source = 3;
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_CLEAN_BED,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_CLEAN_BED:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						doblocking = true;
 						if(redo_source == 0){		 //redo z test print
 							if (active_extruder==0){
-								genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
 								gif_processing_state = PROCESSING_TEST;
 								home_axis_from_code(true,true,true);
 								if(gif_processing_state == PROCESSING_ERROR)return;
@@ -3731,7 +3739,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								if(gif_processing_state == PROCESSING_ERROR)return;
 							}
 							else{
-								genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
 								gif_processing_state = PROCESSING_TEST;
 								home_axis_from_code(true,true,true);
 								if(gif_processing_state == PROCESSING_ERROR)return;
@@ -3742,7 +3750,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							}
 						}
 						else if(redo_source == 1){ //redo x test print
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
 							gif_processing_state = PROCESSING_TEST;
 							home_axis_from_code(true,true,false);
 							current_position[Z_AXIS] = 0.2;
@@ -3750,7 +3758,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							enquecommand_P(PSTR("G40"));
 						}
 						else if(redo_source == 2){ //redo y test print
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
 							gif_processing_state = PROCESSING_TEST;
 							home_axis_from_code(true,true,false);
 							current_position[Z_AXIS] = 0.3;
@@ -3761,7 +3769,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						else if(redo_source == 3){	//recalibrate
 							if (active_extruder == 0){
 								gif_processing_state = PROCESSING_DEFAULT;
-								genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 								current_position[E_AXIS]-=4;
 								plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],INSERT_FAST_SPEED/60,LEFT_EXTRUDER);
 								st_synchronize();
@@ -3774,7 +3782,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							}
 							else{
 								gif_processing_state = PROCESSING_DEFAULT;
-								genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 								current_position[E_AXIS]-=4;
 								plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],INSERT_FAST_SPEED/60,RIGHT_EXTRUDER);
 								st_synchronize();
@@ -3789,70 +3797,72 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_REDO_Z_1:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDOZL_BEST1:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						redo_source = 0;
-						if (active_extruder == 0){
-							zprobe_zoffset+=0.1;
-							Config_StoreSettings(); //Store changes
-							gcode_T0_T1_auto(0);
-							st_synchronize();
-							if(gif_processing_state == PROCESSING_ERROR)return;
-							
-						}
-						else{
-							extruder_offset[Z_AXIS][RIGHT_EXTRUDER]+=0.1;
-							Config_StoreSettings(); //Store changes
-							gcode_T0_T1_auto(1);
-							st_synchronize();
-							if(gif_processing_state == PROCESSING_ERROR)return;
-							
-						}
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_CLEAN_BED,0);
+						zprobe_zoffset+=0.1;
+						Config_StoreSettings(); //Store changes
+						gcode_T0_T1_auto(0);
+						st_synchronize();
+						if(gif_processing_state == PROCESSING_ERROR)return;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
 					}
 					break;
-					
-					case BUTTON_REDO_Z_5:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDOZR_BEST1:
 					if (millis() >= waitPeriod_button_press){
-						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
-						
-						redo_source = 0;
-						if (active_extruder == 0){
-							
-							zprobe_zoffset-=0.1;
-							Config_StoreSettings(); //Store changes
-							gcode_T0_T1_auto(0);
-							st_synchronize();
-							if(gif_processing_state == PROCESSING_ERROR)return;
-						}
-						else{
-							extruder_offset[Z_AXIS][RIGHT_EXTRUDER]-=0.1;
-							Config_StoreSettings(); //Store changes
-							gcode_T0_T1_auto(1);
-							st_synchronize();
-							if(gif_processing_state == PROCESSING_ERROR)return;
-						}
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_CLEAN_BED,0);
+						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;				
+						extruder_offset[Z_AXIS][RIGHT_EXTRUDER]+=0.1;
+						Config_StoreSettings(); //Store changes
+						gcode_T0_T1_auto(1);
+						st_synchronize();
+						if(gif_processing_state == PROCESSING_ERROR)return;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
 					}
 					break;
-					
-					case BUTTON_REDO_Z:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDOZL_BEST5:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						redo_source = 0;
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_CLEAN_BED,0);
+						zprobe_zoffset-=0.1;
+						Config_StoreSettings(); //Store changes
+						gcode_T0_T1_auto(0);
+						st_synchronize();
+						if(gif_processing_state == PROCESSING_ERROR)return;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
 					}
 					break;
 					
-					case BUTTON_Z_RIGHT_SELECT1:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDOZR_BEST5:
+					if (millis() >= waitPeriod_button_press){
+						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+						redo_source = 0;
+						extruder_offset[Z_AXIS][RIGHT_EXTRUDER]-=0.1;
+						Config_StoreSettings(); //Store changes
+						gcode_T0_T1_auto(1);
+						st_synchronize();
+						if(gif_processing_state == PROCESSING_ERROR)return;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
+					}
+					break;
+					
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDOZL:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDOZR:
+					if (millis() >= waitPeriod_button_press){
+						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+						redo_source = 0;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
+					}
+					break;
+					
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZR_SELECT1:
 					if (millis() >= waitPeriod_button_press){
 						Full_calibration_ZR_set(0.05);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_Z_RIGHT_SELECT2:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZR_SELECT2:
 					if (millis() >= waitPeriod_button_press){
 						Full_calibration_ZR_set(0);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
@@ -3860,28 +3870,28 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					break;
 					
-					case BUTTON_Z_RIGHT_SELECT3:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZR_SELECT3:
 					if (millis() >= waitPeriod_button_press){
 						Full_calibration_ZR_set(-0.05);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_Z_RIGHT_SELECT4:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZR_SELECT4:
 					if (millis() >= waitPeriod_button_press){
 						Full_calibration_ZR_set(-0.1);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_Z_RIGHT_SELECT5:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZR_SELECT5:
 					if (millis() >= waitPeriod_button_press){
 						Full_calibration_ZR_set(-0.15);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_FULL_CAL_ZL_GO:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBZL_GO:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						
@@ -3889,7 +3899,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						
 						
 						setTargetHotend1(EXTRUDER_RIGHT_CLEAN_TEMP);
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 						gif_processing_state = PROCESSING_DEFAULT;
 						active_extruder = LEFT_EXTRUDER;
 						//Wait until temperature it's okey
@@ -3923,31 +3933,31 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						if(gif_processing_state == PROCESSING_ERROR)return;
 						gif_processing_state = PROCESSING_STOP;
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_CLEAN_NOZZLE_L,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANNOZZLE0,0);
 						
 						
 					}
 					break;
 					
-					case BUTTON_FULL_CAL_ZL_SKIP:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBZL_SKIP:
 					if(!Step_First_Start_Wizard && !flag_utilities_calibration_bedcomensationmode){
 						if (millis() >= waitPeriod_button_press){
 							
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_ZR,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBZR,0);
 							if(Step_First_Start_Wizard){
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZR_SKIP,1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBZR_SKIP,1);
 							}
 							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						}
 					}
 					break;
 					
-					case BUTTON_FULL_CAL_ZR_GO:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBZR_GO:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						
 						doblocking=true;
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 						gif_processing_state = PROCESSING_DEFAULT;
 						active_extruder = RIGHT_EXTRUDER;
 						//Wait until temperature it's okey
@@ -3978,12 +3988,12 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						if(gif_processing_state == PROCESSING_ERROR)return;
 						gif_processing_state = PROCESSING_STOP;
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_CLEAN_NOZZLE_R,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANNOZZLE1,0);
 						
 					}
 					break;
 					
-					case BUTTON_FULL_CAL_ZR_SKIP:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBZR_SKIP:
 					if(!Step_First_Start_Wizard){
 						if (millis() >= waitPeriod_button_press){
 							Z_compensation_decisor();
@@ -3995,15 +4005,15 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
 					case BUTTON_Z_COMPENSATION_NEXT:
 					if (millis() >= waitPeriod_button_press){
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_X,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBX,0);
 						if(Step_First_Start_Wizard){
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_X_SKIP,1);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBX_SKIP,1);
 						}
 					}
 					break;
 					
 					#endif
-					case BUTTON_FULL_CAL_X_GO:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBX_GO:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						
@@ -4019,20 +4029,20 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_FULL_CAL_X_SKIP:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBX_SKIP:
 					if(!Step_First_Start_Wizard){
 						if (millis() >= waitPeriod_button_press){
 							
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_Y,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBY,0);
 							if(Step_First_Start_Wizard){
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_Y_SKIP,1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBY_SKIP,1);
 							}
 							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						}
 					}
 					break;
 					
-					case BUTTON_FULL_CAL_Y_GO:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBY_GO:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						
@@ -4048,20 +4058,20 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_FULL_CAL_Y_SKIP:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBY_SKIP:
 					if(!Step_First_Start_Wizard){
 						if (millis() >= waitPeriod_button_press){
 							
 							if(Step_First_Start_Wizard){
-								genie.WriteObject(GENIE_OBJ_FORM,FORN_FIRST_RUN_WIZARD_SUCCESS,0);
+								genie.WriteObject(GENIE_OBJ_FORM,FORN_SETUPASSISTANT_SUCCESS,0);
 								gif_processing_state = PROCESSING_SUCCESS_FIRST_RUN;
 								FLAG_First_Start_Wizard = 888;
 								Step_First_Start_Wizard = false;
 								flag_utilities_calibration_calibfull = false;
 								}else{
 								printer_state = STATE_CALIBRATION;
-								genie.WriteObject(GENIE_OBJ_VIDEO,GIF_BED_CALIB_SUCCESS,0);
-								genie.WriteObject(GENIE_OBJ_FORM,FORM_CAL_WIZARD_DONE_GOOD,0);
+								genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_CALIBRATION_SUCCESS,0);
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_SUCCESS,0);
 								gif_processing_state = PROCESSING_BED_SUCCESS;
 							}
 							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
@@ -4069,10 +4079,10 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_CLEAN_NOZZLE_L:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_CLEANNOZZLE0:
 					if (millis() >= waitPeriod_button_press){
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 						//processing =  true;
 						//home_axis_from_code(true, true , false);
 						enquecommand_P(PSTR("G43"));
@@ -4081,10 +4091,10 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_CLEAN_NOZZLE_R:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_CLEANNOZZLE1:
 					if (millis() >= waitPeriod_button_press){
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 						
 						//home_axis_from_code(true, true , false);
 						enquecommand_P(PSTR("G43"));
@@ -4098,10 +4108,10 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					#pragma region Manual Fine Calibration
 					
-					case BUTTON_MANUAL_FINE_CALIB_BACK:
+					case BUTTON_UTILITIES_CALIBRATION_MANUAL_BACK:
 					if (millis() >= waitPeriod_button_press){
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_CALIBRATION,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION,0);
 						offset_calib_manu[0]=0.0;
 						offset_calib_manu[1]=0.0;
 						offset_calib_manu[2]=0.0;
@@ -4111,7 +4121,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_MANUAL_FINE_CALIB_MENU:
+					case BUTTON_UTILITIES_CALIBRATION_MANUAL_MENU:
 					if (millis() >= waitPeriod_button_press){
 						
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_MAIN,0);
@@ -4128,93 +4138,93 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_MANUAL_FINE_CALIB_OK:
+					case BUTTON_UTILITIES_CALIBRATION_MANUAL_OK:
 					if (millis() >= waitPeriod_button_press){
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_MANUAL_FINE_CALIB_SAVE,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_MANUAL_SAVE,0);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_MANUAL_FINE_CALIB_X:
+					case BUTTON_UTILITIES_CALIBRATION_MANUAL_X:
 					if (millis() >= waitPeriod_button_press){
 						
 						calib_value_selected = 0;
-						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_MANUAL_FINE_CALIB,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_ZR,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_ZL,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_X,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_Y,0);
-						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_RIGHT,0);
-						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_LEFT,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_UP,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_DOWN,1);
+						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_UTILITIES_CALIBRATION_MANUAL,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_ZR,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_ZL,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_X,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_Y,0);
+						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_RIGHT,0);
+						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_LEFT,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_UP,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_DOWN,1);
 						value = 0.0;
 						value = manual_fine_calib_offset[calib_value_selected] + offset_calib_manu[calib_value_selected];
-						genie.WriteStr(STRING_MANUAL_FINE_CALIB,value,3);
+						genie.WriteStr(STRING_UTILITIES_CALIBRATION_MANUAL,value,3);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_MANUAL_FINE_CALIB_Y:
+					case BUTTON_UTILITIES_CALIBRATION_MANUAL_Y:
 					if (millis() >= waitPeriod_button_press){
 						
 						calib_value_selected = 1;
-						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_MANUAL_FINE_CALIB,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_ZR,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_ZL,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_X,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_Y,1);
-						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_RIGHT,1);
-						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_LEFT,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_UP,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_DOWN,0);
+						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_UTILITIES_CALIBRATION_MANUAL,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_ZR,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_ZL,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_X,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_Y,1);
+						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_RIGHT,1);
+						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_LEFT,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_UP,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_DOWN,0);
 						value = 0.0;
 						value = manual_fine_calib_offset[calib_value_selected] + offset_calib_manu[calib_value_selected];
-						genie.WriteStr(STRING_MANUAL_FINE_CALIB,value,3);
+						genie.WriteStr(STRING_UTILITIES_CALIBRATION_MANUAL,value,3);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_MANUAL_FINE_CALIB_ZL:
+					case BUTTON_UTILITIES_CALIBRATION_MANUAL_ZL:
 					if (millis() >= waitPeriod_button_press){
 						
 						calib_value_selected = 2;
-						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_MANUAL_FINE_CALIB,2);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_ZR,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_ZL,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_X,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_Y,0);
-						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_RIGHT,1);
-						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_LEFT,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_UP,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_DOWN,0);
+						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_UTILITIES_CALIBRATION_MANUAL,2);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_ZR,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_ZL,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_X,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_Y,0);
+						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_RIGHT,1);
+						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_LEFT,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_UP,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_DOWN,0);
 						value = 0.0;
 						value = manual_fine_calib_offset[calib_value_selected] + offset_calib_manu[calib_value_selected];
-						genie.WriteStr(STRING_MANUAL_FINE_CALIB,value,3);
+						genie.WriteStr(STRING_UTILITIES_CALIBRATION_MANUAL,value,3);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_MANUAL_FINE_CALIB_ZR:
+					case BUTTON_UTILITIES_CALIBRATION_MANUAL_ZR:
 					if (millis() >= waitPeriod_button_press){
 						calib_value_selected = 3;
-						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_MANUAL_FINE_CALIB,2);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_ZR,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_ZL,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_X,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_Y,0);
-						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_RIGHT,1);
-						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_LEFT,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_UP,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_MANUAL_FINE_CALIB_DOWN,0);
+						genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_UTILITIES_CALIBRATION_MANUAL,2);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_ZR,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_ZL,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_X,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_Y,0);
+						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_RIGHT,1);
+						//genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_LEFT,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_UP,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_MANUAL_DOWN,0);
 						value = 0.0;
 						value = manual_fine_calib_offset[calib_value_selected] + offset_calib_manu[calib_value_selected];
-						genie.WriteStr(STRING_MANUAL_FINE_CALIB,value,3);
+						genie.WriteStr(STRING_UTILITIES_CALIBRATION_MANUAL,value,3);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_MANUAL_FINE_CALIB_UP:
+					case BUTTON_UTILITIES_CALIBRATION_MANUAL_UP:
 					
 					value = 0.0;
 					
@@ -4225,10 +4235,10 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						if(offset_calib_manu[calib_value_selected] < 0.200) offset_calib_manu[calib_value_selected] += 0.025;
 					}
 					value = offset_calib_manu[calib_value_selected]+manual_fine_calib_offset[calib_value_selected];
-					genie.WriteStr(STRING_MANUAL_FINE_CALIB,value,3);
+					genie.WriteStr(STRING_UTILITIES_CALIBRATION_MANUAL,value,3);
 					break;
 					
-					case BUTTON_MANUAL_FINE_CALIB_DOWN:
+					case BUTTON_UTILITIES_CALIBRATION_MANUAL_DOWN:
 					value = 0.0;
 					
 					if(calib_value_selected == 1 || calib_value_selected == 0){
@@ -4239,10 +4249,10 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					value = offset_calib_manu[calib_value_selected]+manual_fine_calib_offset[calib_value_selected];
 					
-					genie.WriteStr(STRING_MANUAL_FINE_CALIB,value,3);
+					genie.WriteStr(STRING_UTILITIES_CALIBRATION_MANUAL,value,3);
 					break;
 					
-					case BUTTON_MANUAL_FINE_CALIB_SAVE_OK:
+					case BUTTON_UTILITIES_CALIBRATION_MANUAL_SAVE_OK:
 					if (millis() >= waitPeriod_button_press){
 						
 						manual_fine_calib_offset[0] += offset_calib_manu[0];
@@ -4254,7 +4264,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						extruder_offset[Y_AXIS][RIGHT_EXTRUDER]+= offset_calib_manu[1];
 						zprobe_zoffset += offset_calib_manu[2];
 						extruder_offset[Z_AXIS][RIGHT_EXTRUDER]+= offset_calib_manu[3] - offset_calib_manu[2];
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_CALIBRATION,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION,0);
 						offset_calib_manu[0]=0.0;
 						offset_calib_manu[1]=0.0;
 						offset_calib_manu[2]=0.0;
@@ -4266,10 +4276,10 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_MANUAL_FINE_CALIB_SAVE_NOT:
+					case BUTTON_UTILITIES_CALIBRATION_MANUAL_SAVE_NOT:
 					if (millis() >= waitPeriod_button_press){
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_CALIBRATION,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION,0);
 						offset_calib_manu[0]=0.0;
 						offset_calib_manu[1]=0.0;
 						offset_calib_manu[2]=0.0;
@@ -4290,7 +4300,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					#pragma region Info Screens
 					
 					//Backing from INFO SCREENS
-					case BACKBUTTON_CALIBRATION:
+					case BUTTON_UTILITIES_CALIBRATION_BACK:
 					if (millis() >= waitPeriod_button_press){
 						
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES,0);
@@ -4300,7 +4310,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					
 					//SKIP BED CALIBRATION
-					case BUTTON_SKIP_BED:
+					case BUTTON_UTILITIES_CALIBRATION_CALIBBED_ADJUSTSCREWASK_SKIP:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						
@@ -4311,7 +4321,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							
 							
 							active_extruder = LEFT_EXTRUDER;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							gif_processing_state = PROCESSING_DEFAULT;
 							setTargetHotend0(print_temp_l);
 							setTargetHotend1(print_temp_r);
@@ -4323,13 +4333,13 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							if(gif_processing_state == PROCESSING_ERROR)return;
 							enquecommand_P(PSTR("T0"));
 							gif_processing_state = PROCESSING_STOP;
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_ZL,0);
-							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZL_SKIP,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBZL,0);
+							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBZL_SKIP,0);
 							if(Step_First_Start_Wizard){
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZL_SKIP,1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBZL_SKIP,1);
 								}else if(flag_utilities_calibration_bedcomensationmode){
 								Bed_Compensation_state = 1;
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZL_SKIP,1);
+								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBZL_SKIP,1);
 							}
 							
 							
@@ -4338,8 +4348,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						}
 						else{
 							printer_state = STATE_CALIBRATION;
-							genie.WriteObject(GENIE_OBJ_VIDEO,GIF_BED_CALIB_SUCCESS,0);
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_CAL_WIZARD_DONE_GOOD,0);
+							genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_CALIBRATION_SUCCESS,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_SUCCESS,0);
 							gif_processing_state = PROCESSING_BED_SUCCESS;
 						}
 					}
@@ -4349,7 +4359,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						
 						if(printing_error_temps){
-							genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							enquecommand_P(PSTR("G28 X0 Y0")); //Home X and Y
 							back_home = true;
 							home_made = false;
@@ -4380,19 +4390,19 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					#pragma endregion Info Screens
 					
 					#pragma region Setup Assistant
-					case BUTTON_FIRST_RUN_WIZARD_YES:
+					case BUTTON_SETUPASSISTANT_YES:
 					if (millis() >= waitPeriod_button_press){
 						
 						surfing_utilities = true;
 						Step_First_Start_Wizard = true;
-						genie.WriteObject(GENIE_OBJ_FORM,FORN_FIRST_RUN_WIZARD_STEP_1,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORN_SETUPASSISTANT_STEP_1,0);
 						Config_ResetDefault();
 						Config_StoreSettings();
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_FIRST_RUN_WIZARD_SKIP:
+					case BUTTON_SETUPASSISTANT_SKIP:
 					if (millis() >= waitPeriod_button_press){
 						
 						FLAG_First_Start_Wizard = 888;
@@ -4403,26 +4413,26 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_FIRST_RUN_WIZARD_STEP_NEXT_1:
+					case BUTTON_SETUPASSISTANT_STEP_NEXT_1:
 					if (millis() >= waitPeriod_button_press){
 						
 						which_extruder = 0;
 						filament_mode = 'I';
-						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE2, 0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_FILAMENT_NOZZLE1, 1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT1, 0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT0, 1);
 						
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_SELECT_EXTRUDER_MENU,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FILAMENT_BACK,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_PLA, 1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_ABS, 1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_PVA, 1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_CUST, 1);
-						genie.WriteObject(GENIE_OBJ_FORM, FORM_SELECT_EXTRUDER, 1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_MENU,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_BACK,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_PLA, 1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_ABS, 1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_PVA, 1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM, 1);
+						genie.WriteObject(GENIE_OBJ_FORM, FORM_UTILITIES_FILAMENT_LOAD, 1);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
-					case BUTTON_FIRST_RUN_WIZARD_STEP_NEXT_2:
+					case BUTTON_SETUPASSISTANT_STEP_NEXT_2:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON2;
 						
@@ -4430,7 +4440,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						Serial.println(flag_utilities_calibration_calibbeddone);
 						flag_utilities_calibration_calibfull = true;
 						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 						gif_processing_state = PROCESSING_DEFAULT;
 						doblocking = true;
 						home_axis_from_code(true,true,true);
@@ -4441,16 +4451,16 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					case BUTTON_SETUP_ASSISTANT:
+					case BUTTON_INFO_SETUPASSISTANT:
 					if (millis() >= waitPeriod_button_press){
-						genie.WriteObject(GENIE_OBJ_VIDEO,GIF_FIRST_RUN_WIZARD_INIT,0);
-						genie.WriteObject(GENIE_OBJ_FORM,FORN_FIRST_RUN_WIZARD_INIT,0);
+						genie.WriteObject(GENIE_OBJ_VIDEO,GIF_SETUPASSISTANT_INIT,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORN_SETUPASSISTANT_INIT,0);
 						int j = 0;
 						static uint32_t waitPeriod = millis(); //Processing back home
 						while ( j<GIF_FRAMES_INIT_FIRST_RUN){
 							if (millis() >= waitPeriod){
 								
-								genie.WriteObject(GENIE_OBJ_VIDEO,GIF_FIRST_RUN_WIZARD_INIT,j);
+								genie.WriteObject(GENIE_OBJ_VIDEO,GIF_SETUPASSISTANT_INIT,j);
 								j+=1;
 								waitPeriod = GIF_FRAMERATE+millis();	//Every 5s
 							}
@@ -4458,7 +4468,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							
 							
 						}
-						genie.WriteObject(GENIE_OBJ_FORM,FORN_FIRST_RUN_WIZARD_YESNOT,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORN_SETUPASSISTANT_YESNOT,0);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
@@ -4529,7 +4539,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 				}
 				break;
 				
-				case FORM_TEMP_MENU:
+				case FORM_TEMP:
 				if (millis() >= waitPeriod_button_press){
 					
 					surfing_temps = true;
@@ -4537,23 +4547,23 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 				}
 				break;
 				
-				case FORM_PURGE:
+				case FORM_UTILITIES_FILAMENT_PURGE:
 				if (millis() >= waitPeriod_button_press){
 					
 					SERIAL_PROTOCOLPGM("Enter in purge mode \n");
 					if(purge_extruder_selected == 0) {
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_LEFT,1);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_RIGHT,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT0,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT1,0);
 					}
 					else {
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_LEFT,0);
-						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_PURGE_RIGHT,1);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT0,0);
+						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT1,1);
 					}
 					
 					sprintf_P(buffer, PSTR("%3d %cC"),int(degHotend(0)),0x00B0);
-					genie.WriteStr(STRING_PURGE_LEFT_TEMP,buffer);	Serial.println(buffer);
+					genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_LEFTTARGET,buffer);	Serial.println(buffer);
 					sprintf_P(buffer, PSTR("%3d %cC"),int(degHotend(1)),0x00B0);
-					genie.WriteStr(STRING_PURGE_RIGHT_TEMP,buffer);	Serial.println(buffer);
+					genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_RIGHTTARGET,buffer);	Serial.println(buffer);
 					waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 				}
 				break;
@@ -4566,9 +4576,9 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					if(UI_SerialID0 || UI_SerialID1 || UI_SerialID2){
 						sprintf(buffer, "%03d.%03d%03d.%04d",UI_SerialID0, (int)(UI_SerialID1/1000),(int)(UI_SerialID1%1000), UI_SerialID2);
 						//sprintf(buffer, "%03d.%03d%03d.%04d",1020, 1151,1021, 10002);
-						genie.WriteStr(STRING_INFO_UI_SerialID,buffer);
+						genie.WriteStr(STRING_INFO_UI_SERIALID,buffer);
 						}else{
-						genie.WriteStr(STRING_INFO_UI_SerialID,UI_SerialID);
+						genie.WriteStr(STRING_INFO_UI_SERIALID,UI_SerialID);
 					}
 					sprintf(buffer, "%d h",log_hours_print);
 					//Serial.println(buffer);
@@ -5093,7 +5103,7 @@ inline void insertmetod(){
 		/****************************************************/
 	}
 	gif_processing_state = PROCESSING_STOP;
-	genie.WriteObject(GENIE_OBJ_FORM,FORM_INSERT_FILAMENT_TOP,0);
+	genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_LOAD_FEELSTOPS,0);
 	
 }
 inline void folder_navigation_register(bool upchdir){
@@ -5110,7 +5120,7 @@ inline void folder_navigation_register(bool upchdir){
 inline void Bed_Compensation_Set_Lines(int jint){
 	if(Bed_Compensation_state == 2){
 		Bed_Compensation_state = 3;
-		genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+		genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
 		gif_processing_state = PROCESSING_TEST;
 		Bed_Compensation_Lines_Selected[0]+=jint;
 		#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
@@ -5119,12 +5129,12 @@ inline void Bed_Compensation_Set_Lines(int jint){
 		bed_test_print_code(-184.0,-220.0, 0);
 		#endif
 		
-		genie.WriteObject(GENIE_OBJ_FORM,FORM_LEFT_Z_TEST,0);
+		genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL,0);
 		gif_processing_state = PROCESSING_STOP;
 	}
 	else if(Bed_Compensation_state == 3){
 		Bed_Compensation_state = 4;
-		genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+		genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
 		gif_processing_state = PROCESSING_TEST;
 		Bed_Compensation_Lines_Selected[1]+=jint;
 		#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
@@ -5132,12 +5142,12 @@ inline void Bed_Compensation_Set_Lines(int jint){
 		#else
 		bed_test_print_code(192.0,-220.0, 0);
 		#endif
-		genie.WriteObject(GENIE_OBJ_FORM,FORM_LEFT_Z_TEST,0);
+		genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL,0);
 		gif_processing_state = PROCESSING_STOP;
 	}
 	else if(Bed_Compensation_state == 4){
 		Bed_Compensation_Lines_Selected[2]+=jint;
-		genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_TURN_SCREWS_FIRST,0);
+		genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBBED_ADJUSTSCREWASKFIRST,0);
 		gif_processing_state = PROCESSING_BED_FIRST;
 		
 	}
@@ -5145,15 +5155,15 @@ inline void Bed_Compensation_Set_Lines(int jint){
 }
 inline void Bed_Compensation_Redo_Lines(int jint){
 	if(Bed_Compensation_state == 2){
-		genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+		genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
 		gif_processing_state = PROCESSING_TEST;
 		Bed_Compensation_Lines_Selected[0]+=jint;
 		bed_test_print_code(0, 0, 0);
-		genie.WriteObject(GENIE_OBJ_FORM,FORM_LEFT_Z_TEST,0);
+		genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL,0);
 		gif_processing_state = PROCESSING_STOP;
 	}
 	else if(Bed_Compensation_state == 3){
-		genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+		genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
 		gif_processing_state = PROCESSING_TEST;
 		Bed_Compensation_Lines_Selected[1]+=jint;
 		#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
@@ -5161,11 +5171,11 @@ inline void Bed_Compensation_Redo_Lines(int jint){
 		#else
 		bed_test_print_code(-184.0,-220.0, Bed_Compensation_Lines_Selected[1]);
 		#endif
-		genie.WriteObject(GENIE_OBJ_FORM,FORM_LEFT_Z_TEST,0);
+		genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL,0);
 		gif_processing_state = PROCESSING_STOP;
 	}
 	else if(Bed_Compensation_state == 4){
-		genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_Z_PRINT,0);
+		genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
 		gif_processing_state = PROCESSING_TEST;
 		Bed_Compensation_Lines_Selected[2]+=jint;
 		#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
@@ -5173,23 +5183,23 @@ inline void Bed_Compensation_Redo_Lines(int jint){
 		#else
 		bed_test_print_code(192.0,-220.0, Bed_Compensation_Lines_Selected[2]);
 		#endif
-		genie.WriteObject(GENIE_OBJ_FORM,FORM_LEFT_Z_TEST,0);
+		genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL,0);
 		gif_processing_state = PROCESSING_STOP;
 	}
 	
 }
 inline void Z_compensation_decisor(void){
 	#if BCN3D_SCREEN_VERSION == BCN3D_SIGMA_PRINTER
-	genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_X,0);
+	genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBX,0);
 	if(Step_First_Start_Wizard){
-		genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_X_SKIP,1);
+		genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBX_SKIP,1);
 	}
 	
 	#elif BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
 	if(abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) <=RAFT_Z_THRESHOLD){
-		genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_X,0);
+		genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBX,0);
 		if(Step_First_Start_Wizard){
-			genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_X_SKIP,1);
+			genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBX_SKIP,1);
 		}
 		}else{
 		char offset_string[250]="";
@@ -5278,16 +5288,16 @@ inline void Calib_check_temps(void){
 		}
 		if(!flag_utilities_calibration_bedcomensationmode){
 			gif_processing_state = PROCESSING_STOP;
-			genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+			genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 		}
 	}
 }
 inline void Full_calibration_ZL_set(float offset){
 	manual_fine_calib_offset[2]=0.0;
 	manual_fine_calib_offset[3]=0.0;
-	genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_ZR,0);
+	genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBZR,0);
 	if(Step_First_Start_Wizard){
-		genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_ZR_SKIP,1);
+		genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBZR_SKIP,1);
 	}
 	
 	active_extruder = RIGHT_EXTRUDER;
@@ -5302,9 +5312,9 @@ inline void Full_calibration_ZR_set(float offset){
 }
 inline void Full_calibration_X_set(float offset){
 	manual_fine_calib_offset[0]=0.0;
-	genie.WriteObject(GENIE_OBJ_FORM,FORM_FULL_CAL_Y,0);
+	genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBY,0);
 	if(Step_First_Start_Wizard){
-		genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_FULL_CAL_Y_SKIP,1);
+		genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBY_SKIP,1);
 	}
 	float calculus = extruder_offset[X_AXIS][1]+offset;
 	SERIAL_PROTOCOLPGM("Calculus:  ");
@@ -5319,8 +5329,8 @@ inline void Full_calibration_Y_set(float offset){
 	manual_fine_calib_offset[1]=0.0;
 	if (!Step_First_Start_Wizard){
 		printer_state = STATE_CALIBRATION;
-		genie.WriteObject(GENIE_OBJ_VIDEO,GIF_BED_CALIB_SUCCESS,0);
-		genie.WriteObject(GENIE_OBJ_FORM,FORM_CAL_WIZARD_DONE_GOOD,0);
+		genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_CALIBRATION_SUCCESS,0);
+		genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_SUCCESS,0);
 		gif_processing_state = PROCESSING_BED_SUCCESS;
 		
 		//char buffer[30];
@@ -5338,7 +5348,7 @@ inline void Full_calibration_Y_set(float offset){
 		
 		
 		}else{
-		genie.WriteObject(GENIE_OBJ_FORM,FORN_FIRST_RUN_WIZARD_SUCCESS,0);
+		genie.WriteObject(GENIE_OBJ_FORM,FORN_SETUPASSISTANT_SUCCESS,0);
 		gif_processing_state = PROCESSING_SUCCESS_FIRST_RUN;
 		FLAG_First_Start_Wizard = 888;
 		Step_First_Start_Wizard = false;
