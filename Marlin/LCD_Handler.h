@@ -822,6 +822,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							
 							gif_processing_state = PROCESSING_STOP;
 							printer_state = STATE_LOADUNLOAD_FILAMENT;
+							touchscreen_update();
 							genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_FILAMENT_SUCCESS,0);
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_SUCCESS,0);
 							gif_processing_state = PROCESSING_SUCCESS;
@@ -2688,6 +2689,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							st_synchronize();
 							if(gif_processing_state == PROCESSING_ERROR)return;
 							gif_processing_state = PROCESSING_STOP;
+							touchscreen_update();
 							printer_state = STATE_LOADUNLOAD_FILAMENT;
 							genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_FILAMENT_SUCCESS,0);
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_SUCCESS,0);
