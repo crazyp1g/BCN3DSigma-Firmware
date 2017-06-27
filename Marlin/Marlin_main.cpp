@@ -1476,7 +1476,6 @@ void update_screen_printing(){
 			if (count5s == 720){ //5s * 720 = 3600s = 1h
 				count5s=0;
 				log_hours_print++;
-				Config_StoreSettings();
 			}
 			if (count5s1 == 12){ //5s * 12 = 60s = 1min
 				count5s1=0;
