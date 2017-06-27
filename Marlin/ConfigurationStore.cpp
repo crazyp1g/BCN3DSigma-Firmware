@@ -626,9 +626,6 @@ void Config_ResetDefault()
 	}
 	log_minutes_lastprint = 0;
 	log_hours_lastprint = 0;
-	log_X0_mmdone = 0;
-	log_Y_mmdone = 0;
-	log_X0_mmdone = 0;
 	FLAG_First_Start_Wizard = 1888;
 	
 	/*
