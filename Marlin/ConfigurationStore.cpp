@@ -268,7 +268,7 @@ void Config_PrintSettings()
 	SERIAL_ECHO_START;
 	SERIAL_ECHOLNPGM("PID settings:");
 	SERIAL_ECHO_START;
-	SERIAL_ECHOPAIR(" M301 LEFT P",Kp[0]);
+	SERIAL_ECHOPAIR("  M301 LEFT P",Kp[0]);
 	SERIAL_ECHOPAIR(" I" ,unscalePID_i(Ki[0]));
 	SERIAL_ECHOPAIR(" D" ,unscalePID_d(Kd[0]));
 	SERIAL_ECHOPAIR(" - M301 RIGHT P",Kp[1]);
@@ -280,23 +280,23 @@ void Config_PrintSettings()
 	SERIAL_ECHO_START;
 	SERIAL_ECHOLNPGM("Offsets (mm):");
 	SERIAL_ECHO_START;
-	SERIAL_ECHOPAIR(" X ",extruder_offset[X_AXIS][1] );
+	SERIAL_ECHOPAIR("  M530 X ",extruder_offset[X_AXIS][1] );
 	SERIAL_ECHOPAIR(" Y " ,extruder_offset[Y_AXIS][1]  );
 	SERIAL_ECHOPAIR(" Z " ,extruder_offset[Z_AXIS][1]  );
-	SERIAL_ECHOPAIR(" Z probe" ,zprobe_zoffset  );
+	SERIAL_ECHOPAIR(" P(Z probe)" ,zprobe_zoffset  );
 	SERIAL_ECHOLN("");
 	SERIAL_ECHO_START;
 	SERIAL_ECHOLNPGM("Bed Offsets (mm):");
 	SERIAL_ECHO_START;
-	SERIAL_ECHOPAIR(" Bed left screw ",bed_offset_left_screw);
-	SERIAL_ECHOPAIR(" Bed right screw " ,bed_offset_right_screw);
-	SERIAL_ECHOPAIR(" Version " ,(unsigned long)bed_offset_version);
+	SERIAL_ECHOPAIR("  M531 L(Bed left screw) ",bed_offset_left_screw);
+	SERIAL_ECHOPAIR(" R(Bed right screw) " ,bed_offset_right_screw);
+	SERIAL_ECHOPAIR(" V(Version) " ,(unsigned long)bed_offset_version);
 	SERIAL_ECHOLN("");
 	
 	SERIAL_ECHO_START;
 	SERIAL_ECHOLNPGM("Temp (C):");
 	SERIAL_ECHO_START;
-	SERIAL_ECHOPAIR(" L_INSERT: ",(unsigned long)insert_temp_l);
+	SERIAL_ECHOPAIR("  L_INSERT: ",(unsigned long)insert_temp_l);
 	SERIAL_ECHOPAIR(" C, L_REMOVE: " ,(unsigned long)remove_temp_l);
 	SERIAL_ECHOPAIR(" C, L_BED: " ,(unsigned long)bed_temp_l);
 	SERIAL_ECHOPAIR(" C, L_PRINT: " ,(unsigned long)print_temp_l);
@@ -305,7 +305,7 @@ void Config_PrintSettings()
 	SERIAL_ECHO_START;
 	SERIAL_ECHOLNPGM("Temp (C):");
 	SERIAL_ECHO_START;
-	SERIAL_ECHOPAIR(" R_INSERT: ",(unsigned long)insert_temp_r);
+	SERIAL_ECHOPAIR("  R_INSERT: ",(unsigned long)insert_temp_r);
 	SERIAL_ECHOPAIR(" C, R_REMOVE: " ,(unsigned long)remove_temp_r);
 	SERIAL_ECHOPAIR(" C, R_BED: " ,(unsigned long)bed_temp_r);
 	SERIAL_ECHOPAIR(" C, R_PRINT: " ,(unsigned long)print_temp_r);
@@ -314,7 +314,7 @@ void Config_PrintSettings()
 	SERIAL_ECHO_START;
 	SERIAL_ECHOLNPGM("STATS:");
 	SERIAL_ECHO_START;
-	SERIAL_ECHOPAIR(" prints: ",(unsigned long)log_prints);
+	SERIAL_ECHOPAIR("  prints: ",(unsigned long)log_prints);
 	SERIAL_ECHOPAIR(", printing time: " ,(unsigned long)log_hours_print);
 	SERIAL_ECHOPAIR("h, prints finished: " ,(unsigned long)log_prints_finished);
 	SERIAL_ECHOPAIR(", max temp L: " ,(unsigned long)log_max_temp_l);
@@ -330,14 +330,14 @@ void Config_PrintSettings()
 	SERIAL_ECHO_START;
 	SERIAL_ECHOLNPGM("UI Information Serial Number:");
 	SERIAL_ECHO_START;
-	SERIAL_ECHOPAIR(" First ID number: ",(unsigned long)UI_SerialID0);
+	SERIAL_ECHOPAIR("  First ID number: ",(unsigned long)UI_SerialID0);
 	SERIAL_ECHOPAIR(", Second ID number: " ,(unsigned long)UI_SerialID1);
 	SERIAL_ECHOPAIR(", Third ID number " ,(unsigned long)UI_SerialID2);
 	SERIAL_ECHOLN("");
 	SERIAL_ECHO_START;
 	SERIAL_ECHOLNPGM("Last print duration");
 	SERIAL_ECHO_START;
-	SERIAL_ECHOPAIR(" Last print time-> Hours :",(unsigned long)log_hours_lastprint);
+	SERIAL_ECHOPAIR("  Last print time-> Hours :",(unsigned long)log_hours_lastprint);
 	SERIAL_ECHOPAIR(" Minutes :" ,(unsigned long)log_minutes_lastprint);
 	SERIAL_ECHOLN("");
 	
