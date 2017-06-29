@@ -154,6 +154,78 @@
 
 #define POWER_SUPPLY 1
 
+
+//////////////////////////////////////////////////////////////////////////
+// Enable this for dual x-carriage printers.
+// A dual x-carriage design has the advantage that the inactive extruder can be parked which
+// prevents hot-end ooze contaminating the print. It also reduces the weight of each x-carriage
+// allowing faster printing speeds.
+#define DUAL_X_CARRIAGE
+#ifdef DUAL_X_CARRIAGE
+// Configuration for second X-carriage
+// Note: the first x-carriage is defined as the x-carriage which homes to the minimum endstop;
+// the second x-carriage always homes to the maximum endstop.
+#define X2_MIN_POS 0     // set minimum to ensure second x-carriage doesn't hit the parked first X-carriage
+#define X2_MAX_POS X_MAX_POS    // set maximum to the distance between toolheads when both heads are homed
+#define X2_HOME_DIR 1     // the second X-carriage always homes to the maximum endstop position
+#define X2_HOME_POS X2_MAX_POS // default home position is the maximum carriage position
+//#define X2_HOME_POS 259.5 // default home position is the maximum carriage position
+// However: In this mode the EXTRUDER_OFFSET_X value for the second extruder provides a software
+// override for X2_HOME_POS. This also allow recalibration of the distance between the two endstops
+// without modifying the firmware (through the "M218 T1 X???" command).
+// Remember: you should set the second extruder x-offset to 0 in your slicer.
+
+// Pins for second x-carriage stepper driver (defined here to avoid further complicating pins.h)
+#if MOTHERBOARD == BCN3D_BOARD
+//#define X2_ENABLE_PIN	2
+//#define X2_STEP_PIN		5
+//#define X2_DIR_PIN		3
+//#define X2_ENABLE_PIN	75//4
+//#define X2_STEP_PIN		76//5
+//#define X2_DIR_PIN		73//3
+#else
+#define X2_ENABLE_PIN 23
+#define X2_STEP_PIN 22
+#define X2_DIR_PIN 60
+#endif
+
+// There are a few selectable movement modes for dual x-carriages using M605 S<mode>
+//    M605 S0: Full control mode. The slicer has full control over x-carriage movement
+//    M605 S1: Auto-park mode. The inactive head will auto park/unpark without slicer involvement
+//    M605 S2 [Xnnn] [Rmmm]: Duplication mode. The second extruder will duplicate the first with nnn
+//                         millimeters x-offset and an optional differential hotend temperature of
+//                         mmm degrees. E.g., with "M605 S2 X100 R2" the second extruder will duplicate
+//                         the first with a spacing of 100mm in the x direction and 2 degrees hotter.
+//
+//    Note: the X axis should be homed after changing dual x-carriage mode.
+//    M605 S3: Default mode
+//	  M605 S4: Duplication Mirror mode
+//    M605 S5 [Xnnn] [Rmmm]: Duplication Raft mode
+//	  M605 S6: Duplication Raft Mirror mode
+//
+//    Note: the X axis should be homed after changing dual x-carriage mode.
+#define DEFAULT_DUAL_X_CARRIAGE_MODE 3
+
+#define DXC_FULL_SIGMA_MODE 3 //SIGMA MODE: Combination of dual park and dual full control
+
+// As the x-carriages are independent we can now account for any relative Z offset
+#define EXTRUDER1_Z_OFFSET 0.0           // z offset relative to extruder 0
+
+// Default settings in "Auto-park Mode"
+#define TOOLCHANGE_PARK_ZLIFT   0.2      // the distance to raise Z axis when parking an extruder
+#define TOOLCHANGE_UNPARK_ZLIFT 1        // the distance to raise Z axis when unparking an extruder
+
+// Default x offset in duplication mode (typically set to half print bed width)
+#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+	#define DEFAULT_DUPLICATION_X_OFFSET 105
+#elif BCN3D_PRINTER == BCN3D_SIGMAX_PRINTER
+	#define DEFAULT_DUPLICATION_X_OFFSET 210
+#endif
+
+
+#endif //DUAL_X_CARRIAGE/////////////////////////////////////////////////////
+
+
 // Define this to have the electronics keep the power supply off on startup. If you don't know what this is leave it.
 // #define PS_DEFAULT_OFF
 
