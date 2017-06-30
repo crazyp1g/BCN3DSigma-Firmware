@@ -668,7 +668,7 @@ void Config_Reset_Calib(){
 	manual_fine_calib_offset[3] = 0.0;
 	extruder_offset[X_AXIS][RIGHT_EXTRUDER] = X2_MAX_POS;
 	extruder_offset[Y_AXIS][RIGHT_EXTRUDER] = 0.25;
-	extruder_offset[Z_AXIS][RIGHT_EXTRUDER] = 0.08;
+	extruder_offset[Z_AXIS][RIGHT_EXTRUDER] = 0;
 	#ifdef ENABLE_AUTO_BED_LEVELING
 	zprobe_zoffset = -Z_PROBE_OFFSET_FROM_EXTRUDER;
 	#endif
