@@ -1237,7 +1237,6 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					case BUTTON_UTILITIES_CALIBRATION_CALIBBED_ADJUSTSCREWASKFIRST_NEXT:
 					gif_processing_state = PROCESSING_STOP;
-					genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBBED_SCREW2,0);
 					vuitensL = Bed_Compensation_Lines_Selected[1]-Bed_Compensation_Lines_Selected[0];
 					vuitensR = Bed_Compensation_Lines_Selected[2]-Bed_Compensation_Lines_Selected[0];
 					bed_offset_left_screw = -0.1*vuitensL;
