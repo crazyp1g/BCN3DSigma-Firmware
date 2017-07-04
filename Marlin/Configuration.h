@@ -28,7 +28,7 @@
 //get the hw and fw version to Cura-BCN3D and update the new firmware
 
 #define VERSION_STRING  "01-1.2.5RC"
-#define BUILD_DATE  "|M06.30"
+#define BUILD_DATE  "|M07.03"
 #define VERSION_NUMBER  125
 //#define BUILD_DATE  " "
 #define UI_SerialID  "At Bottom Sticker"
@@ -117,7 +117,7 @@
 #endif
 
 #ifndef BCN3D_SCREEN_VERSION
-	#define BCN3D_SCREEN_VERSION BCN3D_SIGMA_PRINTER
+	#define BCN3D_SCREEN_VERSION BCN3D_SIGMAX_PRINTER
 #endif
 #if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
 	#define PRINTER_NAME "BCN3D Sigma"
@@ -590,7 +590,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
 		#define X_MAX_POS 305.6//312 //Distance between extruders
 	#endif
-	#if BCN3D_PRINTER == BCN3D_SIGMAX_PRINTER
+	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
 		#define X_MAX_POS 526.7//312 //Distance between extruders
 	#endif
 	//#define X_MAX_POS 210 //Bed X

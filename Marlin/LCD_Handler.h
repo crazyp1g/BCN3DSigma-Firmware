@@ -5290,6 +5290,7 @@ inline void Calib_check_temps(void){
 		if(!flag_utilities_calibration_bedcomensationmode){
 			gif_processing_state = PROCESSING_STOP;
 			genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
+			gif_processing_state = PROCESSING_DEFAULT;
 		}
 	}
 }
