@@ -2780,7 +2780,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						gif_processing_state = PROCESSING_STOP;
 						fanSpeed=255;
 						printer_state = STATE_NYLONCLEANING;
-						#if BCN3D_SCREEN_VERSION
+						#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
 						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP4,1);
 						#endif
 						
