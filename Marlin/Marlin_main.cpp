@@ -2130,7 +2130,7 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP3,processing_state);
 					processing_state++;
 				}
-				if(processing_state == GIF_FRAMES_NYLONSTEP3){
+				else if(processing_state == GIF_FRAMES_NYLONSTEP3){
 					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP3,processing_state);
 					processing_state=0;
 				}
@@ -2176,7 +2176,7 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP4,processing_state);
 					processing_state++;
 				}
-				else if(processing_state < GIF_FRAMES_SUCCESS){
+				else if(processing_state == GIF_FRAMES_SUCCESS){
 					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP4,processing_state);
 					processing_state=0;
 					gif_processing_state = PROCESSING_STOP;
