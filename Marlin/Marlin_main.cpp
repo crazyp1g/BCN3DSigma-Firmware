@@ -4875,6 +4875,8 @@ inline void gcode_G34(){
 	SERIAL_PROTOCOLLNPGM("");
 	home_axis_from_code(true,true,false);
 	doblocking= false;
+	gif_processing_state = PROCESSING_STOP;
+	touchscreen_update();
 	if (aprox2==0 && aprox3==0) //If the calibration it's ok
 	{
 		
@@ -4892,8 +4894,6 @@ inline void gcode_G34(){
 			st_synchronize();
 			if(gif_processing_state == PROCESSING_ERROR)return;
 			enquecommand_P(PSTR("T0"));
-			gif_processing_state = PROCESSING_STOP;
-			touchscreen_update();
 			genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBZL,0);
 			genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBZL_SKIP,0);
 			if(Step_First_Start_Wizard){
@@ -4913,17 +4913,12 @@ inline void gcode_G34(){
 			
 			if(gif_processing_state == PROCESSING_ERROR)return;
 			enquecommand_P(PSTR("T0"));
-			
-			gif_processing_state = PROCESSING_STOP;
-			touchscreen_update();
 			genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
 			
 			
 			
 		}
 		else{
-			gif_processing_state = PROCESSING_STOP;
-			touchscreen_update();
 			#ifdef SIGMA_TOUCH_SCREEN
 			printer_state = STATE_CALIBRATION;
 			genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_CALIBRATION_SUCCESS,0);
@@ -4935,7 +4930,6 @@ inline void gcode_G34(){
 			plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],1500/60,active_extruder);
 		}
 		}else{
-		gif_processing_state = PROCESSING_STOP;
 		bed_calibration_times++;
 		
 		#ifdef SIGMA_TOUCH_SCREEN
@@ -9349,17 +9343,9 @@ void prepare_move()
 						destination[X_AXIS] = extruder_offset[X_AXIS][RIGHT_EXTRUDER]-destination_X_2;
 						dual_mode_duplication_z_adjust_raft();
 					}
-					
-					
 				}
-				
-				
 			}
-			
-			
-			
 		}
-		
 	}
 	#endif //DUAL_X_CARRIAGE
 	
