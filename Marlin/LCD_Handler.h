@@ -1865,6 +1865,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							st_synchronize();
 							if(gif_processing_state == PROCESSING_ERROR)return;
 							gif_processing_state = PROCESSING_STOP;
+							touchscreen_update();
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP0,0);
 							
 						}
@@ -2313,7 +2314,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								if(gif_processing_state == PROCESSING_ERROR)return;
 								
 								gif_processing_state = PROCESSING_STOP;
-								
+								touchscreen_update();
 								//genie.WriteObject(GENIE_OBJ_USERIMAGES,10,1);
 								genie.WriteStr(STRING_UTILITIES_FILAMENT_CHANGEFILAMENT_TEMPS,"0%");
 								genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_CHANGEFILAMENT_TEMPS,0);
@@ -2737,7 +2738,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							if(gif_processing_state == PROCESSING_ERROR)return;
 						}
 						gif_processing_state = PROCESSING_STOP;
-						
+						touchscreen_update();
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP2,0);
 						
 					}
@@ -2778,6 +2779,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							if(gif_processing_state == PROCESSING_ERROR)return;
 						}
 						gif_processing_state = PROCESSING_STOP;
+						touchscreen_update();
 						fanSpeed=255;
 						printer_state = STATE_NYLONCLEANING;
 						#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
@@ -3105,7 +3107,6 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					case BUTTON_UTILITIES_CALIBRATION_CALIBBED_ADJUSTSCREWASKFIRST_NEXT:
 					if (millis() >= waitPeriod_button_press){
 						
-						gif_processing_state = PROCESSING_STOP;
 						gif_processing_state = PROCESSING_STOP;
 						/*if (vuitens1!= 0){
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_CALIB_BED_SCREW1,0);
@@ -3625,8 +3626,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						gif_processing_state = PROCESSING_STOP;
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_ADJUSTING_TEMPERATURES,0);
 						touchscreen_update();
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_ADJUSTING_TEMPERATURES,0);
 						SERIAL_PROTOCOLLNPGM("OK second Extruder!");
 						extruder_offset[Z_AXIS][RIGHT_EXTRUDER]-=(current_position[Z_AXIS]);//Add the difference to the current offset value
 						SERIAL_PROTOCOLPGM("Z2 Offset: ");
@@ -4334,6 +4335,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							if(gif_processing_state == PROCESSING_ERROR)return;
 							enquecommand_P(PSTR("T0"));
 							gif_processing_state = PROCESSING_STOP;
+							touchscreen_update();
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBZL,0);
 							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBZL_SKIP,0);
 							if(Step_First_Start_Wizard){
@@ -4360,11 +4362,12 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						
 						if(printing_error_temps){
+							gif_processing_state = PROCESSING_STOP;
+							touchscreen_update();
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							enquecommand_P(PSTR("G28 X0 Y0")); //Home X and Y
 							back_home = true;
 							home_made = false;
-							gif_processing_state = PROCESSING_STOP;
 							screen_sdcard = false;
 							surfing_utilities=false;
 							surfing_temps = false;
@@ -4372,7 +4375,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							card.sdprinting = false;
 							card.sdispaused = false;
 							
-							gif_processing_state = PROCESSING_STOP;
+							gif_processing_state = PROCESSING_DEFAULT;
 							printing_error_temps = false;
 						}
 						else{
