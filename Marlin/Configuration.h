@@ -590,7 +590,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
 		#define X_MAX_POS 305.6//312 //Distance between extruders
 	#endif
-	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+	#if BCN3D_PRINTER == BCN3D_SIGMAX_PRINTER
 		#define X_MAX_POS 526.7//312 //Distance between extruders
 	#endif
 	//#define X_MAX_POS 210 //Bed X
