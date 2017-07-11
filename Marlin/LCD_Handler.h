@@ -90,6 +90,7 @@ inline void Full_calibration_Y_set(float offset);
 // Bed compensation
 inline void Bed_Compensation_Set_Lines(int jint);
 inline void Bed_Compensation_Redo_Lines(int jint);
+int Bed_compensation_redo_offset = 0;
 int8_t Bed_Compensation_Lines_Selected[3] = {0,0,0};
 uint8_t Bed_Compensation_state = 0;// state 0: First Bed Calib, state 1: ZL Calib, state 2: Bed Compensation Back, state 3: Bed Compensation Front Left, state 4: Bed Compensation Front Right
 
@@ -1199,24 +1200,24 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDOZL_BEST1:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
-						Bed_Compensation_Redo_Lines(-3);
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL,0);
+						Bed_compensation_redo_offset = -3;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
 					}
 					break;
 					
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDOZL_BEST5:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
-						Bed_Compensation_Redo_Lines(3);
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL,0);
+						Bed_compensation_redo_offset = 3;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
 					}
 					break;
 					
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDOZL:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
-						Bed_Compensation_Redo_Lines(0);
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL,0);
+						Bed_compensation_redo_offset = 0;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
 					}
 					break;
 					
@@ -1227,11 +1228,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						gif_processing_state = PROCESSING_DEFAULT;
 						home_axis_from_code(true,true,true);
 						Calib_check_temps();
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
-						gif_processing_state = PROCESSING_TEST;
-						bed_test_print_code(0, 0, 0);
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL,0);
-						gif_processing_state = PROCESSING_STOP;
+						Bed_Compensation_Redo_Lines(Bed_compensation_redo_offset);
 					}
 					break;
 					
@@ -4005,8 +4002,9 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					break;
 
 					#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
-					case BUTTON_Z_COMPENSATION_NEXT:
+					case BUTTON_Z_COMPENSATION_SKIP:
 					if (millis() >= waitPeriod_button_press){
+						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBX,0);
 						if(Step_First_Start_Wizard){
 							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBX_SKIP,1);
@@ -4014,7 +4012,82 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
+					case BUTTON_Z_COMPENSATION_INSTALL:
+					if (millis() >= waitPeriod_button_press){
+						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+						setTargetHotend1(0);
+						setTargetHotend0(0);
+						setTargetBed(0);
+						which_extruder = (extruder_offset[Z_AXIS][RIGHT_EXTRUDER]<0) ? 1:0;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_ADJUSTING_TEMPERATURES,0);
+						flag_utilities_calibration_zcomensationmode_gauges = 1888;
+						Config_StoreSettings();
+						if(which_extruder == 0)digitalWrite(FAN_PIN, 1);
+						else digitalWrite(FAN2_PIN, 1);
+						gif_processing_state = PROCESSING_ADJUSTING;
+						int Tref = (int)degHotend(which_extruder);
+						int Tfinal = NYLON_TEMP_COOLDOWN_THRESHOLD;
+						int percentage = 0;
+						while (degHotend(which_extruder)>Tfinal){ //Waiting to heat the extruder
+							if (millis() >= waitPeriod_s){
+								memset(buffer, '\0', sizeof(buffer) );
+								int Tinstant;
+								if(Tref < (int)degHotend(which_extruder)){
+									Tinstant = Tref;
+									}else if((int)degHotend(which_extruder) < Tfinal){
+									Tinstant = Tfinal;
+									}else{
+									Tinstant = (int)degHotend(which_extruder);
+								}
+								
+								percentage = ((Tref-Tfinal)-(Tinstant-Tfinal))*100; //<<<<<<<<<<<<<  0% TO 100%
+								percentage = percentage/(Tref-Tfinal);
+								sprintf(buffer, "%d%%", percentage);
+								genie.WriteStr(STRING_ADJUSTING_TEMPERATURES,buffer);
+								waitPeriod_s=2000+millis();
+							}
+							//previous_millis_cmd = millis();
+							manage_heater();
+							touchscreen_update();
+							if(gif_processing_state == PROCESSING_ERROR)return;
+							
+						}
+						gif_processing_state = PROCESSING_STOP;
+						touchscreen_update();
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_Z_COMPENSATION_SHUTDOWN,0);
+						
+					}
+					break;
+					case BUTTON_Z_COMPENSATION_COMFIRMATION_YES:
+					if (millis() >= waitPeriod_button_press){
+						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBX,0);
+						setTargetHotend0(print_temp_l);
+						setTargetHotend1(print_temp_r);
+						setTargetBed(max(bed_temp_l,bed_temp_r));
+						if(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]<0){
+							extruder_offset[Z_AXIS][RIGHT_EXTRUDER] = 0; 
+						}else{
+							zprobe_zoffset +=extruder_offset[Z_AXIS][RIGHT_EXTRUDER];  
+							extruder_offset[Z_AXIS][RIGHT_EXTRUDER] = 0; 
+						}
+						SERIAL_PROTOCOLLNPGM("Gauges installation confirmed");
+						flag_utilities_calibration_zcomensationmode_gauges = 888;
+						Config_StoreSettings();
+						surfing_utilities = true;
+					}
+					break;
+					case BUTTON_Z_COMPENSATION_COMFIRMATION_NOT:
+					if (millis() >= waitPeriod_button_press){
+						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_MAIN,0);
+						flag_utilities_calibration_zcomensationmode_gauges = 888;
+						Config_StoreSettings();
+					}
+					break;
+					
 					#endif
+					
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBX_GO:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;

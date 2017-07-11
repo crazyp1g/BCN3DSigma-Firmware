@@ -383,7 +383,7 @@ float zprobe_zoffset;
 float bed_offset_left_screw=0.0;
 float bed_offset_right_screw=0.0;
 unsigned int bed_offset_version=0;
-
+int flag_utilities_calibration_zcomensationmode_gauges = 888;
 //bools to control which kind of process are actually running
 
 /////// Processing Gifs	/////////
@@ -909,7 +909,11 @@ void setup()
 			
 		}
 		genie.WriteObject(GENIE_OBJ_FORM,FORN_SETUPASSISTANT_YESNOT,0);
-		}else{
+		}
+		else if(flag_utilities_calibration_zcomensationmode_gauges == 1888){
+			genie.WriteObject(GENIE_OBJ_FORM, FORM_Z_COMPENSATION_COMFIRMATION,0);
+		}
+		else{
 		genie.WriteObject(GENIE_OBJ_FORM,FORM_MAIN,0);
 	}
 	
@@ -4876,7 +4880,7 @@ inline void gcode_G34(){
 	home_axis_from_code(true,true,false);
 	doblocking= false;
 	gif_processing_state = PROCESSING_STOP;
-	touchscreen_update();
+	st_synchronize();
 	if (aprox2==0 && aprox3==0) //If the calibration it's ok
 	{
 		
@@ -4910,7 +4914,7 @@ inline void gcode_G34(){
 			st_synchronize();
 			
 			Bed_Compensation_state = 2;
-			
+			Bed_compensation_redo_offset = 0;
 			if(gif_processing_state == PROCESSING_ERROR)return;
 			enquecommand_P(PSTR("T0"));
 			genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);

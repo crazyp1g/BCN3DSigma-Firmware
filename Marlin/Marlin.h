@@ -237,6 +237,7 @@ extern float zprobe_zoffset;
 extern float bed_offset_left_screw;
 extern float bed_offset_right_screw;
 extern unsigned int bed_offset_version;
+extern int flag_utilities_calibration_zcomensationmode_gauges;
 extern int fanSpeed;
 extern int Flag_fanSpeed_mirror;
 #ifdef BARICUDA

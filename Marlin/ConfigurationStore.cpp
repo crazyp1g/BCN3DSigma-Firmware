@@ -189,6 +189,7 @@ void Config_StoreSettings()
 	EEPROM_WRITE_VAR(i,saved_duplicate_extruder_x_offset);
 	EEPROM_WRITE_VAR(i,Flag_fanSpeed_mirror);
 	EEPROM_WRITE_VAR(i,bed_offset_version);
+	EEPROM_WRITE_VAR(i,flag_utilities_calibration_zcomensationmode_gauges);
 	#endif
 	char ver2[4]=EEPROM_VERSION;
 	i=EEPROM_OFFSET;
@@ -517,6 +518,7 @@ void Config_RetrieveSettings()
 		EEPROM_READ_VAR(i,saved_duplicate_extruder_x_offset);
 		EEPROM_READ_VAR(i,saved_Flag_fanSpeed_mirror);
 		EEPROM_READ_VAR(i,bed_offset_version);
+		EEPROM_READ_VAR(i,flag_utilities_calibration_zcomensationmode_gauges);
 		#endif RECOVERY_PRINT
 		// Call updatePID (similar to when we have processed M301)
 		updatePID();

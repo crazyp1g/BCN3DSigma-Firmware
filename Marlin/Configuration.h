@@ -27,9 +27,9 @@
 //This is the version declaration for Sigma, v followed by '-' first indicate the hardware, it must have 2 ditgits. Then the '-' and then the firmware, it has to have 3 digits separets by '.'. -> This is useful to
 //get the hw and fw version to Cura-BCN3D and update the new firmware
 
-#define VERSION_STRING  "01-1.2.5RC"
-#define BUILD_DATE  "|M07.06"
-#define VERSION_NUMBER  125
+#define VERSION_STRING  "02-1.2.6dev"
+#define BUILD_DATE  "|M07.11"
+#define VERSION_NUMBER  126
 //#define BUILD_DATE  " "
 #define UI_SerialID  "At Bottom Sticker"
 //#define DEFAULT_QUICK_GUIDE  0;
@@ -117,7 +117,7 @@
 #endif
 
 #ifndef BCN3D_SCREEN_VERSION
-	#define BCN3D_SCREEN_VERSION BCN3D_SIGMA_PRINTER
+	#define BCN3D_SCREEN_VERSION BCN3D_SIGMAX_PRINTER
 #endif
 #if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
 	#define PRINTER_NAME "BCN3D Sigma"
