@@ -90,6 +90,7 @@ inline void Full_calibration_Y_set(float offset);
 // Bed compensation
 inline void Bed_Compensation_Set_Lines(int jint);
 inline void Bed_Compensation_Redo_Lines(int jint);
+int Bed_compensation_redo_offset = 0;
 int8_t Bed_Compensation_Lines_Selected[3] = {0,0,0};
 uint8_t Bed_Compensation_state = 0;// state 0: First Bed Calib, state 1: ZL Calib, state 2: Bed Compensation Back, state 3: Bed Compensation Front Left, state 4: Bed Compensation Front Right
 
@@ -1199,24 +1200,24 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDOZL_BEST1:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
-						Bed_Compensation_Redo_Lines(-3);
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL,0);
+						Bed_compensation_redo_offset = -3;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
 					}
 					break;
 					
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDOZL_BEST5:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
-						Bed_Compensation_Redo_Lines(3);
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL,0);
+						Bed_compensation_redo_offset = 3;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
 					}
 					break;
 					
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDOZL:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
-						Bed_Compensation_Redo_Lines(0);
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL,0);
+						Bed_compensation_redo_offset = 0;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
 					}
 					break;
 					
@@ -1227,11 +1228,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						gif_processing_state = PROCESSING_DEFAULT;
 						home_axis_from_code(true,true,true);
 						Calib_check_temps();
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
-						gif_processing_state = PROCESSING_TEST;
-						bed_test_print_code(0, 0, 0);
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL,0);
-						gif_processing_state = PROCESSING_STOP;
+						Bed_Compensation_Redo_Lines(Bed_compensation_redo_offset);
 					}
 					break;
 					
