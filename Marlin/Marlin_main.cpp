@@ -4910,7 +4910,7 @@ inline void gcode_G34(){
 			st_synchronize();
 			
 			Bed_Compensation_state = 2;
-			
+			Bed_compensation_redo_offset = 0;
 			if(gif_processing_state == PROCESSING_ERROR)return;
 			enquecommand_P(PSTR("T0"));
 			genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
