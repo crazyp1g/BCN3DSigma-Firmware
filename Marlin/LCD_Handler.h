@@ -1227,6 +1227,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 						gif_processing_state = PROCESSING_DEFAULT;
 						home_axis_from_code(true,true,true);
+						gif_processing_state = PROCESSING_STOP;
+						st_synchronize();
 						Calib_check_temps();
 						Bed_Compensation_Redo_Lines(Bed_compensation_redo_offset);
 					}
@@ -3051,9 +3053,9 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							saved_print_flag = 888;
 							Config_StoreSettings();
 						}
-						gif_processing_state = PROCESSING_DEFAULT;
 						doblocking = true;
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
+						gif_processing_state = PROCESSING_DEFAULT;
 						bed_calibration_times = 0;
 						flag_utilities_calibration_calibfull = false;
 						home_axis_from_code(true,true,true);
@@ -3066,9 +3068,9 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					case BUTTON_UTILITIES_CALIBRATION_CALIBBED_SCREW3_NEXT:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON2;
-						gif_processing_state = PROCESSING_DEFAULT;
 						doblocking = true;
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
+						gif_processing_state = PROCESSING_DEFAULT;
 						home_axis_from_code(true,true,false);
 						changeTool(0);
 						enquecommand_P((PSTR("G34")));
@@ -3088,9 +3090,9 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							if (sentit3>0){genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_UTILITIES_CALIBRATION_CALIBBED_SCREW3,vuitens3);} //The direction is inverted in Sigma's bed screws
 							else{genie.WriteObject(GENIE_OBJ_USERIMAGES,USERIMAGE_UTILITIES_CALIBRATION_CALIBBED_SCREW3,vuitens3+8);}
 							}else{
-							gif_processing_state = PROCESSING_DEFAULT;
 							doblocking = true;
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
+							gif_processing_state = PROCESSING_DEFAULT;
 							home_axis_from_code(true,true,false);
 							changeTool(0);
 							enquecommand_P((PSTR("G34")));
@@ -3896,8 +3898,6 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						
 						doblocking=true;
 						
-						
-						setTargetHotend1(EXTRUDER_RIGHT_CLEAN_TEMP);
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 						gif_processing_state = PROCESSING_DEFAULT;
 						active_extruder = LEFT_EXTRUDER;
@@ -3907,7 +3907,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						home_axis_from_code(true,true,true);
 						//changeTool(LEFT_EXTRUDER);
 						gif_processing_state = PROCESSING_STOP;
-						
+						st_synchronize();
 						
 						Calib_check_temps();
 						
@@ -3960,12 +3960,12 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						gif_processing_state = PROCESSING_DEFAULT;
 						active_extruder = RIGHT_EXTRUDER;
 						//Wait until temperature it's okey
-						setTargetHotend1(EXTRUDER_RIGHT_CLEAN_TEMP);
+						
 						home_axis_from_code(true,true,true);
 						//changeTool(LEFT_EXTRUDER);
 						gif_processing_state = PROCESSING_STOP;
 						
-						
+						st_synchronize();
 						//changeTool(LEFT_EXTRUDER);
 						Calib_check_temps();
 						
@@ -4015,12 +4015,13 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBX_GO:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
-						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_ADJUSTING_TEMPERATURES,0);
-						gif_processing_state = PROCESSING_ADJUSTING;
-						Calib_check_temps();
 						doblocking=true;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
+						gif_processing_state = PROCESSING_DEFAULT;
 						home_axis_from_code(true,true,false);
+						gif_processing_state = PROCESSING_STOP;						
+						st_synchronize();
+						Calib_check_temps();
 						if(gif_processing_state == PROCESSING_ERROR)return;
 						changeTool(0);
 						enquecommand_P(PSTR("G40"));
@@ -4044,13 +4045,15 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBY_GO:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
-						
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_ADJUSTING_TEMPERATURES,0);
-						gif_processing_state = PROCESSING_ADJUSTING;
-						Calib_check_temps();
 						doblocking=true;
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
+						gif_processing_state = PROCESSING_DEFAULT;
 						home_axis_from_code(true,true,false);
+						gif_processing_state = PROCESSING_STOP;
+						st_synchronize();
+						Calib_check_temps();
 						changeTool(0);
+						if(gif_processing_state == PROCESSING_ERROR)return;
 						enquecommand_P(PSTR("G41"));
 						st_synchronize();
 						if(gif_processing_state == PROCESSING_ERROR)return;
@@ -5159,7 +5162,7 @@ inline void Bed_Compensation_Redo_Lines(int jint){
 		genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
 		gif_processing_state = PROCESSING_TEST;
 		Bed_Compensation_Lines_Selected[0]+=jint;
-		bed_test_print_code(0, 0, 0);
+		bed_test_print_code(0, 0, Bed_Compensation_Lines_Selected[0]);
 		genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL,0);
 		gif_processing_state = PROCESSING_STOP;
 	}
@@ -5289,6 +5292,7 @@ inline void Calib_check_temps(void){
 		}
 		if(!flag_utilities_calibration_bedcomensationmode){
 			gif_processing_state = PROCESSING_STOP;
+			st_synchronize();
 			genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 			gif_processing_state = PROCESSING_DEFAULT;
 		}
