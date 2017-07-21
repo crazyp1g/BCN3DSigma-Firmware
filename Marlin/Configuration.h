@@ -28,7 +28,7 @@
 //get the hw and fw version to Cura-BCN3D and update the new firmware
 
 #define VERSION_STRING  "02-1.2.6dev"
-#define BUILD_DATE  "|M07.13"
+#define BUILD_DATE  "|M07.20"
 #define VERSION_NUMBER  126
 //#define BUILD_DATE  " "
 #define UI_SerialID  "At Bottom Sticker"

@@ -1,7 +1,7 @@
 /*
-	LCD_Handler.h - A place to hold all interactions between LCD and printer. It is called from Marlin_main.cpp when using genie.DoEvents().
-	Last Update: 20/06/2017
-	Author: Alejandro Garcia (S3mt0x)
+LCD_Handler.h - A place to hold all interactions between LCD and printer. It is called from Marlin_main.cpp when using genie.DoEvents().
+Last Update: 20/06/2017
+Author: Alejandro Garcia (S3mt0x)
 */
 
 #ifdef SIGMA_TOUCH_SCREEN
@@ -87,6 +87,8 @@ inline void Full_calibration_ZL_set(float offset);
 inline void Full_calibration_ZR_set(float offset);
 inline void Full_calibration_X_set(float offset);
 inline void Full_calibration_Y_set(float offset);
+inline void Z_compensation_coolingdown(void);
+
 // Bed compensation
 inline void Bed_Compensation_Set_Lines(int jint);
 inline void Bed_Compensation_Redo_Lines(int jint);
@@ -3812,7 +3814,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					break;
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDOZR_BEST1:
 					if (millis() >= waitPeriod_button_press){
-						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;				
+						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						extruder_offset[Z_AXIS][RIGHT_EXTRUDER]+=0.1;
 						Config_StoreSettings(); //Store changes
 						gcode_T0_T1_auto(1);
@@ -4015,47 +4017,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					case BUTTON_Z_COMPENSATION_INSTALL:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
-						setTargetHotend1(0);
-						setTargetHotend0(0);
-						setTargetBed(0);
-						which_extruder = (extruder_offset[Z_AXIS][RIGHT_EXTRUDER]<0) ? 1:0;
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_ADJUSTING_TEMPERATURES,0);
-						flag_utilities_calibration_zcomensationmode_gauges = 1888;
-						Config_StoreSettings();
-						if(which_extruder == 0)digitalWrite(FAN_PIN, 1);
-						else digitalWrite(FAN2_PIN, 1);
-						gif_processing_state = PROCESSING_ADJUSTING;
-						int Tref = (int)degHotend(which_extruder);
-						int Tfinal = NYLON_TEMP_COOLDOWN_THRESHOLD;
-						int percentage = 0;
-						while (degHotend(which_extruder)>Tfinal){ //Waiting to heat the extruder
-							if (millis() >= waitPeriod_s){
-								memset(buffer, '\0', sizeof(buffer) );
-								int Tinstant;
-								if(Tref < (int)degHotend(which_extruder)){
-									Tinstant = Tref;
-									}else if((int)degHotend(which_extruder) < Tfinal){
-									Tinstant = Tfinal;
-									}else{
-									Tinstant = (int)degHotend(which_extruder);
-								}
-								
-								percentage = ((Tref-Tfinal)-(Tinstant-Tfinal))*100; //<<<<<<<<<<<<<  0% TO 100%
-								percentage = percentage/(Tref-Tfinal);
-								sprintf(buffer, "%d%%", percentage);
-								genie.WriteStr(STRING_ADJUSTING_TEMPERATURES,buffer);
-								waitPeriod_s=2000+millis();
-							}
-							//previous_millis_cmd = millis();
-							manage_heater();
-							touchscreen_update();
-							if(gif_processing_state == PROCESSING_ERROR)return;
-							
-						}
-						gif_processing_state = PROCESSING_STOP;
-						touchscreen_update();
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_Z_COMPENSATION_SHUTDOWN,0);
-						
+						Z_compensation_coolingdown();
 					}
 					break;
 					case BUTTON_Z_COMPENSATION_COMFIRMATION_YES:
@@ -4066,10 +4028,10 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						setTargetHotend1(print_temp_r);
 						setTargetBed(max(bed_temp_l,bed_temp_r));
 						if(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]<0){
-							extruder_offset[Z_AXIS][RIGHT_EXTRUDER] = 0; 
-						}else{
-							zprobe_zoffset +=extruder_offset[Z_AXIS][RIGHT_EXTRUDER];  
-							extruder_offset[Z_AXIS][RIGHT_EXTRUDER] = 0; 
+							extruder_offset[Z_AXIS][RIGHT_EXTRUDER] = 0;
+							}else{
+							zprobe_zoffset +=extruder_offset[Z_AXIS][RIGHT_EXTRUDER];
+							extruder_offset[Z_AXIS][RIGHT_EXTRUDER] = 0;
 						}
 						SERIAL_PROTOCOLLNPGM("Gauges installation confirmed");
 						flag_utilities_calibration_zcomensationmode_gauges = 888;
@@ -4080,9 +4042,33 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					case BUTTON_Z_COMPENSATION_COMFIRMATION_NOT:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+						char offset_string[250]="";
+						int offset_aprox;
+						offset_aprox = (int)(abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])*100.01)/5.0;
+						char buffer[80];
+						//sprintf_P(offset_string, PSTR("Your Sigma Z axis has been calibrated\n\nTo avoid first layer Z compensation in Mirror/Duplication Mode:\n1.Turn off the machine and install gauges \n    on %s Hotend to correct %d.%1d%1dmm\n2. Re-run a Full Calibration\n\nWarning: Hotends may be hot when turning off the machine\n "),
+						/*sprintf_P(offset_string, PSTR("Remember install gauges\non %s Hotend to correct %d.%1d%1dmm"),
+						((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0)?"right":"left"),
+						(int)(5*offset_aprox)/100,(int)((5*offset_aprox)/10)%10,(int)(5*offset_aprox)%10);*/
+						sprintf_P(offset_string, PSTR("Remember to install %d %s on the %s hotend."), offset_aprox, ((offset_aprox > 1)?"sheems":"sheem") , ((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0)?"right":"left"));
+						Serial.println(offset_string);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_Z_COMPENSATION_COMFIRMATION_SURECANCEL,0);
+						genie.WriteStr(STRING_Z_COMPENSATION_COMFIRMATION_SURECANCEL,offset_string);
+					}
+					break;
+					
+					case BUTTON_Z_COMPENSATION_COMFIRMATION_SURECANCEL_YES:
+					if (millis() >= waitPeriod_button_press){
+						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_MAIN,0);
 						flag_utilities_calibration_zcomensationmode_gauges = 888;
 						Config_StoreSettings();
+					}
+					break;
+					
+					case BUTTON_Z_COMPENSATION_COMFIRMATION_SURECANCEL_NOT:
+					if (millis() >= waitPeriod_button_press){
+						Z_compensation_coolingdown();
 					}
 					break;
 					
@@ -4095,7 +4081,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 						gif_processing_state = PROCESSING_DEFAULT;
 						home_axis_from_code(true,true,true);
-						gif_processing_state = PROCESSING_STOP;						
+						gif_processing_state = PROCESSING_STOP;
 						st_synchronize();
 						Calib_check_temps();
 						gif_processing_state = PROCESSING_DEFAULT;
@@ -5289,9 +5275,7 @@ inline void Z_compensation_decisor(void){
 		offset_aprox = (int)(abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])*100.01)/5.0;
 		char buffer[80];
 		//sprintf_P(offset_string, PSTR("Your Sigma Z axis has been calibrated\n\nTo avoid first layer Z compensation in Mirror/Duplication Mode:\n1.Turn off the machine and install gauges \n    on %s Hotend to correct %d.%1d%1dmm\n2. Re-run a Full Calibration\n\nWarning: Hotends may be hot when turning off the machine\n "),
-		sprintf_P(offset_string, PSTR("Turn off the machine and install gauges\non %s Hotend to correct %d.%1d%1dmm"),
-		((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0)?"right":"left"),
-		(int)(5*offset_aprox)/100,(int)((5*offset_aprox)/10)%10,(int)(5*offset_aprox)%10);
+		sprintf_P(offset_string, PSTR("Install %d %s on the %s hotend. Learn how at the Quick Start Guide"), offset_aprox, ((offset_aprox > 1)?"sheems":"sheem") , ((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0)?"right":"left"));
 		/*if ((extruder_offset[Z_AXIS][RIGHT_EXTRUDER])<0){
 		sprintf_P(offset_string, PSTR("RIGHT HOTEND %d.%1d%1d"),(int)(5*offset_aprox)/100,(int)((5*offset_aprox)/10)%10,(int)(5*offset_aprox)%10);
 		}else{
@@ -5449,6 +5433,52 @@ inline void Full_calibration_Y_set(float offset){
 		//genie.WriteObject(GENIE_OBJ_FORM,FORM_MAIN_SCREEN,0);
 		flag_utilities_calibration_calibfull = false;
 	}
+}
+inline void Z_compensation_coolingdown(void){
+	char buffer[256];
+	static long waitPeriod_s = millis();
+	setTargetHotend1(0);
+	setTargetHotend0(0);
+	setTargetBed(0);
+	flag_utilities_calibration_zcomensationmode_gauges = 1888;
+	Config_StoreSettings();
+	which_extruder = (extruder_offset[Z_AXIS][RIGHT_EXTRUDER]<0) ? 1:0;
+	if(degHotend(which_extruder)>NYLON_TEMP_COOLDOWN_THRESHOLD){
+		genie.WriteObject(GENIE_OBJ_FORM,FORM_ADJUSTING_TEMPERATURES,0);
+		if(which_extruder == 0)digitalWrite(FAN_PIN, 1);
+		else digitalWrite(FAN2_PIN, 1);
+		gif_processing_state = PROCESSING_ADJUSTING;
+		int Tref = (int)degHotend(which_extruder);
+		int Tfinal = NYLON_TEMP_COOLDOWN_THRESHOLD;
+		int percentage = 0;
+		while (degHotend(which_extruder)>Tfinal){ //Waiting to heat the extruder
+			if (millis() >= waitPeriod_s){
+				memset(buffer, '\0', sizeof(buffer) );
+				int Tinstant;
+				if(Tref < (int)degHotend(which_extruder)){
+					Tinstant = Tref;
+					}else if((int)degHotend(which_extruder) < Tfinal){
+					Tinstant = Tfinal;
+					}else{
+					Tinstant = (int)degHotend(which_extruder);
+				}
+				
+				percentage = ((Tref-Tfinal)-(Tinstant-Tfinal))*100; //<<<<<<<<<<<<<  0% TO 100%
+				percentage = percentage/(Tref-Tfinal);
+				sprintf(buffer, "%d%%", percentage);
+				genie.WriteStr(STRING_ADJUSTING_TEMPERATURES,buffer);
+				waitPeriod_s=2000+millis();
+			}
+			//previous_millis_cmd = millis();
+			manage_heater();
+			touchscreen_update();
+			if(gif_processing_state == PROCESSING_ERROR)return;
+			
+		}
+		gif_processing_state = PROCESSING_STOP;
+		touchscreen_update();
+	}
+	genie.WriteObject(GENIE_OBJ_FORM,FORM_Z_COMPENSATION_SHUTDOWN,0);
 }
 
 #endif /* INCLUDE */
