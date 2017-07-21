@@ -1201,7 +1201,7 @@ void update_screen_printing(){
 		if (target_temperature[0] < HEATER_0_MAXTEMP)
 		{
 			target_temperature[0]+=5;
-			sd_printing_temp_setting_offset_hotent0+=5;
+			//sd_printing_temp_setting_offset_hotent0+=5;
 			sprintf_P(buffer, PSTR("%3d %cC"),target_temperature[0],0x00B0);
 			genie.WriteStr(STRING_SDPRINTTING_SETINGS_LEFT,buffer);
 			
@@ -1213,7 +1213,7 @@ void update_screen_printing(){
 		if (target_temperature[1]<HEATER_1_MAXTEMP)
 		{
 			target_temperature[1]+=5;
-			sd_printing_temp_setting_offset_hotent1+=5;
+			//sd_printing_temp_setting_offset_hotent1+=5;
 			sprintf_P(buffer, PSTR("%3d %cC"),target_temperature[1],0x00B0);
 			genie.WriteStr(STRING_SDPRINTTING_SETINGS_RIGHT,buffer);
 			
@@ -1225,7 +1225,7 @@ void update_screen_printing(){
 		if (target_temperature_bed < BED_MAXTEMP)//MaxTemp
 		{
 			target_temperature_bed+=5;
-			sd_printing_temp_setting_offset_bed+=5;
+			//sd_printing_temp_setting_offset_bed+=5;
 			sprintf_P(buffer, PSTR("%3d %cC"),target_temperature_bed,0x00B0);
 			genie.WriteStr(STRING_SDPRINTTING_SETINGS_BED,buffer);
 			
@@ -1250,7 +1250,7 @@ void update_screen_printing(){
 		if (target_temperature[0] > HEATER_0_MINTEMP)
 		{
 			target_temperature[0]-=5;
-			sd_printing_temp_setting_offset_hotent0-=5;
+			//sd_printing_temp_setting_offset_hotent0-=5;
 			sprintf_P(buffer, PSTR("%3d %cC"),target_temperature[0],0x00B0);
 			genie.WriteStr(STRING_SDPRINTTING_SETINGS_LEFT,buffer);
 			
@@ -1263,7 +1263,7 @@ void update_screen_printing(){
 		if (target_temperature[1]>HEATER_1_MINTEMP)
 		{
 			target_temperature[1]-=5;
-			sd_printing_temp_setting_offset_hotent1-=5;
+			//sd_printing_temp_setting_offset_hotent1-=5;
 			sprintf_P(buffer, PSTR("%3d %cC"),target_temperature[1],0x00B0);
 			genie.WriteStr(STRING_SDPRINTTING_SETINGS_RIGHT,buffer);
 			
@@ -1276,7 +1276,7 @@ void update_screen_printing(){
 		if (target_temperature_bed> BED_MINTEMP)//Mintemp
 		{
 			target_temperature_bed-=5;
-			sd_printing_temp_setting_offset_bed-=5;
+			//sd_printing_temp_setting_offset_bed-=5;
 			sprintf_P(buffer, PSTR("%3d %cC"),target_temperature_bed,0x00B0);
 			genie.WriteStr(STRING_SDPRINTTING_SETINGS_BED,buffer);
 			

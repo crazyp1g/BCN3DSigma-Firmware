@@ -4050,7 +4050,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						/*sprintf_P(offset_string, PSTR("Remember install gauges\non %s Hotend to correct %d.%1d%1dmm"),
 						((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0)?"right":"left"),
 						(int)(5*offset_aprox)/100,(int)((5*offset_aprox)/10)%10,(int)(5*offset_aprox)%10);*/
-						sprintf_P(offset_string, PSTR("Remember to install %d %s on the %s hotend."), offset_aprox, ((offset_aprox > 1)?"sheems":"sheem") , ((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0)?"right":"left"));
+						sprintf_P(offset_string, PSTR("Remember to install %d %s on the %s hotend."), offset_aprox, ((offset_aprox > 1)?"shims":"shim") , ((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0)?"right":"left"));
 						Serial.println(offset_string);
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_Z_COMPENSATION_COMFIRMATION_SURECANCEL,0);
 						genie.WriteStr(STRING_Z_COMPENSATION_COMFIRMATION_SURECANCEL,offset_string);
@@ -5275,7 +5275,7 @@ inline void Z_compensation_decisor(void){
 		offset_aprox = (int)(abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])*100.01)/5.0;
 		char buffer[80];
 		//sprintf_P(offset_string, PSTR("Your Sigma Z axis has been calibrated\n\nTo avoid first layer Z compensation in Mirror/Duplication Mode:\n1.Turn off the machine and install gauges \n    on %s Hotend to correct %d.%1d%1dmm\n2. Re-run a Full Calibration\n\nWarning: Hotends may be hot when turning off the machine\n "),
-		sprintf_P(offset_string, PSTR("Install %d %s on the %s hotend. Learn how at the Quick Start Guide"), offset_aprox, ((offset_aprox > 1)?"sheems":"sheem") , ((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0)?"right":"left"));
+		sprintf_P(offset_string, PSTR("Install %d %s on the %s hotend. Learn how at the Quick Start Guide"), offset_aprox, ((offset_aprox > 1)?"shims":"shim") , ((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0)?"right":"left"));
 		/*if ((extruder_offset[Z_AXIS][RIGHT_EXTRUDER])<0){
 		sprintf_P(offset_string, PSTR("RIGHT HOTEND %d.%1d%1d"),(int)(5*offset_aprox)/100,(int)((5*offset_aprox)/10)%10,(int)(5*offset_aprox)%10);
 		}else{
