@@ -267,11 +267,6 @@ bool Flag_raft_last_line = false;
 float raft_extrusion_adjusting = 1.0;
 float destination_X_2 = 0.0;
 float destination_Z_2 = 0.0;
-
-int sd_printing_temp_setting_offset_hotent0 = 0;
-int sd_printing_temp_setting_offset_hotent1 = 0;
-int sd_printing_temp_setting_offset_bed = 0;
-
 #ifdef RECOVERY_PRINT
 
 float saved_x_position;
@@ -1201,7 +1196,6 @@ void update_screen_printing(){
 		if (target_temperature[0] < HEATER_0_MAXTEMP)
 		{
 			target_temperature[0]+=5;
-			sd_printing_temp_setting_offset_hotent0+=5;
 			sprintf_P(buffer, PSTR("%3d %cC"),target_temperature[0],0x00B0);
 			genie.WriteStr(STRING_SDPRINTTING_SETINGS_LEFT,buffer);
 			
@@ -1213,7 +1207,6 @@ void update_screen_printing(){
 		if (target_temperature[1]<HEATER_1_MAXTEMP)
 		{
 			target_temperature[1]+=5;
-			sd_printing_temp_setting_offset_hotent1+=5;
 			sprintf_P(buffer, PSTR("%3d %cC"),target_temperature[1],0x00B0);
 			genie.WriteStr(STRING_SDPRINTTING_SETINGS_RIGHT,buffer);
 			
@@ -1225,7 +1218,6 @@ void update_screen_printing(){
 		if (target_temperature_bed < BED_MAXTEMP)//MaxTemp
 		{
 			target_temperature_bed+=5;
-			sd_printing_temp_setting_offset_bed+=5;
 			sprintf_P(buffer, PSTR("%3d %cC"),target_temperature_bed,0x00B0);
 			genie.WriteStr(STRING_SDPRINTTING_SETINGS_BED,buffer);
 			
@@ -1250,7 +1242,6 @@ void update_screen_printing(){
 		if (target_temperature[0] > HEATER_0_MINTEMP)
 		{
 			target_temperature[0]-=5;
-			sd_printing_temp_setting_offset_hotent0-=5;
 			sprintf_P(buffer, PSTR("%3d %cC"),target_temperature[0],0x00B0);
 			genie.WriteStr(STRING_SDPRINTTING_SETINGS_LEFT,buffer);
 			
@@ -1263,7 +1254,6 @@ void update_screen_printing(){
 		if (target_temperature[1]>HEATER_1_MINTEMP)
 		{
 			target_temperature[1]-=5;
-			sd_printing_temp_setting_offset_hotent1-=5;
 			sprintf_P(buffer, PSTR("%3d %cC"),target_temperature[1],0x00B0);
 			genie.WriteStr(STRING_SDPRINTTING_SETINGS_RIGHT,buffer);
 			
@@ -1276,7 +1266,6 @@ void update_screen_printing(){
 		if (target_temperature_bed> BED_MINTEMP)//Mintemp
 		{
 			target_temperature_bed-=5;
-			sd_printing_temp_setting_offset_bed-=5;
 			sprintf_P(buffer, PSTR("%3d %cC"),target_temperature_bed,0x00B0);
 			genie.WriteStr(STRING_SDPRINTTING_SETINGS_BED,buffer);
 			
@@ -1931,9 +1920,6 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 			quickStop();
 			set_dual_x_carriage_mode(DEFAULT_DUAL_X_CARRIAGE_MODE);
 			autotempShutdown();
-			sd_printing_temp_setting_offset_bed = 0;
-			sd_printing_temp_setting_offset_hotent0 = 0;
-			sd_printing_temp_setting_offset_hotent1 = 0;
 			setTargetHotend0(0);
 			setTargetHotend1(0);
 			setTargetBed(0);
@@ -5564,9 +5550,6 @@ inline void gcode_M24(){
 	starttime=millis();
 	//Rapduch
 	Flag_fanSpeed_mirror=0;
-	sd_printing_temp_setting_offset_bed = 0;
-	sd_printing_temp_setting_offset_hotent0 = 0;
-	sd_printing_temp_setting_offset_hotent1 = 0;
 	setTargetBed(0);
 	setTargetHotend0(0);
 	setTargetHotend1(0);
@@ -6242,7 +6225,7 @@ inline void gcode_M104(){
 	if(setTargetedHotend(104)){
 		return;
 	}
-	if (code_seen('S')) setTargetHotend(code_value()+(tmp_extruder==0 ? sd_printing_temp_setting_offset_hotent0:sd_printing_temp_setting_offset_hotent1), tmp_extruder);
+	if (code_seen('S')) setTargetHotend(code_value(), tmp_extruder);
 	#ifdef DUAL_X_CARRIAGE
 	if ((dual_x_carriage_mode == DXC_DUPLICATION_MODE) && tmp_extruder == 0)
 	setTargetHotend1(code_value() == 0.0 ? 0.0 : code_value() + duplicate_extruder_temp_offset);
@@ -6254,7 +6237,7 @@ inline void gcode_M112(){
 	kill();
 }
 inline void gcode_M140(){
-	if (code_seen('S')) setTargetBed(code_value()+sd_printing_temp_setting_offset_bed);
+	if (code_seen('S')) setTargetBed(code_value());
 	thermal_runaway_reset_bed_state = true;
 }
 inline void gcode_M105(){
@@ -6330,10 +6313,10 @@ inline void gcode_M190(){
 	#if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
 	LCD_MESSAGEPGM(MSG_BED_HEATING);
 	if (code_seen('S')) {
-		setTargetBed(code_value()+sd_printing_temp_setting_offset_bed);
+		setTargetBed(code_value());
 		CooldownNoWait = true;
 		} else if (code_seen('R')) {
-		setTargetBed(code_value()+sd_printing_temp_setting_offset_bed);
+		setTargetBed(code_value());
 		CooldownNoWait = false;
 	}
 	codenum = millis();
@@ -6452,7 +6435,7 @@ inline void gcode_M109(){
 	#endif
 
 	if (code_seen('S')) {
-		setTargetHotend(code_value()+(tmp_extruder==0 ? sd_printing_temp_setting_offset_hotent0:sd_printing_temp_setting_offset_hotent1), tmp_extruder);
+		setTargetHotend(code_value(), tmp_extruder);
 		
 		#ifdef DUAL_X_CARRIAGE
 		if ((dual_x_carriage_mode == DXC_DUPLICATION_MODE) && tmp_extruder == 0)

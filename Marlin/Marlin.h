@@ -240,9 +240,6 @@ extern unsigned int bed_offset_version;
 extern int flag_utilities_calibration_zcomensationmode_gauges;
 extern int fanSpeed;
 extern int Flag_fanSpeed_mirror;
-extern int sd_printing_temp_setting_offset_bed;
-extern int sd_printing_temp_setting_offset_hotent0;
-extern int sd_printing_temp_setting_offset_hotent1;
 #ifdef BARICUDA
 extern int ValvePressure;
 extern int EtoPPressure;
