@@ -1160,7 +1160,7 @@ void update_screen_printing(){
 			genie.WriteStr(STRING_SDPRINTING_SETTINGS_SPEED,buffer);
 			
 			
-			waitPeriod=5000+millis();	//Every 5s
+			waitPeriod=2500+millis();	//Every 5s
 			is_on_printing_screen=false;
 		}
 		
@@ -1181,7 +1181,7 @@ void update_screen_printing(){
 			genie.WriteStr(STRING_SDPRINTING_PAUSE_GCODE,namefilegcode);
 			flag_sdprinting_dararefresh = true;
 		}
-		waitPeriod=5000+millis();	//Every 5s
+		waitPeriod=1500+millis();	//Every 5s
 		flag_sdprinting_showdata = false;
 		
 	}
@@ -1488,15 +1488,15 @@ void update_screen_printing(){
 			flag_sdprinting_dararefresh = false;
 			count5s++;
 			count5s1++;
-			if (count5s == 720){ //5s * 720 = 3600s = 1h
+			if (count5s == 1440){ //5s * 720 = 3600s = 1h
 				count5s=0;
 				log_hours_print++;
 			}
-			if (count5s1 == 12){ //5s * 12 = 60s = 1min
+			if (count5s1 == 24){ //5s * 12 = 60s = 1min
 				count5s1=0;
 				log_min_print++;
 			}
-			waitPeriod=5000+millis();	//Every 5s
+			waitPeriod=2500+millis();	//Every 5s
 			
 		}
 		
