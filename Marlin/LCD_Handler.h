@@ -1036,6 +1036,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						if (millis() >= waitPeriod_button_press){
 							
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_SDPRINTING_PAUSE,0);
+							touchscreen_update();
 							is_on_printing_screen = true;
 							surfing_utilities = false;
 							genie.WriteStr(STRING_SDPRINTING_PAUSE_GCODE,namefilegcode);
@@ -1501,6 +1502,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						surfing_utilities=false;
 						SERIAL_PROTOCOLPGM("Surfing 0 \n");
 						surfing_temps = false;
+						touchscreen_update();
 						HeaterCooldownInactivity(true);
 						genie.WriteObject(GENIE_OBJ_FORM, FORM_MAIN, 0);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
@@ -1688,6 +1690,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						surfing_utilities=false;
 						SERIAL_PROTOCOLPGM("Surfing 0 \n");
 						surfing_temps = false;
+						touchscreen_update();
 						genie.WriteObject(GENIE_OBJ_FORM, FORM_MAIN, 0);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
@@ -1921,6 +1924,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					case BUTTON_MAINTENANCE_ZADJUST_BACK:
 					if (millis() >= waitPeriod_button_press){
+						processing_z_set = 255;
+						touchscreen_update();
 						genie.WriteObject(GENIE_OBJ_FORM, FORM_UTILITIES_MAINTENANCE, 0);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
@@ -1928,6 +1933,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					case BUTTON_MAINTENANCE_ZADJUST_ACCEPT:
 					if (millis() >= waitPeriod_button_press){
+						processing_z_set = 255;
+						touchscreen_update();
 						genie.WriteObject(GENIE_OBJ_FORM, FORM_UTILITIES_MAINTENANCE, 0);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
@@ -2089,6 +2096,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						
 						quickStop();
 						HeaterCooldownInactivity(true);
+						touchscreen_update();
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT,0);
 						
 						//setTargetHotend0(0);
@@ -2106,6 +2114,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						surfing_temps = false;
 						SERIAL_PROTOCOLPGM("Surfing 0 \n");
 						HeaterCooldownInactivity(true);
+						touchscreen_update();
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_MAIN,0);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
@@ -4593,6 +4602,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					screen_sdcard = false;
 					surfing_utilities=false;
 					surfing_temps = false;
+					processing_z_set = 255;
+					touchscreen_update();
 					SERIAL_PROTOCOLPGM("Surfing 0 \n");
 					waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 				}
