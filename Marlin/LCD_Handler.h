@@ -5445,6 +5445,7 @@ inline void Full_calibration_Y_set(float offset){
 		flag_utilities_calibration_calibfull = false;
 	}
 }
+#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
 inline void Z_compensation_coolingdown(void){
 	char buffer[256];
 	static long waitPeriod_s = millis();
@@ -5491,7 +5492,7 @@ inline void Z_compensation_coolingdown(void){
 	}
 	genie.WriteObject(GENIE_OBJ_FORM,FORM_Z_COMPENSATION_SHUTDOWN,0);
 }
-
+#endif
 #endif /* INCLUDE */
 
 #endif

@@ -915,9 +915,11 @@ void setup()
 		}
 		genie.WriteObject(GENIE_OBJ_FORM,FORN_SETUPASSISTANT_YESNOT,0);
 		}
+		#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
 		else if(flag_utilities_calibration_zcomensationmode_gauges == 1888){
 			genie.WriteObject(GENIE_OBJ_FORM, FORM_Z_COMPENSATION_COMFIRMATION,0);
 		}
+		#endif
 		else{
 		genie.WriteObject(GENIE_OBJ_FORM,FORM_MAIN,0);
 	}
@@ -2558,7 +2560,7 @@ void get_command()
 				return; //if empty line
 			}
 			cmdbuffer[bufindw][serial_count] = 0; //terminate string
-			
+			#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
 			if(get_dual_x_carriage_mode() == 5 || get_dual_x_carriage_mode() == 6){
 				switch(raft_indicator){
 					
@@ -2615,7 +2617,7 @@ void get_command()
 					
 				}
 			}
-			
+			#endif
 			
 			
 			
@@ -2635,6 +2637,7 @@ void get_command()
 			
 			if(serial_char == ';') comment_mode = true;
 			if(!comment_mode) cmdbuffer[bufindw][serial_count++] = serial_char;
+			#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
 			if(get_dual_x_carriage_mode() == 5 || get_dual_x_carriage_mode() == 6){//5 = dual mode raft
 				
 				if(serial_char == 'Z' && !comment_mode){
@@ -2653,6 +2656,7 @@ void get_command()
 					if(serial_char == 'E')raft_indicator=raft_indicator+4;
 				}
 			}
+			#endif
 		}
 	}
 	#endif //SDSUPPORT
@@ -2671,7 +2675,7 @@ long code_value_long()
 }
 float extrusion_multiplier(float distance)
 {
-	float flow = 1.05;
+	float flow = 1.05*BCN3D_NOZZLE_DEFAULD_SIZE/0.4;
 	return distance*(current_position[Z_AXIS]*flow*0.3284/(0.188*29.402)); ////////// (distance * flow * extrusion value)------- extrusion multiplier = 1.05*(current_position[Z_AXIS]*0.3284/(0.188*29.402))
 }
 
@@ -7712,65 +7716,110 @@ inline void gcode_M600(){
 	
 }
 inline void gcode_M605(){
-	#ifdef DUAL_X_CARRIAGE
-	//    M605 S0: Full control mode. The slicer has full control over x-carriage movement
-	//    M605 S1: Auto-park mode. The inactive head will auto park/unpark without slicer involvement
-	//    M605 S2 [Xnnn] [Rmmm]: Duplication mode. The second extruder will duplicate the first with nnn
-	//                         millimeters x-offset and an optional differential hotend temperature of
-	//                         mmm degrees. E.g., with "M605 S2 X100 R2" the second extruder will duplicate
-	//                         the first with a spacing of 100mm in the x direction and 2 degrees hotter.
-	//
-	//    Note: the X axis should be homed after changing dual x-carriage mode.
-	//    M605 S3: Default mode
-	//	  M605 S4: Duplication Mirror mode
-	//    M605 S5 [Xnnn] [Rmmm]: Duplication Raft mode
-	//	  M605 S6: Duplication Raft Mirror mode
-	//
-	//    Note: the X axis should be homed after changing dual x-carriage mode.
-	st_synchronize();
+	#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
+		#ifdef DUAL_X_CARRIAGE
+		//    M605 S0: Full control mode. The slicer has full control over x-carriage movement
+		//    M605 S1: Auto-park mode. The inactive head will auto park/unpark without slicer involvement
+		//    M605 S2 [Xnnn] [Rmmm]: Duplication mode. The second extruder will duplicate the first with nnn
+		//                         millimeters x-offset and an optional differential hotend temperature of
+		//                         mmm degrees. E.g., with "M605 S2 X100 R2" the second extruder will duplicate
+		//                         the first with a spacing of 100mm in the x direction and 2 degrees hotter.
+		//
+		//    Note: the X axis should be homed after changing dual x-carriage mode.
+		//    M605 S3: Default mode
+		//	  M605 S4: Duplication Mirror mode
+		//    M605 S5 [Xnnn] [Rmmm]: Duplication Raft mode
+		//	  M605 S6: Duplication Raft Mirror mode
+		//
+		//    Note: the X axis should be homed after changing dual x-carriage mode.
+		st_synchronize();
 
-	if (code_seen('S'))
-	dual_x_carriage_mode = (int)code_value();
+		if (code_seen('S'))
+		dual_x_carriage_mode = (int)code_value();
 
-	if (dual_x_carriage_mode == DXC_DUPLICATION_MODE || dual_x_carriage_mode == DXC_DUPLICATION_MODE_RAFT)
-	{
-		if (code_seen('X'))
-		duplicate_extruder_x_offset = max(code_value(),X2_MIN_POS - x_home_pos(0));
+		if (dual_x_carriage_mode == DXC_DUPLICATION_MODE || dual_x_carriage_mode == DXC_DUPLICATION_MODE_RAFT)
+		{
+			if (code_seen('X'))
+			duplicate_extruder_x_offset = max(code_value(),X2_MIN_POS - x_home_pos(0));
 
-		if (code_seen('R'))
-		duplicate_extruder_temp_offset = code_value();
+			if (code_seen('R'))
+			duplicate_extruder_temp_offset = code_value();
 
-		SERIAL_ECHO_START;
-		SERIAL_ECHOPGM(MSG_HOTEND_OFFSET);
-		SERIAL_ECHO(" ");
-		SERIAL_ECHO(extruder_offset[X_AXIS][0]);
-		SERIAL_ECHO(",");
-		SERIAL_ECHO(extruder_offset[Y_AXIS][0]);
-		SERIAL_ECHO(" ");
-		SERIAL_ECHO(duplicate_extruder_x_offset);
-		SERIAL_ECHO(",");
-		SERIAL_ECHOLN(extruder_offset[Y_AXIS][1]);
-	}
-	else if (dual_x_carriage_mode != DXC_FULL_CONTROL_MODE && dual_x_carriage_mode != DXC_AUTO_PARK_MODE && dual_x_carriage_mode != DXC_DUPLICATION_MIRROR_MODE && dual_x_carriage_mode != DXC_DUPLICATION_MIRROR_MODE_RAFT)
-	{
-		dual_x_carriage_mode = DEFAULT_DUAL_X_CARRIAGE_MODE;
-	}
+			SERIAL_ECHO_START;
+			SERIAL_ECHOPGM(MSG_HOTEND_OFFSET);
+			SERIAL_ECHO(" ");
+			SERIAL_ECHO(extruder_offset[X_AXIS][0]);
+			SERIAL_ECHO(",");
+			SERIAL_ECHO(extruder_offset[Y_AXIS][0]);
+			SERIAL_ECHO(" ");
+			SERIAL_ECHO(duplicate_extruder_x_offset);
+			SERIAL_ECHO(",");
+			SERIAL_ECHOLN(extruder_offset[Y_AXIS][1]);
+		}
+		else if (dual_x_carriage_mode != DXC_FULL_CONTROL_MODE && dual_x_carriage_mode != DXC_AUTO_PARK_MODE && dual_x_carriage_mode != DXC_DUPLICATION_MIRROR_MODE && dual_x_carriage_mode != DXC_DUPLICATION_MIRROR_MODE_RAFT)
+		{
+			dual_x_carriage_mode = DEFAULT_DUAL_X_CARRIAGE_MODE;
+		}
 	
-	active_extruder_parked = false;
-	extruder_duplication_enabled = false;
-	extruder_duplication_mirror_enabled = false;
-	Flag_Raft_Dual_Mode_On = false;
-	delayed_move_time = 0;
+		active_extruder_parked = false;
+		extruder_duplication_enabled = false;
+		extruder_duplication_mirror_enabled = false;
+		Flag_Raft_Dual_Mode_On = false;
+		delayed_move_time = 0;
 	
-	switch(dual_x_carriage_mode){
-		case DXC_DUPLICATION_MODE:
-		case DXC_DUPLICATION_MODE_RAFT:
-		case DXC_DUPLICATION_MIRROR_MODE:
-		case DXC_DUPLICATION_MIRROR_MODE_RAFT:
-		home_axis_from_code(true, false, false);
-	}
-	#endif //DUAL_X_CARRIAGE
+		switch(dual_x_carriage_mode){
+			case DXC_DUPLICATION_MODE:
+			case DXC_DUPLICATION_MODE_RAFT:
+			case DXC_DUPLICATION_MIRROR_MODE:
+			case DXC_DUPLICATION_MIRROR_MODE_RAFT:
+			home_axis_from_code(true, false, false);
+		}
+		#endif //DUAL_X_CARRIAGE
+	#elif BCN3D_SCREEN_VERSION == BCN3D_SIGMA_PRINTER
+		#ifdef DUAL_X_CARRIAGE
+		//    M605 S0: Full control mode. The slicer has full control over x-carriage movement
+		//    M605 S1: Auto-park mode. The inactive head will auto park/unpark without slicer involvement
+		//    M605 S2 [Xnnn] [Rmmm]: Duplication mode. The second extruder will duplicate the first with nnn
+		//                         millimeters x-offset and an optional differential hotend temperature of
+		//                         mmm degrees. E.g., with "M605 S2 X100 R2" the second extruder will duplicate
+		//                         the first with a spacing of 100mm in the x direction and 2 degrees hotter.
+		//
+		//    Note: the X axis should be homed after changing dual x-carriage mode.
 	
+		st_synchronize();
+
+		if (code_seen('S'))
+		dual_x_carriage_mode = (int)code_value();
+
+		if (dual_x_carriage_mode == DXC_DUPLICATION_MODE)
+		{
+			if (code_seen('X'))
+			duplicate_extruder_x_offset = max(code_value(),X2_MIN_POS - x_home_pos(0));
+
+			if (code_seen('R'))
+			duplicate_extruder_temp_offset = code_value();
+
+			SERIAL_ECHO_START;
+			SERIAL_ECHOPGM(MSG_HOTEND_OFFSET);
+			SERIAL_ECHO(" ");
+			SERIAL_ECHO(extruder_offset[X_AXIS][0]);
+			SERIAL_ECHO(",");
+			SERIAL_ECHO(extruder_offset[Y_AXIS][0]);
+			SERIAL_ECHO(" ");
+			SERIAL_ECHO(duplicate_extruder_x_offset);
+			SERIAL_ECHO(",");
+			SERIAL_ECHOLN(extruder_offset[Y_AXIS][1]);
+		}
+		else if (dual_x_carriage_mode != DXC_FULL_CONTROL_MODE && dual_x_carriage_mode != DXC_AUTO_PARK_MODE)
+		{
+			dual_x_carriage_mode = DEFAULT_DUAL_X_CARRIAGE_MODE;
+		}
+
+		active_extruder_parked = false;
+		extruder_duplication_enabled = false;
+		delayed_move_time = 0;
+		#endif //DUAL_X_CARRIAGE
+	#endif //BCN3D_SCREEN_VERSION
 }
 inline void gcode_M907(){
 	#if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
@@ -9087,6 +9136,7 @@ void calculate_delta(float cartesian[3])
 	*/
 }
 #endif
+#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
 inline void dual_mode_duplication_z_adjust_raft(void);
 inline void dual_mode_duplication_extruder_parked(void);
 inline void dual_mode_duplication_mirror_extruder_parked(void);
@@ -9148,6 +9198,7 @@ inline void dual_mode_duplication_extruder_parked_purge(void){
 	st_synchronize();
 	extruder_duplication_enabled = false;
 }
+#endif
 void prepare_move()
 {
 	clamp_to_software_endstops(destination);
@@ -9173,15 +9224,7 @@ void prepare_move()
 			SERIAL_PROTOCOLLNPGM("Dual Mode OFF");
 		}
 		
-		if (dual_x_carriage_mode == DXC_DUPLICATION_MODE && active_extruder == 0)
-		{
-			dual_mode_duplication_extruder_parked();
-			
-		}else if (dual_x_carriage_mode == DXC_DUPLICATION_MIRROR_MODE && active_extruder == 0)
-		{
-			dual_mode_duplication_mirror_extruder_parked();
-		}
-		else if (dual_x_carriage_mode == DXC_AUTO_PARK_MODE) // handle unparking of head
+		if (dual_x_carriage_mode == DXC_AUTO_PARK_MODE) // handle unparking of head
 		{
 			if (current_position[E_AXIS] == destination[E_AXIS])
 			{
@@ -9202,6 +9245,16 @@ void prepare_move()
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], max_feedrate[Z_AXIS], active_extruder);
 			active_extruder_parked = false;
 		}
+		#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
+		else if (dual_x_carriage_mode == DXC_DUPLICATION_MODE && active_extruder == 0)
+		{
+			dual_mode_duplication_extruder_parked();
+			
+		}else if (dual_x_carriage_mode == DXC_DUPLICATION_MIRROR_MODE && active_extruder == 0)
+		{
+			dual_mode_duplication_mirror_extruder_parked();
+		}
+
 		else if(dual_x_carriage_mode == DXC_DUPLICATION_MODE_RAFT ){ ///Smart_Raft_duplication_mode
 			if (abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) <= RAFT_Z_THRESHOLD){
 				dual_mode_duplication_extruder_parked();
@@ -9367,6 +9420,7 @@ void prepare_move()
 				}
 			}
 		}
+		#endif
 	}
 	#endif //DUAL_X_CARRIAGE
 	
