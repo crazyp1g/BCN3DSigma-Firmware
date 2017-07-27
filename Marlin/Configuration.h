@@ -27,7 +27,7 @@
 //This is the version declaration for Sigma, v followed by '-' first indicate the hardware, it must have 2 ditgits. Then the '-' and then the firmware, it has to have 3 digits separets by '.'. -> This is useful to
 //get the hw and fw version to Cura-BCN3D and update the new firmware
 
-#define VERSION_STRING  "01-1.2.6dev"
+#define VERSION_STRING  "02-1.2.6dev"
 #define BUILD_DATE  "|M07.27"
 #define VERSION_NUMBER  126
 //#define BUILD_DATE  " "
@@ -301,12 +301,12 @@
 #define PLA_BED_TEMP			65
 
 #define	ABS_INSERT_TEMP			260
-#define	ABS_REMOVE_TEMP			240
+#define	ABS_REMOVE_TEMP			230
 #define	ABS_PRINT_TEMP			260
 #define ABS_BED_TEMP			90
 
 #define	PVA_INSERT_TEMP			190
-#define	PVA_REMOVE_TEMP			170
+#define	PVA_REMOVE_TEMP			160
 #define	PVA_PRINT_TEMP			190
 #define PVA_BED_TEMP			65
 

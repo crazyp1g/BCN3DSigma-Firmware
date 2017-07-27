@@ -872,7 +872,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						if (millis() >= waitPeriod_button_press){
 							//Adjusting the filament with a Retract Up
 							
-							float modified_position=current_position[E_AXIS]+6;
+							float modified_position=current_position[E_AXIS]+PURGE_DISTANCE_INSERTED;
 							plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], modified_position, INSERT_SLOW_SPEED/60, which_extruder);
 							current_position[E_AXIS]=modified_position;
 							
