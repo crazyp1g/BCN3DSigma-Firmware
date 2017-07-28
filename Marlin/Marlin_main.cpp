@@ -1363,6 +1363,48 @@ void update_screen_printing(){
 	}
 	if (surfing_utilities)
 	{
+		if(flag_utilities_filament_purgeselect0){
+			flag_utilities_filament_purgeselect0 = false;
+			if(degHotend(purge_extruder_selected) >= target_temperature[purge_extruder_selected]-PURGE_TEMP_HYSTERESIS){
+				gif_processing_state = PROCESSING_PURGE_LOAD;
+				current_position[E_AXIS]+=PURGE_DISTANCE_INSERTED;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], INSERT_SLOW_SPEED/60, purge_extruder_selected);//Purge
+				st_synchronize();
+				gif_processing_state = PROCESSING_STOP;
+				genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_FILAMENT_PURGE,0);
+			}
+		}
+		if(flag_utilities_filament_purgeselect1){
+			flag_utilities_filament_purgeselect1 = false;
+			if(degHotend(purge_extruder_selected) >= target_temperature[purge_extruder_selected]-PURGE_TEMP_HYSTERESIS){
+				gif_processing_state = PROCESSING_PURGE_LOAD;
+				current_position[E_AXIS]-=5;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], INSERT_SLOW_SPEED/60, purge_extruder_selected);//Retract
+				st_synchronize();
+				gif_processing_state = PROCESSING_STOP;
+				genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_FILAMENT_PURGE,0);
+			}
+		}
+		if(flag_utilities_filament_purgeload){
+			flag_utilities_filament_purgeload = false;
+			if(degHotend(which_extruder) >= target_temperature[which_extruder]-PURGE_TEMP_HYSTERESIS){
+				genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_ADJUST_LOAD, 1);
+				current_position[E_AXIS]+=PURGE_DISTANCE_INSERTED;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], INSERT_SLOW_SPEED/60, which_extruder);//Purge
+				st_synchronize();
+				genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_ADJUST_LOAD, 0);
+			}
+		}
+		if(flag_utilities_filament_purgeunload){
+			flag_utilities_filament_purgeunload = false;
+			if(degHotend(which_extruder) >= target_temperature[which_extruder]-PURGE_TEMP_HYSTERESIS){
+				genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_ADJUST_UNLOAD, 1);
+				current_position[E_AXIS]-=5;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], INSERT_SLOW_SPEED/60, which_extruder);//Retract
+				st_synchronize();
+				genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_ADJUST_UNLOAD, 0);
+			}
+		}
 		//static uint32_t waitPeriod = millis();
 		if (millis() >= waitPeriod)
 		{
