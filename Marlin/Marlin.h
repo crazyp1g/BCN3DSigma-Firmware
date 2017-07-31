@@ -297,6 +297,7 @@ extern bool is_on_printing_screen;
 extern uint8_t which_extruder;
 extern char filament_mode;
 extern bool is_changing_filament;
+extern bool is_purging_filament;
 extern int getBuflen();
 extern void HeaterCooldownInactivity(bool switchOnOff);
 extern void homeFromMain();

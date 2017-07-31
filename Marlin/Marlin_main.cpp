@@ -242,6 +242,7 @@ String screen_status = "Printing...";
 uint8_t which_extruder=0;
 char filament_mode='O';
 bool is_changing_filament=false;
+bool is_purging_filament=false;
 String currentSDFileName;
 int vuitens1=0;
 int vuitens2=0;
@@ -915,7 +916,7 @@ void setup()
 		}
 		genie.WriteObject(GENIE_OBJ_FORM,FORN_SETUPASSISTANT_YESNOT,0);
 		}
-		#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
+		#if BCN3D_SCREEN_VERSION_SETUP == BCN3D_SIGMA_PRINTER_DEVMODE_1
 		else if(flag_utilities_calibration_zcomensationmode_gauges == 1888){
 			genie.WriteObject(GENIE_OBJ_FORM, FORM_Z_COMPENSATION_COMFIRMATION,0);
 		}
@@ -1096,6 +1097,7 @@ int TimerCooldownInactivity(bool restartOrRun){ //false Restart  true Run
 void thermal_error_screen_on(){
 	gif_processing_state = PROCESSING_STOP;
 	is_changing_filament = false;
+	is_purging_filament = false;
 }
 float smartPurge_Distant(double A, double B, double T, double P, double E, int timeIdle){
 	
@@ -1410,8 +1412,10 @@ void update_screen_printing(){
 		{
 			int tHotend=int(degHotend(0));
 			int tHotend1=int(degHotend(1));
+			int percentage = 0;
+			int Tinstant = 0;
 			char buffer[25];
-			if(!is_changing_filament){
+			if(is_purging_filament){
 				sprintf_P(buffer, PSTR("%3d %cC"),tHotend,0x00B0);
 				genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_LEFTTARGET,buffer);
 				sprintf_P(buffer, PSTR("%3d %cC"),tHotend1,0x00B0);
@@ -1419,14 +1423,24 @@ void update_screen_printing(){
 			}
 			
 			if(is_changing_filament){
-				int percentage = 0;
-				int Tinstant;
-				if(Tref1 > (int)degHotend(which_extruder)){
-					Tinstant = Tref1;
-					}else if((int)degHotend(which_extruder) > Tfinal1){
-					Tinstant = Tfinal1;
-					}else{
-					Tinstant = (int)degHotend(which_extruder);
+				if(Tref1<Tfinal1){
+					
+					if(Tref1 > (int)degHotend(which_extruder)){
+						Tinstant = Tref1;
+						}else if((int)degHotend(which_extruder) > Tfinal1){
+						Tinstant = Tfinal1;
+						}else{
+						Tinstant = (int)degHotend(which_extruder);
+					}
+				}
+				else{
+					if(Tref1 < (int)degHotend(which_extruder)){
+						Tinstant = Tref1;
+						}else if((int)degHotend(which_extruder) < Tfinal1){
+						Tinstant = Tfinal1;
+						}else{
+						Tinstant = (int)degHotend(which_extruder);
+					}
 				}
 				percentage = Tfinal1-Tref1;
 				percentage = 100*(Tinstant-Tref1)/percentage;
@@ -1436,7 +1450,7 @@ void update_screen_printing(){
 			
 			#if EXTRUDERS > 1
 			// Check if preheat for insert_FIL is done ////////////////////////////////////////////////////////////////////
-			if ((degHotend(0) >= (degTargetHotend0()-10)) && (degHotend(1) >= (degTargetHotend1()-10)) && is_changing_filament){
+			if ((abs(Tinstant-Tref1) < CHANGE_FIL_TEMP_HYSTERESIS) && is_changing_filament){
 				// if we want to add user setting temp, we should control if is heating
 				SERIAL_PROTOCOLPGM("temp ok \n");
 				SERIAL_PROTOCOLPGM("Ready to Insert/Remove \n");
@@ -1693,10 +1707,12 @@ void update_screen_noprinting(){
 		{
 			int tHotend=int(degHotend(0));
 			int tHotend1=int(degHotend(1));
+			int Tinstant = 0;
+			int percentage = 0;
 			char buffer[25];
 			memset(buffer, '\0', sizeof(buffer) );
 			
-			if(!is_changing_filament){
+			if(is_purging_filament){
 				sprintf_P(buffer, PSTR("%3d %cC"),tHotend,0x00B0);
 				//Serial.println(buffer);
 				genie.WriteStr(STRING_UTILITIES_FILAMENT_PURGE_LEFTTARGET,buffer);
@@ -1722,15 +1738,25 @@ void update_screen_noprinting(){
 				}
 				
 			}
-			else{
-				int percentage = 0;
-				int Tinstant;
-				if(Tref1 > (int)degHotend(which_extruder)){
-					Tinstant = Tref1;
-					}else if((int)degHotend(which_extruder) > Tfinal1){
-					Tinstant = Tfinal1;
-					}else{
-					Tinstant = (int)degHotend(which_extruder);
+			if(is_changing_filament){
+				if(Tref1<Tfinal1){
+					
+					if(Tref1 > (int)degHotend(which_extruder)){
+						Tinstant = Tref1;
+						}else if((int)degHotend(which_extruder) > Tfinal1){
+						Tinstant = Tfinal1;
+						}else{
+						Tinstant = (int)degHotend(which_extruder);
+					}
+				}
+				else{
+					if(Tref1 < (int)degHotend(which_extruder)){
+						Tinstant = Tref1;
+						}else if((int)degHotend(which_extruder) < Tfinal1){
+						Tinstant = Tfinal1;
+						}else{
+						Tinstant = (int)degHotend(which_extruder);
+					}
 				}
 				percentage = Tfinal1-Tref1;
 				percentage = 100*(Tinstant-Tref1)/percentage;
@@ -1740,7 +1766,7 @@ void update_screen_noprinting(){
 			
 			#if EXTRUDERS > 1
 			// Check if preheat for insert_FIL is done ////////////////////////////////////////////////////////////////////
-			if ((degHotend(0) >= (degTargetHotend0()-CHANGE_FIL_TEMP_HYSTERESIS)) && (degHotend(1) >= (degTargetHotend1()-CHANGE_FIL_TEMP_HYSTERESIS)) && is_changing_filament){
+			if ((abs(Tinstant-Tref1) < CHANGE_FIL_TEMP_HYSTERESIS) && is_changing_filament){
 				// if we want to add user setting temp, we should control if is heating
 				
 				SERIAL_PROTOCOLPGM("temp ok \n");
@@ -2602,7 +2628,7 @@ void get_command()
 				return; //if empty line
 			}
 			cmdbuffer[bufindw][serial_count] = 0; //terminate string
-			#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
+			#if BCN3D_SCREEN_VERSION_SETUP == BCN3D_SIGMA_PRINTER_DEVMODE_1
 			if(get_dual_x_carriage_mode() == 5 || get_dual_x_carriage_mode() == 6){
 				switch(raft_indicator){
 					
@@ -2679,7 +2705,7 @@ void get_command()
 			
 			if(serial_char == ';') comment_mode = true;
 			if(!comment_mode) cmdbuffer[bufindw][serial_count++] = serial_char;
-			#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
+			#if BCN3D_SCREEN_VERSION_SETUP == BCN3D_SIGMA_PRINTER_DEVMODE_1
 			if(get_dual_x_carriage_mode() == 5 || get_dual_x_carriage_mode() == 6){//5 = dual mode raft
 				
 				if(serial_char == 'Z' && !comment_mode){
@@ -3779,7 +3805,7 @@ inline void gcode_G40(){
 		if (i == 0){
 			//draw borders
 			current_position[Y_AXIS]=275.5;
-			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 			current_position[X_AXIS] = 197.5;//Move X and Z
 			#else
 			current_position[X_AXIS] = 197.5 + X_OFFSET_CALIB_PROCEDURES;
@@ -3793,7 +3819,7 @@ inline void gcode_G40(){
 			st_synchronize();
 			if(gif_processing_state == PROCESSING_ERROR)return;
 			//current_position[X_AXIS]=109.5; current_position[E_AXIS]+=((197.5-109.5)*1.05*(current_position[Z_AXIS]*0.3284/(0.188*29.402)));
-			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 			current_position[X_AXIS] = 109.5;
 			#else
 			current_position[X_AXIS] = 109.5 + X_OFFSET_CALIB_PROCEDURES;
@@ -3810,7 +3836,7 @@ inline void gcode_G40(){
 			plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS], current_position[Z_AXIS],current_position[E_AXIS], INSERT_FAST_SPEED/60 , active_extruder);
 			st_synchronize();
 			if(gif_processing_state == PROCESSING_ERROR)return;
-			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 			current_position[X_AXIS] = mm_left_offset;
 			#else
 			current_position[X_AXIS] = mm_left_offset + X_OFFSET_CALIB_PROCEDURES;
@@ -3824,7 +3850,7 @@ inline void gcode_G40(){
 		plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], INSERT_FAST_SPEED/60, active_extruder);//Move Y and extrude
 		st_synchronize();
 		if(gif_processing_state == PROCESSING_ERROR)return;
-		#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+		#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 		current_position[X_AXIS] = mm_left_offset+(mm_each_extrusion*i);
 		#else
 		current_position[X_AXIS] = mm_left_offset+(mm_each_extrusion*i) + X_OFFSET_CALIB_PROCEDURES;
@@ -3838,7 +3864,7 @@ inline void gcode_G40(){
 		st_synchronize();
 		if(gif_processing_state == PROCESSING_ERROR)return;
 		if (i != 9) {
-			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 			current_position[X_AXIS] = mm_left_offset+(mm_each_extrusion*(i+1));
 			#else
 			current_position[X_AXIS] = mm_left_offset+(mm_each_extrusion*(i+1)) + X_OFFSET_CALIB_PROCEDURES;
@@ -3877,7 +3903,7 @@ inline void gcode_G40(){
 	{
 		if (i == 0) {
 						
-			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 			current_position[X_AXIS] = 197.5;
 			#else
 			current_position[X_AXIS] =197.5 + X_OFFSET_CALIB_PROCEDURES;
@@ -3894,7 +3920,7 @@ inline void gcode_G40(){
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 40 , active_extruder);
 			st_synchronize();
 			if(gif_processing_state == PROCESSING_ERROR)return;
-			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 			current_position[X_AXIS] = 109.5;
 			#else
 			current_position[X_AXIS] = 109.5 + X_OFFSET_CALIB_PROCEDURES;
@@ -3907,7 +3933,7 @@ inline void gcode_G40(){
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], INSERT_FAST_SPEED/60 , active_extruder);
 			st_synchronize();
 			if(gif_processing_state == PROCESSING_ERROR)return;
-			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 			current_position[X_AXIS] = mm_left_offset+(mm_second_extruder[i]+(mm_each_extrusion*(i)));
 			#else
 			current_position[X_AXIS] = mm_left_offset+(mm_second_extruder[i]+(mm_each_extrusion*(i))) + X_OFFSET_CALIB_PROCEDURES;
@@ -3924,7 +3950,7 @@ inline void gcode_G40(){
 		if(gif_processing_state == PROCESSING_ERROR)return;
 		Serial.println(mm_second_extruder[i]);
 		current_position[Y_AXIS]= mm_right_lines_x_up; 
-		#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+		#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 		current_position[X_AXIS] = mm_left_offset+(mm_second_extruder[i]+(mm_each_extrusion*(i)));
 		#else
 		current_position[X_AXIS] = mm_left_offset+(mm_second_extruder[i]+(mm_each_extrusion*(i))) + X_OFFSET_CALIB_PROCEDURES;
@@ -3940,7 +3966,7 @@ inline void gcode_G40(){
 		if (i != 9){
 			current_position[Y_AXIS]= mm_right_lines_x_down;
 			 			
-			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 			current_position[X_AXIS] = mm_left_offset+(mm_second_extruder[i]+(mm_each_extrusion*(i+1)));
 			#else
 			current_position[X_AXIS] = mm_left_offset+(mm_second_extruder[i]+(mm_each_extrusion*(i+1))) + X_OFFSET_CALIB_PROCEDURES;
@@ -4023,7 +4049,7 @@ inline void gcode_G41(){
 	{
 		if (i == 0){
 			current_position[Y_AXIS]=23.5;
-			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 			current_position[X_AXIS] = 109.5;
 			#else
 			current_position[X_AXIS] = 109.5 + X_OFFSET_CALIB_PROCEDURES;
@@ -4039,7 +4065,7 @@ inline void gcode_G41(){
 			plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 40 , active_extruder);
 			st_synchronize();
 			if(gif_processing_state == PROCESSING_ERROR)return;
-			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 			current_position[X_AXIS] = 197.5;
 			#else
 			current_position[X_AXIS] = 197.5 + X_OFFSET_CALIB_PROCEDURES;
@@ -4052,7 +4078,7 @@ inline void gcode_G41(){
 			plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], INSERT_FAST_SPEED/60 , active_extruder);
 			st_synchronize();
 			if(gif_processing_state == PROCESSING_ERROR)return;
-			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 			current_position[X_AXIS] = mm_left_lines_y_l;
 			#else
 			current_position[X_AXIS] = mm_left_lines_y_l + X_OFFSET_CALIB_PROCEDURES;
@@ -4067,7 +4093,7 @@ inline void gcode_G41(){
 		plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], INSERT_FAST_SPEED/60 , active_extruder);
 		st_synchronize();
 		if(gif_processing_state == PROCESSING_ERROR)return;
-		#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+		#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 		current_position[X_AXIS] = mm_left_lines_y_r;
 		#else
 		current_position[X_AXIS] = mm_left_lines_y_r + X_OFFSET_CALIB_PROCEDURES;
@@ -4081,7 +4107,7 @@ inline void gcode_G41(){
 		st_synchronize();
 		if(gif_processing_state == PROCESSING_ERROR)return;
 		if(i != 9){			
-			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 			current_position[X_AXIS] = mm_left_lines_y_l;
 			#else
 			current_position[X_AXIS] = mm_left_lines_y_l + X_OFFSET_CALIB_PROCEDURES;
@@ -4112,7 +4138,7 @@ inline void gcode_G41(){
 		if (i == 0) {
 			
 			current_position[Y_AXIS]=23.5;
-			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 			current_position[X_AXIS] = 109.5;
 			#else
 			current_position[X_AXIS] = 109.5 + X_OFFSET_CALIB_PROCEDURES;
@@ -4125,7 +4151,7 @@ inline void gcode_G41(){
 			plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], INSERT_FAST_SPEED/60 , active_extruder);
 			st_synchronize();
 			if(gif_processing_state == PROCESSING_ERROR)return;
-			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 			current_position[X_AXIS] = 197.5;
 			#else
 			current_position[X_AXIS] = 197.5 + X_OFFSET_CALIB_PROCEDURES;
@@ -4143,7 +4169,7 @@ inline void gcode_G41(){
 			plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], INSERT_FAST_SPEED/60 , active_extruder);
 			st_synchronize();
 			if(gif_processing_state == PROCESSING_ERROR)return;
-			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 			current_position[X_AXIS] = mm_right_lines_y_r;
 			#else
 			current_position[X_AXIS] = mm_right_lines_y_r + X_OFFSET_CALIB_PROCEDURES;
@@ -4158,7 +4184,7 @@ inline void gcode_G41(){
 		plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], INSERT_FAST_SPEED/60 , active_extruder);
 		st_synchronize();
 		if(gif_processing_state == PROCESSING_ERROR)return;
-		#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+		#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 		current_position[X_AXIS] = mm_right_lines_y_l;
 		#else
 		current_position[X_AXIS] = mm_right_lines_y_l + X_OFFSET_CALIB_PROCEDURES;
@@ -4170,7 +4196,7 @@ inline void gcode_G41(){
 		plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], INSERT_FAST_SPEED/60, active_extruder);
 		
 		if (i != 9){
-			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 			current_position[X_AXIS] = mm_right_lines_y_r;
 			#else
 			current_position[X_AXIS] = mm_right_lines_y_r + X_OFFSET_CALIB_PROCEDURES;
@@ -4212,13 +4238,13 @@ inline void gcode_G43(){
 	current_position[Y_AXIS]=Y_MAX_POS/2;
 	if(active_extruder == LEFT_EXTRUDER) {
 		
-		#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+		#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 		current_position[X_AXIS] = 150;
 		#else
 		current_position[X_AXIS] = 150 + X_OFFSET_CALIB_PROCEDURES;
 		#endif
 		}else{
-		#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+		#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 		current_position[X_AXIS] = 170;
 		#else
 		current_position[X_AXIS] = 170 + X_OFFSET_CALIB_PROCEDURES;
@@ -7758,7 +7784,7 @@ inline void gcode_M600(){
 	
 }
 inline void gcode_M605(){
-	#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
+	#if BCN3D_SCREEN_VERSION_SETUP == BCN3D_SIGMA_PRINTER_DEVMODE_1
 		#ifdef DUAL_X_CARRIAGE
 		//    M605 S0: Full control mode. The slicer has full control over x-carriage movement
 		//    M605 S1: Auto-park mode. The inactive head will auto park/unpark without slicer involvement
@@ -7817,7 +7843,7 @@ inline void gcode_M605(){
 			home_axis_from_code(true, false, false);
 		}
 		#endif //DUAL_X_CARRIAGE
-	#elif BCN3D_SCREEN_VERSION == BCN3D_SIGMA_PRINTER
+	#elif BCN3D_SCREEN_VERSION_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 		#ifdef DUAL_X_CARRIAGE
 		//    M605 S0: Full control mode. The slicer has full control over x-carriage movement
 		//    M605 S1: Auto-park mode. The inactive head will auto park/unpark without slicer involvement
@@ -9178,7 +9204,7 @@ void calculate_delta(float cartesian[3])
 	*/
 }
 #endif
-#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
+#if BCN3D_SCREEN_VERSION_SETUP == BCN3D_SIGMA_PRINTER_DEVMODE_1
 inline void dual_mode_duplication_z_adjust_raft(void);
 inline void dual_mode_duplication_extruder_parked(void);
 inline void dual_mode_duplication_mirror_extruder_parked(void);
@@ -9287,7 +9313,7 @@ void prepare_move()
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], max_feedrate[Z_AXIS], active_extruder);
 			active_extruder_parked = false;
 		}
-		#if BCN3D_SCREEN_VERSION == BCN3D_SIGMAX_PRINTER
+		#if BCN3D_SCREEN_VERSION_SETUP == BCN3D_SIGMA_PRINTER_DEVMODE_1
 		else if (dual_x_carriage_mode == DXC_DUPLICATION_MODE && active_extruder == 0)
 		{
 			dual_mode_duplication_extruder_parked();
@@ -9901,7 +9927,7 @@ void left_test_print_code(){
 	//SKIRT_v2
 	//Positioning
 	current_position[Y_AXIS] = 187.5;
-	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+	#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 	current_position[X_AXIS] = 125.5;
 	#else
 	current_position[X_AXIS] = 125.5 + X_OFFSET_CALIB_PROCEDURES;
@@ -9919,7 +9945,7 @@ void left_test_print_code(){
 	plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],40,active_extruder);
 	st_synchronize();
 	if(gif_processing_state == PROCESSING_ERROR)return;
-	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+	#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 	current_position[X_AXIS] = 149.5;
 	#else
 	current_position[X_AXIS] = 149.5 + X_OFFSET_CALIB_PROCEDURES;
@@ -9932,7 +9958,7 @@ void left_test_print_code(){
 	plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],40,active_extruder);
 	st_synchronize();
 	if(gif_processing_state == PROCESSING_ERROR)return;
-	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+	#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 	current_position[X_AXIS] = 125.5;
 	#else
 	current_position[X_AXIS] = 125.5 + X_OFFSET_CALIB_PROCEDURES;
@@ -9952,7 +9978,7 @@ void left_test_print_code(){
 	float initial_z_pos = 0.1;
 	float z_layer_test = 0.15;
 	
-	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+	#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 	current_position[X_AXIS] = initial_x_pos;
 	#else
 	current_position[X_AXIS] = initial_x_pos + X_OFFSET_CALIB_PROCEDURES;
@@ -9977,7 +10003,7 @@ void left_test_print_code(){
 		st_synchronize();
 		if(gif_processing_state == PROCESSING_ERROR)return;
 		if(i != 5){
-			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 			current_position[X_AXIS] = initial_x_pos+(distance_x*i);
 			#else
 			current_position[X_AXIS] = initial_x_pos+(distance_x*i) + X_OFFSET_CALIB_PROCEDURES;
@@ -10021,7 +10047,7 @@ void right_test_print_code(){
 	
 	//SKIRT v2
 	current_position[Y_AXIS] = 187.5;
-	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+	#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 	current_position[X_AXIS] = 157.5;
 	#else
 	current_position[X_AXIS] = 157.5 + X_OFFSET_CALIB_PROCEDURES;
@@ -10033,7 +10059,7 @@ void right_test_print_code(){
 	plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],INSERT_FAST_SPEED/60,active_extruder);
 	st_synchronize();
 	if(gif_processing_state == PROCESSING_ERROR)return;
-	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+	#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 	current_position[X_AXIS] = 181.5;
 	#else
 	current_position[X_AXIS] = 181.5 + X_OFFSET_CALIB_PROCEDURES;
@@ -10044,7 +10070,7 @@ void right_test_print_code(){
 	current_position[Y_AXIS] = 107.5; current_position[E_AXIS] += extrusion_multiplier(187.5-107.5);
 	plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],40,active_extruder);
 	st_synchronize();
-	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+	#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 	current_position[X_AXIS] = 157.5;
 	#else
 	current_position[X_AXIS] = 157.5 + X_OFFSET_CALIB_PROCEDURES;
@@ -10067,7 +10093,7 @@ void right_test_print_code(){
 	float initial_z_pos = 0.1;
 	float z_layer_test = 0.15;
 		
-	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+	#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 	current_position[X_AXIS] = initial_x_pos;
 	#else
 	current_position[X_AXIS] = initial_x_pos + X_OFFSET_CALIB_PROCEDURES;
@@ -10092,7 +10118,7 @@ void right_test_print_code(){
 		st_synchronize();
 		if(gif_processing_state == PROCESSING_ERROR)return;
 		if(i != 5){
-			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 			current_position[X_AXIS] = initial_x_pos+(distance_x*i);
 			#else
 			current_position[X_AXIS] = initial_x_pos+(distance_x*i) + X_OFFSET_CALIB_PROCEDURES;
@@ -10139,7 +10165,7 @@ void bed_test_print_code(float x_offset, float y_offset, int zline){
 	//SKIRT_v2
 	//Positioning
 	current_position[Y_AXIS] = 280 + y_offset;
-	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+	#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 	current_position[X_AXIS] = NOZZLE_PARK_DISTANCE_BED_X0 + 118 + x_offset;
 	#else
 	current_position[X_AXIS] = NOZZLE_PARK_DISTANCE_BED_X0 + 118 + x_offset + X_OFFSET_BEDCOMPENSATION_PROCEDURE;
@@ -10157,7 +10183,7 @@ void bed_test_print_code(float x_offset, float y_offset, int zline){
 	plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],40,active_extruder);
 	st_synchronize();
 	if(gif_processing_state == PROCESSING_ERROR)return;
-	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+	#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 	current_position[X_AXIS] = NOZZLE_PARK_DISTANCE_BED_X0 + 92 + x_offset;
 	#else
 	current_position[X_AXIS] = NOZZLE_PARK_DISTANCE_BED_X0 + 92 + x_offset + X_OFFSET_BEDCOMPENSATION_PROCEDURE;
@@ -10170,7 +10196,7 @@ void bed_test_print_code(float x_offset, float y_offset, int zline){
 	plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],40,active_extruder);
 	st_synchronize();
 	if(gif_processing_state == PROCESSING_ERROR)return;
-	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+	#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 	current_position[X_AXIS] = NOZZLE_PARK_DISTANCE_BED_X0 + 118 + x_offset;
 	#else
 	current_position[X_AXIS] = NOZZLE_PARK_DISTANCE_BED_X0 + 118 + x_offset + X_OFFSET_BEDCOMPENSATION_PROCEDURE;
@@ -10194,7 +10220,7 @@ void bed_test_print_code(float x_offset, float y_offset, int zline){
 	float initial_z_pos = 0.4 + 0.1*zline;
 	float z_layer_test = 0.15;
 	
-	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+	#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 	current_position[X_AXIS] = initial_x_pos;
 	#else
 	current_position[X_AXIS] = initial_x_pos + X_OFFSET_BEDCOMPENSATION_PROCEDURE;
@@ -10219,7 +10245,7 @@ void bed_test_print_code(float x_offset, float y_offset, int zline){
 		st_synchronize();
 		if(gif_processing_state == PROCESSING_ERROR)return;
 		if(i != 5){
-			#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 			current_position[X_AXIS] = initial_x_pos+(distance_x*i);
 			#else
 			current_position[X_AXIS] = initial_x_pos+(distance_x*i) + X_OFFSET_BEDCOMPENSATION_PROCEDURE;
