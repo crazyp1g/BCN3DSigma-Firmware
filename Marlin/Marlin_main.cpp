@@ -1450,7 +1450,7 @@ void update_screen_printing(){
 			
 			#if EXTRUDERS > 1
 			// Check if preheat for insert_FIL is done ////////////////////////////////////////////////////////////////////
-			if ((abs(Tinstant-Tref1) < CHANGE_FIL_TEMP_HYSTERESIS) && is_changing_filament){
+			if ((abs(Tfinal1-Tinstant) < CHANGE_FIL_TEMP_HYSTERESIS) && is_changing_filament){
 				// if we want to add user setting temp, we should control if is heating
 				SERIAL_PROTOCOLPGM("temp ok \n");
 				SERIAL_PROTOCOLPGM("Ready to Insert/Remove \n");
