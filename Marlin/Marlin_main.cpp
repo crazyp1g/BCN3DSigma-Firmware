@@ -2040,10 +2040,8 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 					processing_state=0;
 					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_PROCESSING,processing_state);
 				}
-				genie.WriteObject(GENIE_OBJ_VIDEO,GIF_PROCESSING,processing_state);
 				waitPeriod_p=GIF_FRAMERATE+millis();
 			}
-			
 			break;
 			
 			case PROCESSING_CHANGE_FILAMENT_TEMPS:
@@ -2062,7 +2060,6 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 					processing_state=0;
 					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_FILAMENT_CHANGEFILAMENT_TEMPS,processing_state);
 				}
-				
 				waitPeriod_p=GIF_FRAMERATE+millis();
 			}
 			
@@ -2084,10 +2081,8 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 					processing_state=0;
 					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_ADJUSTING_TEMPERATURES,processing_state);
 				}
-				
 				waitPeriod_p=GIF_FRAMERATE+millis();
 			}
-			
 			break;
 			
 			case PROCESSING_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS:
@@ -2106,10 +2101,8 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 					processing_state=0;
 					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_MAINTENANCE_NYLONCLEANING_TEMPS,processing_state);
 				}
-				
 				waitPeriod_p=GIF_FRAMERATE+millis();
 			}
-			
 			break;
 			
 			
@@ -2129,7 +2122,6 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 					processing_state=0;
 					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,processing_state);
 				}
-				
 				waitPeriod_p=GIF_FRAMERATE+millis();
 			}
 			
@@ -2152,7 +2144,6 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 					processing_state=0;
 					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_CALIBRATION_CALIBBED_ADJUSTSCREWASKFIRST,processing_state);
 				}
-				
 				waitPeriod_p=GIF_FRAMERATE+millis();
 			}
 			
@@ -2175,7 +2166,6 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 					processing_state=0;
 					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_FILAMENT_SUCCESS,processing_state);
 				}
-				
 				waitPeriod_p=GIF_FRAMERATE+millis();
 			}
 			
@@ -2249,7 +2239,6 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 					processing_state=0;
 					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_FILAMENT_PURGE,processing_state);
 				}
-				
 				waitPeriod_p=GIF_FRAMERATE+millis();
 			}
 			
@@ -2273,10 +2262,8 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 					processing_state=0;
 					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP4,processing_state);
 				}
-				
 				waitPeriod_p=GIF_FRAMERATE+millis();
 			}
-			
 			break;
 			
 			
@@ -2298,10 +2285,8 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 					processing_state=0;
 					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_CALIBRATION_SUCCESS,processing_state);
 				}
-				
 				waitPeriod_p=GIF_FRAMERATE+millis();
 			}
-			
 			break;
 			
 			
@@ -2343,7 +2328,6 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 					processing_state= 0;
 					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_SETUPASSISTANT_SUCCESS,processing_state);
 				}
-				
 				waitPeriod_p=GIF_FRAMERATE+millis();
 			}
 			
@@ -2366,7 +2350,6 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 					processing_state=0;
 					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_CALIBRATION_CALIBBED_ADJUSTSCREWASK,processing_state);
 				}
-				
 				waitPeriod_p=GIF_FRAMERATE+millis();
 			}
 			break;
@@ -2386,7 +2369,6 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_CALIBRATION_CALIBFULL_CALIBZL,processing_state);
 					
 				}
-				genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_CALIBRATION_CALIBFULL_CALIBZL,processing_state);
 				waitPeriod_p=GIF_FRAMERATE+millis();
 			}
 			break;
@@ -2426,7 +2408,6 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 					processing_state =0;
 					genie.WriteObject(GENIE_OBJ_VIDEO,GIF_ERROR,processing_state);
 				}
-				
 				waitPeriod_p=GIF_FRAMERATE+millis();
 			}
 			
