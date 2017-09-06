@@ -2797,7 +2797,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					if(printer_state == STATE_NYLONCLEANING){
 						if (millis() >= waitPeriod_button_press){
 							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
-							#if BCN3D_SCREEN_VERSION_SETUP
+							#if BCN3D_SCREEN_VERSION_SETUP == BCN3D_SIGMA_PRINTER_DEVMODE_1
 							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP4,0);
 							#endif
 							if(which_extruder == 0)digitalWrite(FAN_PIN, 1);
@@ -3002,8 +3002,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							active_extruder = LEFT_EXTRUDER;
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							gif_processing_state = PROCESSING_DEFAULT;
-							setTargetHotend0(print_temp_l);
-							setTargetHotend1(print_temp_r);
+							setTargetHotend0(CALIBFULL_HOTEND_STANDBY_TEMP);
+							setTargetHotend1(CALIBFULL_HOTEND_STANDBY_TEMP);
 							setTargetBed(max(bed_temp_l,bed_temp_r));
 							
 							
@@ -3242,9 +3242,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					else if(printer_state == STATE_NYLONCLEANING){
 						if (millis() >= waitPeriod_button_press){
 							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
-							#if BCN3D_SCREEN_VERSION_SETUP
 							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_MAINTENANCE_NYLONCLEANING_STEP4,0);
-							#endif
 							if(which_extruder == 0)digitalWrite(FAN_PIN, 1);
 							else digitalWrite(FAN2_PIN, 1);
 							
@@ -3565,7 +3563,21 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						gif_processing_state = PROCESSING_STOP;
 						touchscreen_update();
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_ADJUSTING_TEMPERATURES,0);
+						setTargetHotend0(print_temp_l);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
+						gif_processing_state = PROCESSING_DEFAULT;
+						current_position[Z_AXIS] += 2;
+						plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],homing_feedrate[Z_AXIS]/60,active_extruder);
+						st_synchronize();
+						if(gif_processing_state == PROCESSING_ERROR)return;
+						home_axis_from_code(true,false,false);
+						gif_processing_state = PROCESSING_STOP;
+						touchscreen_update();
+						Calib_check_temps();
+						gif_processing_state = PROCESSING_STOP;
+						touchscreen_update();
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
+						gif_processing_state = PROCESSING_TEST;
 						SERIAL_PROTOCOLPGM("OK first Extruder! \n");
 						//We have to override z_prove_offset
 						zprobe_zoffset-=(current_position[Z_AXIS]); //We are putting more offset if needed
@@ -3573,32 +3585,13 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						/*current_position[Z_AXIS]=0;//We are setting this position as Zero
 						plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);*/
 						
-						setTargetHotend0(print_temp_l);
+						
 						
 						SERIAL_PROTOCOLPGM("Z1 Probe offset: ");
 						Serial.println(zprobe_zoffset);
 						Config_StoreSettings(); //Store changes
 						
 						
-						gif_processing_state = PROCESSING_ADJUSTING;
-						current_position[Z_AXIS] += 2;
-						plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],homing_feedrate[Z_AXIS]/60,active_extruder);
-						st_synchronize();
-						if(gif_processing_state == PROCESSING_ERROR)return;
-						home_axis_from_code(true,false,false);
-						
-						while (degHotend(LEFT_EXTRUDER)<(degTargetHotend(LEFT_EXTRUDER)-10) || degBed()<(target_temperature_bed)-10){ //Waiting to heat the extruder
-							
-							
-							manage_heater();
-							touchscreen_update();
-							if(gif_processing_state == PROCESSING_ERROR)return;
-						}
-						gif_processing_state = PROCESSING_STOP;
-						//delay(6000);
-						touchscreen_update();
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
-						gif_processing_state = PROCESSING_TEST;
 						home_axis_from_code(false,true,true);
 						if(gif_processing_state == PROCESSING_ERROR)return;
 						left_test_print_code();
@@ -3627,37 +3620,32 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						gif_processing_state = PROCESSING_STOP;
+						setTargetHotend1(print_temp_r);
 						touchscreen_update();
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_ADJUSTING_TEMPERATURES,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
+						gif_processing_state = PROCESSING_DEFAULT;
+						current_position[Z_AXIS] += 2;
+						plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],homing_feedrate[Z_AXIS]/60,active_extruder);
+						st_synchronize();
+						if(gif_processing_state == PROCESSING_ERROR)return;
+						home_axis_from_code(true,false,false);
+						gif_processing_state = PROCESSING_STOP;
+						touchscreen_update();
+						Calib_check_temps();
+						gif_processing_state = PROCESSING_STOP;
+						touchscreen_update();
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
+						gif_processing_state = PROCESSING_TEST;
 						SERIAL_PROTOCOLLNPGM("OK second Extruder!");
 						extruder_offset[Z_AXIS][RIGHT_EXTRUDER]-=(current_position[Z_AXIS]);//Add the difference to the current offset value
 						SERIAL_PROTOCOLPGM("Z2 Offset: ");
 						Serial.println(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]);
 						Config_StoreSettings(); //Store changes
 						
-						setTargetHotend1(print_temp_r);
+						
 						st_synchronize();
 						if(gif_processing_state == PROCESSING_ERROR)return;
 						
-						gif_processing_state = PROCESSING_ADJUSTING;
-						current_position[Z_AXIS] += 2;
-						plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],homing_feedrate[Z_AXIS]/60,active_extruder);
-						st_synchronize();
-						if(gif_processing_state == PROCESSING_ERROR)return;
-						home_axis_from_code(true,false,false);
-						if(gif_processing_state == PROCESSING_ERROR)return;
-						while (degHotend(RIGHT_EXTRUDER)<(degTargetHotend(RIGHT_EXTRUDER)-10) || degBed()<(target_temperature_bed)-10){ //Waiting to heat the extruder
-							
-							manage_heater();
-							touchscreen_update();
-							if(gif_processing_state == PROCESSING_ERROR)return;
-						}
-						//delay(6000);
-						
-						gif_processing_state = PROCESSING_STOP;
-						touchscreen_update();
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
-						gif_processing_state = PROCESSING_TEST;
 						home_axis_from_code(false,true,true);
 						if(gif_processing_state == PROCESSING_ERROR)return;
 						right_test_print_code();
@@ -3723,6 +3711,9 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					if (millis() >= waitPeriod_button_press){
 						redo_source = 3;
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
+						current_position[E_AXIS] -= 4;
+						plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15, active_extruder);//move first extruder
+						st_synchronize();
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
@@ -3733,6 +3724,10 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						doblocking = true;
 						if(redo_source == 0){		 //redo z test print
 							if (active_extruder==0){
+								setTargetHotend0(print_temp_l);
+								Calib_check_temps();
+								gif_processing_state = PROCESSING_STOP;
+								touchscreen_update();
 								genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
 								gif_processing_state = PROCESSING_TEST;
 								home_axis_from_code(true,true,true);
@@ -3742,6 +3737,10 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								if(gif_processing_state == PROCESSING_ERROR)return;
 							}
 							else{
+								setTargetHotend1(print_temp_r);
+								Calib_check_temps();
+								gif_processing_state = PROCESSING_STOP;
+								touchscreen_update();
 								genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
 								gif_processing_state = PROCESSING_TEST;
 								home_axis_from_code(true,true,true);
@@ -3753,6 +3752,11 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							}
 						}
 						else if(redo_source == 1){ //redo x test print
+							setTargetHotend1(print_temp_r);
+							setTargetHotend0(print_temp_l);
+							Calib_check_temps();
+							gif_processing_state = PROCESSING_STOP;
+							touchscreen_update();
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
 							gif_processing_state = PROCESSING_TEST;
 							home_axis_from_code(true,true,false);
@@ -3761,6 +3765,11 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							enquecommand_P(PSTR("G40"));
 						}
 						else if(redo_source == 2){ //redo y test print
+							setTargetHotend1(print_temp_r);
+							setTargetHotend0(print_temp_l);
+							Calib_check_temps();
+							gif_processing_state = PROCESSING_STOP;
+							touchscreen_update();
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
 							gif_processing_state = PROCESSING_TEST;
 							home_axis_from_code(true,true,false);
@@ -3776,8 +3785,6 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								current_position[E_AXIS]-=4;
 								plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],INSERT_FAST_SPEED/60,LEFT_EXTRUDER);
 								st_synchronize();
-								if(gif_processing_state == PROCESSING_ERROR)return;
-								setTargetHotend0(print_temp_l);
 								home_axis_from_code(true,true,true);
 								if(gif_processing_state == PROCESSING_ERROR)return;
 								enquecommand_P(PSTR("G43"));
@@ -3790,7 +3797,6 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],INSERT_FAST_SPEED/60,RIGHT_EXTRUDER);
 								st_synchronize();
 								if(gif_processing_state == PROCESSING_ERROR)return;
-								setTargetHotend1(print_temp_r);
 								home_axis_from_code(true,true,true);
 								if(gif_processing_state == PROCESSING_ERROR)return;
 								enquecommand_P(PSTR("G43"));
@@ -3910,11 +3916,10 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						//changeTool(LEFT_EXTRUDER);
 						gif_processing_state = PROCESSING_STOP;
 						st_synchronize();
-						
-						Calib_check_temps();
-						
-						
-						
+						setTargetHotend0(CALIBFULL_HOTEND_STANDBY_TEMP);
+						setTargetHotend1(CALIBFULL_HOTEND_STANDBY_TEMP);
+						setTargetBed(max(bed_temp_l,bed_temp_r));
+						Calib_check_temps();						
 						gif_processing_state = PROCESSING_DEFAULT;
 						changeTool(0);
 						current_position[Z_AXIS] = 60;
@@ -3931,11 +3936,12 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						current_position[Y_AXIS] = 0;
 						plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200, LEFT_EXTRUDER);//move first extruder
 						st_synchronize();
+						current_position[E_AXIS] -= 4;
+						plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 7.5, LEFT_EXTRUDER);//move first extruder
+						st_synchronize();
 						if(gif_processing_state == PROCESSING_ERROR)return;
 						gif_processing_state = PROCESSING_STOP;
-						
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANNOZZLE0,0);
-						
 						
 					}
 					break;
@@ -3968,7 +3974,9 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						gif_processing_state = PROCESSING_STOP;
 						
 						st_synchronize();
-						//changeTool(LEFT_EXTRUDER);
+						setTargetHotend0(CALIBFULL_HOTEND_STANDBY_TEMP);
+						setTargetHotend1(CALIBFULL_HOTEND_STANDBY_TEMP);
+						setTargetBed(max(bed_temp_l,bed_temp_r));
 						Calib_check_temps();
 						
 						gif_processing_state = PROCESSING_DEFAULT;
@@ -3985,6 +3993,9 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						
 						current_position[Y_AXIS] = 0;
 						plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200, RIGHT_EXTRUDER);//move first extruder
+						st_synchronize();
+						current_position[E_AXIS] -= 4;
+						plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 7.5, RIGHT_EXTRUDER);//move first extruder
 						st_synchronize();
 						if(gif_processing_state == PROCESSING_ERROR)return;
 						gif_processing_state = PROCESSING_STOP;
@@ -4083,6 +4094,9 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						home_axis_from_code(true,true,true);
 						gif_processing_state = PROCESSING_STOP;
 						st_synchronize();
+						setTargetHotend0(print_temp_l);
+						setTargetHotend1(print_temp_r);
+						setTargetBed(max(bed_temp_l,bed_temp_r));
 						Calib_check_temps();
 						gif_processing_state = PROCESSING_DEFAULT;
 						if(gif_processing_state == PROCESSING_ERROR)return;
@@ -4113,6 +4127,9 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						gif_processing_state = PROCESSING_DEFAULT;
 						home_axis_from_code(true,true,true);
 						gif_processing_state = PROCESSING_STOP;
+						setTargetHotend0(print_temp_l);
+						setTargetHotend1(print_temp_r);
+						setTargetBed(max(bed_temp_l,bed_temp_r));
 						st_synchronize();
 						Calib_check_temps();
 						gif_processing_state = PROCESSING_DEFAULT;
@@ -5292,17 +5309,17 @@ inline void Z_compensation_decisor(void){
 }
 inline void Calib_check_temps(void){
 	static long waitPeriod_s = millis();
-	if(degHotend(LEFT_EXTRUDER)<(degTargetHotend(LEFT_EXTRUDER)-5) || degHotend(RIGHT_EXTRUDER)<(degTargetHotend(RIGHT_EXTRUDER)-5) || degBed()<(max(bed_temp_l,bed_temp_r)-2)){
+	if((abs(degHotend(LEFT_EXTRUDER)-degTargetHotend(LEFT_EXTRUDER))>5) || (abs(degHotend(RIGHT_EXTRUDER)-degTargetHotend(RIGHT_EXTRUDER))>5) || (abs(degBed()-max(bed_temp_l,bed_temp_r)> 2))){
 		int Tref0 = (int)degHotend0();
 		int Tref1 = (int)degHotend1();
 		int Trefbed = (int)degBed();
-		int Tfinal0 = (int)(degTargetHotend(LEFT_EXTRUDER)-5);
-		int Tfinal1 = (int)(degTargetHotend(RIGHT_EXTRUDER)-5);
+		int Tfinal0 = (int)degTargetHotend(LEFT_EXTRUDER);
+		int Tfinal1 = (int)degTargetHotend(RIGHT_EXTRUDER);
 		int Tfinalbed = (int)(degTargetBed()-2);
 		long percentage = 0;
 		genie.WriteObject(GENIE_OBJ_FORM,FORM_ADJUSTING_TEMPERATURES,0);
 		gif_processing_state = PROCESSING_ADJUSTING;
-		while (degHotend(LEFT_EXTRUDER)<(degTargetHotend(LEFT_EXTRUDER)-5) || degHotend(RIGHT_EXTRUDER)<(degTargetHotend(RIGHT_EXTRUDER)-5) || degBed()<(max(bed_temp_l,bed_temp_r)-2)){ //Waiting to heat the extruder
+		while ((abs(degHotend(LEFT_EXTRUDER)-degTargetHotend(LEFT_EXTRUDER))>5) || (abs(degHotend(RIGHT_EXTRUDER)-degTargetHotend(RIGHT_EXTRUDER))>5) || (abs(degBed()-max(bed_temp_l,bed_temp_r)> 2))){ //Waiting to heat the extruder
 			
 			manage_heater();
 			touchscreen_update();
@@ -5313,25 +5330,43 @@ inline void Calib_check_temps(void){
 				memset(buffer, '\0', sizeof(buffer) );
 				int Tinstanthot0, Tinstanthot1, Tinstantbed;
 				
-				if(Tref0 > Tfinal0){
-					Tref0 = Tfinal0;
-					Tinstanthot0 = Tfinal0;
-					}else if(Tref0 > (int)degHotend(LEFT_EXTRUDER)){
-					Tinstanthot0 = Tref0;
-					}else if((int)degHotend(LEFT_EXTRUDER) > Tfinal0){
-					Tinstanthot0 = Tfinal0;
-					}else{
-					Tinstanthot0 = (int)degHotend(LEFT_EXTRUDER);
+				if(Tref0<Tfinal0){
+					
+					if(Tref0 > (int)degHotend(LEFT_EXTRUDER)){
+						Tinstanthot0 = Tref0;
+						}else if((int)degHotend(LEFT_EXTRUDER) > Tfinal0){
+						Tinstanthot0 = Tfinal1;
+						}else{
+						Tinstanthot0 = (int)degHotend(LEFT_EXTRUDER);
+					}
 				}
-				if(Tref1 > Tfinal1){
-					Tref1 = Tfinal1;
-					Tinstanthot1 = Tfinal1;
-					}else if(Tref1 > (int)degHotend(RIGHT_EXTRUDER)){
-					Tinstanthot1 = Tref1;
-					}else if((int)degHotend(RIGHT_EXTRUDER) > Tfinal1){
-					Tinstanthot1 = Tfinal1;
-					}else{
-					Tinstanthot1 = (int)degHotend(RIGHT_EXTRUDER);
+				else{
+					if(Tref0 < (int)degHotend(LEFT_EXTRUDER)){
+						Tinstanthot0 = Tref0;
+						}else if((int)degHotend(LEFT_EXTRUDER) < Tfinal0){
+						Tinstanthot0 = Tfinal0;
+						}else{
+						Tinstanthot0 = (int)degHotend(LEFT_EXTRUDER);
+					}
+				}
+				if(Tref1<Tfinal1){
+					
+					if(Tref1 > (int)degHotend(RIGHT_EXTRUDER)){
+						Tinstanthot1 = Tref1;
+						}else if((int)degHotend(RIGHT_EXTRUDER) > Tfinal1){
+						Tinstanthot1 = Tfinal1;
+						}else{
+						Tinstanthot1 = (int)degHotend(RIGHT_EXTRUDER);
+					}
+				}
+				else{
+					if(Tref1 < (int)degHotend(RIGHT_EXTRUDER)){
+						Tinstanthot1 = Tref1;
+						}else if((int)degHotend(RIGHT_EXTRUDER) < Tfinal1){
+						Tinstanthot1 = Tfinal1;
+						}else{
+						Tinstanthot1 = (int)degHotend(RIGHT_EXTRUDER);
+					}
 				}
 				if(Trefbed > Tfinalbed){
 					Trefbed = Tfinalbed;
@@ -5343,9 +5378,9 @@ inline void Calib_check_temps(void){
 					}else{
 					Tinstantbed = (int)degBed();
 				}
-				
-				percentage = (long)Tfinal0+(long)Tfinal1+(long)Tfinalbed*5-(long)Tref0-(long)Tref1-(long)Trefbed*5;
-				percentage= 100*((long)Tinstanthot0+(long)Tinstanthot1+(long)Tinstantbed*5-(long)Tref0-(long)Tref1-(long)Trefbed*5)/percentage;
+								
+				percentage = abs((long)Tfinal0-(long)Tref0)+abs((long)Tfinal1-(long)Tref1)+abs((long)Tfinalbed*5-(long)Trefbed*5);
+				percentage= 100*(abs((long)Tinstanthot0-(long)Tref0)+abs((long)Tinstanthot1-(long)Tref1)+abs((long)Tinstantbed*5-(long)Trefbed*5))/percentage;
 				
 				sprintf(buffer, "%ld%%", percentage);
 				genie.WriteStr(STRING_ADJUSTING_TEMPERATURES,buffer);
