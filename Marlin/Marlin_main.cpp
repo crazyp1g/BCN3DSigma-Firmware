@@ -1864,8 +1864,10 @@ void update_screen_noprinting(){
 	
 	
 }
+
 void update_screen_sdcard(){
 	static uint32_t waitPeriod_input_button_command = millis();
+	Serial.println("ENTRANDO EN BUSY");
 	
 	if(flag_sdlist_goup){
 		ListFilesDownfunc();
@@ -1881,6 +1883,7 @@ void update_screen_sdcard(){
 	}
 	if(flag_sdlist_gofolderback){
 		ListFileListENTERBACKFORLDERSD();
+		waitPeriod_input_button_command = millis();
 		flag_sdlist_gofolderback = false;
 	}
 	if(millis() >= waitPeriod_input_button_command && flag_sdlist_filesupdown){
@@ -1911,6 +1914,7 @@ void update_screen_sdcard(){
 	flag_sdlist_select2 = false;
 	flag_sdlist_select3 = false;
 	flag_sdlist_select4 = false;
+	Serial.println("SALIENDO DE BUSY");
 }
 
 
@@ -3969,6 +3973,8 @@ inline void gcode_G40(){
 	gif_processing_state = PROCESSING_STOP;
 	doblocking = false;
 	enquecommand_P(PSTR("M84"));
+	setTargetHotend0(print_temp_l-30);
+	setTargetHotend1(print_temp_r-30);
 	if(gif_processing_state == PROCESSING_ERROR)return;
 	genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_RESULTSX,0);
 
@@ -4203,12 +4209,12 @@ inline void gcode_G41(){
 	doblocking = false;
 	enquecommand_P(PSTR("M84"));
 	//Go to Calibration select screen
+	setTargetHotend0(print_temp_l-30);
+	setTargetHotend1(print_temp_r-30);
 	if(gif_processing_state == PROCESSING_ERROR)return;
 	genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_RESULTSY,0);
-	
-	
-	
 	#endif //EXTRUDER_CALIBRATION_WIZARD
+	
 }
 inline void gcode_G43(){
 	#ifdef EXTRUDER_CALIBRATION_WIZARD
@@ -4677,8 +4683,8 @@ inline void gcode_G34(){
 	doblocking= true;
 	
 	if (flag_utilities_calibration_calibfull){
-		setTargetHotend0(print_temp_l);
-		setTargetHotend1(print_temp_r);
+		setTargetHotend0(CALIBFULL_HOTEND_STANDBY_TEMP);
+		setTargetHotend1(CALIBFULL_HOTEND_STANDBY_TEMP);
 		setTargetBed(max(bed_temp_l,bed_temp_r));
 	}
 	
@@ -10008,6 +10014,7 @@ void left_test_print_code(){
 	doblocking = false;
 	//SELECT LINES SCREEN
 	gif_processing_state = PROCESSING_STOP;
+	setTargetHotend0(CALIBFULL_HOTEND_STANDBY_TEMP);
 	genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL,0);
 }
 
@@ -10122,6 +10129,7 @@ void right_test_print_code(){
 	//SELECT LINES SCREEN
 	doblocking = false;
 	gif_processing_state = PROCESSING_STOP;
+	setTargetHotend1(CALIBFULL_HOTEND_STANDBY_TEMP);
 	genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZR,0);
 }
 void bed_test_print_code(float x_offset, float y_offset, int zline){
