@@ -777,13 +777,13 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					case BUTTON_UTILITIES_FILAMENT_LOAD_KEEPPUSHING_NEXT:
 					if (millis() >= waitPeriod_button_press){
-						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON2;
 						
 						if (filament_mode =='I')
 						{ //Inserting...
-							gif_processing_state = PROCESSING_DEFAULT;
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
-							//delay(850);
+							gif_processing_state = PROCESSING_DEFAULT;
+							delay(550);
 							plan_set_position(extruder_offset[X_AXIS][which_extruder], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 							#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 							current_position[X_AXIS] = 155;
@@ -815,13 +815,13 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					case BUTTON_UTILITIES_FILAMENT_UNLOAD_ROLLTHESPOOL_NEXT:
 					if (millis() >= waitPeriod_button_press){
-						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
-						
+						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON2;
 						
 						if (filament_mode =='R')
 						{ //Removing...
-							gif_processing_state = PROCESSING_DEFAULT;
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
+							gif_processing_state = PROCESSING_DEFAULT;
+							delay(550);
 							current_position[E_AXIS] -= (BOWDEN_LENGTH + EXTRUDER_LENGTH + 100);//Extra extrusion at fast feedrate
 							plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS],  INSERT_FAST_SPEED/60, which_extruder);
 							st_synchronize();
@@ -2642,12 +2642,12 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					case BUTTON_UTILITIES_FILAMENT_LOAD_KEEPPUSHING_NEXT:
 					if (millis() >= waitPeriod_button_press){
-						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON2;
 						if (filament_mode =='I')
 						{ //Inserting...
-							gif_processing_state = PROCESSING_DEFAULT;
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
-							delay(850);
+							gif_processing_state = PROCESSING_DEFAULT;
+							delay(550);
 							#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 							current_position[X_AXIS] = 155;
 							#else
@@ -2678,11 +2678,12 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					case BUTTON_UTILITIES_FILAMENT_UNLOAD_ROLLTHESPOOL_NEXT:
 					if (millis() >= waitPeriod_button_press){
-						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON2;
 						if (filament_mode =='R')
 						{ //Removing...
-							gif_processing_state = PROCESSING_DEFAULT;
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
+							gif_processing_state = PROCESSING_DEFAULT;
+							delay(550);
 							current_position[E_AXIS] -= (BOWDEN_LENGTH + EXTRUDER_LENGTH + 100);//Extra extrusion at fast feedrate
 							plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS],  INSERT_FAST_SPEED/60, which_extruder);
 							previous_state = FORM_UTILITIES_FILAMENT;
@@ -4150,13 +4151,14 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								gif_processing_state = PROCESSING_SUCCESS_FIRST_RUN;
 								FLAG_First_Start_Wizard = 888;
 								Step_First_Start_Wizard = false;
-								flag_utilities_calibration_calibfull = false;
+								
 								}else{
 								printer_state = STATE_CALIBRATION;
 								genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_CALIBRATION_SUCCESS,0);
 								genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_SUCCESS,0);
 								gif_processing_state = PROCESSING_BED_SUCCESS;
 							}
+							flag_utilities_calibration_calibfull = false;
 							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						}
 					}
@@ -5309,7 +5311,7 @@ inline void Z_compensation_decisor(void){
 }
 inline void Calib_check_temps(void){
 	static long waitPeriod_s = millis();
-	if((abs(degHotend(LEFT_EXTRUDER)-degTargetHotend(LEFT_EXTRUDER))>5) || (abs(degHotend(RIGHT_EXTRUDER)-degTargetHotend(RIGHT_EXTRUDER))>5) || (abs(degBed()-max(bed_temp_l,bed_temp_r)> 2))){
+	if((abs(degHotend(LEFT_EXTRUDER)-degTargetHotend(LEFT_EXTRUDER))>5) || (abs(degHotend(RIGHT_EXTRUDER)-degTargetHotend(RIGHT_EXTRUDER))>5) || (max(bed_temp_l,bed_temp_r)-degBed()> 2)){
 		int Tref0 = (int)degHotend0();
 		int Tref1 = (int)degHotend1();
 		int Trefbed = (int)degBed();
@@ -5319,7 +5321,7 @@ inline void Calib_check_temps(void){
 		long percentage = 0;
 		genie.WriteObject(GENIE_OBJ_FORM,FORM_ADJUSTING_TEMPERATURES,0);
 		gif_processing_state = PROCESSING_ADJUSTING;
-		while ((abs(degHotend(LEFT_EXTRUDER)-degTargetHotend(LEFT_EXTRUDER))>5) || (abs(degHotend(RIGHT_EXTRUDER)-degTargetHotend(RIGHT_EXTRUDER))>5) || (abs(degBed()-max(bed_temp_l,bed_temp_r)> 2))){ //Waiting to heat the extruder
+		while (((abs(degHotend(LEFT_EXTRUDER)-degTargetHotend(LEFT_EXTRUDER))>5) && Tfinal0!=0) || ((abs(degHotend(RIGHT_EXTRUDER)-degTargetHotend(RIGHT_EXTRUDER))>5) && Tfinal1!=0) || (max(bed_temp_l,bed_temp_r)-degBed()> 2)){ //Waiting to heat the extruder
 			
 			manage_heater();
 			touchscreen_update();
@@ -5336,6 +5338,9 @@ inline void Calib_check_temps(void){
 						Tinstanthot0 = Tref0;
 						}else if((int)degHotend(LEFT_EXTRUDER) > Tfinal0){
 						Tinstanthot0 = Tfinal1;
+						}else if(Tfinal0==0){
+						Tinstanthot0 = 0;
+						Tref0 = 0;	
 						}else{
 						Tinstanthot0 = (int)degHotend(LEFT_EXTRUDER);
 					}
@@ -5345,6 +5350,9 @@ inline void Calib_check_temps(void){
 						Tinstanthot0 = Tref0;
 						}else if((int)degHotend(LEFT_EXTRUDER) < Tfinal0){
 						Tinstanthot0 = Tfinal0;
+						}else if(Tfinal0==0){
+						Tinstanthot0 = 0;
+						Tref0 = 0;	
 						}else{
 						Tinstanthot0 = (int)degHotend(LEFT_EXTRUDER);
 					}
@@ -5355,6 +5363,9 @@ inline void Calib_check_temps(void){
 						Tinstanthot1 = Tref1;
 						}else if((int)degHotend(RIGHT_EXTRUDER) > Tfinal1){
 						Tinstanthot1 = Tfinal1;
+						}else if(Tfinal1==0){
+						Tinstanthot1 = 0;
+						Tref1 = 0;
 						}else{
 						Tinstanthot1 = (int)degHotend(RIGHT_EXTRUDER);
 					}
@@ -5364,6 +5375,9 @@ inline void Calib_check_temps(void){
 						Tinstanthot1 = Tref1;
 						}else if((int)degHotend(RIGHT_EXTRUDER) < Tfinal1){
 						Tinstanthot1 = Tfinal1;
+						}else if(Tfinal1==0){
+						Tinstanthot1 = 0;
+						Tref1 = 0;
 						}else{
 						Tinstanthot1 = (int)degHotend(RIGHT_EXTRUDER);
 					}

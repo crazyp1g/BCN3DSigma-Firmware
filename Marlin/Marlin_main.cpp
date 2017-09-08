@@ -1446,34 +1446,36 @@ void update_screen_printing(){
 				percentage = 100*(Tinstant-Tref1)/percentage;
 				sprintf_P(buffer, PSTR("%d%%"), percentage);
 				genie.WriteStr(STRING_UTILITIES_FILAMENT_CHANGEFILAMENT_TEMPS,buffer);
+				
+				if ((abs((int)degHotend(which_extruder)-(int)degTargetHotend(which_extruder)) < CHANGE_FIL_TEMP_HYSTERESIS)){
+					// if we want to add user setting temp, we should control if is heating
+					SERIAL_PROTOCOLPGM("temp ok \n");
+					SERIAL_PROTOCOLPGM("Ready to Insert/Remove \n");
+					//We have preheated correctly
+					
+					if (filament_mode =='I'){
+						heatting = false;
+						//genie.WriteStr(STRING_FILAMENT,"Press GO and keep pushing the filament \n until starts being pulled");
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_LOAD_KEEPPUSHING,0);
+						//genie.WriteStr(STRING_FILAMENT,"Press GO and keep pushing the filament \n until starts being pulled");
+					}
+					else if (filament_mode =='R')
+					{
+						heatting = false;
+						//genie.WriteStr(STRING_FILAMENT,"Press GO to Remove Filament, roll\n the spool backwards to save the filament");
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_UNLOAD_ROLLTHESPOOL,0);
+						//genie.WriteStr(STRING_FILAMENT,"Press GO to Remove Filament, roll\n the spool backwards to save the filament");
+						
+					}
+					gif_processing_state = PROCESSING_STOP;
+					is_changing_filament=false; //Reset changing filament control
+				}
 			}
 			
-			#if EXTRUDERS > 1
+			
 			// Check if preheat for insert_FIL is done ////////////////////////////////////////////////////////////////////
-			if ((abs(Tfinal1-Tinstant) < CHANGE_FIL_TEMP_HYSTERESIS) && is_changing_filament){
-				// if we want to add user setting temp, we should control if is heating
-				SERIAL_PROTOCOLPGM("temp ok \n");
-				SERIAL_PROTOCOLPGM("Ready to Insert/Remove \n");
-				//We have preheated correctly
-				
-				if (filament_mode =='I'){
-					heatting = false;
-					//genie.WriteStr(STRING_FILAMENT,"Press GO and keep pushing the filament \n until starts being pulled");
-					genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_LOAD_KEEPPUSHING,0);
-					//genie.WriteStr(STRING_FILAMENT,"Press GO and keep pushing the filament \n until starts being pulled");
-				}
-				else if (filament_mode =='R')
-				{
-					heatting = false;
-					//genie.WriteStr(STRING_FILAMENT,"Press GO to Remove Filament, roll\n the spool backwards to save the filament");
-					genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_UNLOAD_ROLLTHESPOOL,0);
-					//genie.WriteStr(STRING_FILAMENT,"Press GO to Remove Filament, roll\n the spool backwards to save the filament");
-					
-				}
-				gif_processing_state = PROCESSING_STOP;
-				is_changing_filament=false; //Reset changing filament control
-			}
-			#endif //Extruders > 1
+			
+			
 			
 			waitPeriod=2000+millis(); // Every Second
 		}
@@ -1546,15 +1548,15 @@ void update_screen_printing(){
 			flag_sdprinting_dararefresh = false;
 			count5s++;
 			count5s1++;
-			if (count5s == 1440){ //5s * 720 = 3600s = 1h
+			if (count5s == 1440){ //2.5s * 1440 = 3600s = 1h
 				count5s=0;
 				log_hours_print++;
 			}
-			if (count5s1 == 24){ //5s * 12 = 60s = 1min
+			if (count5s1 == 24){ //2.5s * 34 = 60s = 1min
 				count5s1=0;
 				log_min_print++;
 			}
-			waitPeriod=2500+millis();	//Every 5s
+			waitPeriod=2500+millis();	//Every 2.5s
 			
 		}
 		
@@ -1762,30 +1764,29 @@ void update_screen_noprinting(){
 				percentage = 100*(Tinstant-Tref1)/percentage;
 				sprintf_P(buffer, PSTR("%d%%"), percentage);
 				genie.WriteStr(STRING_UTILITIES_FILAMENT_CHANGEFILAMENT_TEMPS,buffer);
+				
+				// Check if preheat for insert_FIL is done ////////////////////////////////////////////////////////////////////
+				if ((abs((int)degHotend(which_extruder)-(int)degTargetHotend(which_extruder)) < CHANGE_FIL_TEMP_HYSTERESIS)){
+					// if we want to add user setting temp, we should control if is heating
+					
+					SERIAL_PROTOCOLPGM("temp ok \n");
+					SERIAL_PROTOCOLPGM("Ready to Insert/Remove \n");
+					//We have preheated correctly
+					if (filament_mode =='I'){
+						
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_LOAD_KEEPPUSHING,0);
+					}
+					else if (filament_mode =='R')
+					{
+						
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_UNLOAD_ROLLTHESPOOL,0);
+						
+					}
+					gif_processing_state = PROCESSING_STOP;
+					is_changing_filament=false; //Reset changing filament control
+				}
 			}
 			
-			#if EXTRUDERS > 1
-			// Check if preheat for insert_FIL is done ////////////////////////////////////////////////////////////////////
-			if ((abs(Tinstant-Tref1) < CHANGE_FIL_TEMP_HYSTERESIS) && is_changing_filament){
-				// if we want to add user setting temp, we should control if is heating
-				
-				SERIAL_PROTOCOLPGM("temp ok \n");
-				SERIAL_PROTOCOLPGM("Ready to Insert/Remove \n");
-				//We have preheated correctly
-				if (filament_mode =='I'){
-					
-					genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_LOAD_KEEPPUSHING,0);
-				}
-				else if (filament_mode =='R')
-				{
-					
-					genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_UNLOAD_ROLLTHESPOOL,0);
-					
-				}
-				gif_processing_state = PROCESSING_STOP;
-				is_changing_filament=false; //Reset changing filament control
-			}
-			#endif //Extruders > 1
 			
 			waitPeriodno=2000+millis(); // Every Second
 		}
@@ -1867,8 +1868,7 @@ void update_screen_noprinting(){
 
 void update_screen_sdcard(){
 	static uint32_t waitPeriod_input_button_command = millis();
-	Serial.println("ENTRANDO EN BUSY");
-	
+		
 	if(flag_sdlist_goup){
 		ListFilesDownfunc();
 		flag_sdlist_goup = false;
@@ -1914,7 +1914,6 @@ void update_screen_sdcard(){
 	flag_sdlist_select2 = false;
 	flag_sdlist_select3 = false;
 	flag_sdlist_select4 = false;
-	Serial.println("SALIENDO DE BUSY");
 }
 
 
@@ -4962,8 +4961,8 @@ inline void gcode_G34(){
 			active_extruder = LEFT_EXTRUDER;
 			//genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
 			//gif_processing_state = PROCESSING_DEFAULT;
-			setTargetHotend0(print_temp_l);
-			setTargetHotend1(print_temp_r);
+			setTargetHotend0(CALIBFULL_HOTEND_STANDBY_TEMP);
+			setTargetHotend1(CALIBFULL_HOTEND_STANDBY_TEMP);
 			setTargetBed(max(bed_temp_l,bed_temp_r));
 			
 			
@@ -5124,7 +5123,7 @@ inline void gcode_G36()
 	Bed_Compensation_Lines_Selected[2] = 0;
 	flag_utilities_calibration_bedcomensationmode = true;
 	setTargetHotend0(print_temp_l);
-	//setTargetHotend1(print_temp_r);
+	setTargetHotend1(0);
 	setTargetBed(max(bed_temp_l,bed_temp_r));
 	genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 	gif_processing_state = PROCESSING_DEFAULT;
@@ -10149,7 +10148,7 @@ void bed_test_print_code(float x_offset, float y_offset, int zline){
 	st_synchronize();
 	if(gif_processing_state == PROCESSING_ERROR)return;
 	current_position[E_AXIS]-=4;
-	plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],INSERT_FAST_SPEED/60,active_extruder);
+	plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],RETRACT_SPEED_G36/60,active_extruder);
 	
 	//SKIRT_v2
 	//Positioning
@@ -10164,7 +10163,7 @@ void bed_test_print_code(float x_offset, float y_offset, int zline){
 	st_synchronize();
 	if(gif_processing_state == PROCESSING_ERROR)return;
 	current_position[E_AXIS]+=4.1;
-	plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],INSERT_FAST_SPEED/60,active_extruder);
+	plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],RETRACT_SPEED_G36/60,active_extruder);
 	st_synchronize();
 	if(gif_processing_state == PROCESSING_ERROR)return;
 	//start print the skirt
@@ -10195,7 +10194,7 @@ void bed_test_print_code(float x_offset, float y_offset, int zline){
 	st_synchronize();
 	if(gif_processing_state == PROCESSING_ERROR)return;
 	current_position[E_AXIS]-=4;
-	plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],INSERT_FAST_SPEED/60,active_extruder);
+	plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],RETRACT_SPEED_G36/60,active_extruder);
 	st_synchronize();
 	if(gif_processing_state == PROCESSING_ERROR)return;
 	
@@ -10222,7 +10221,7 @@ void bed_test_print_code(float x_offset, float y_offset, int zline){
 	for(int i = 1; i<=5;i++){
 		
 		current_position[E_AXIS]+= 4.1;
-		plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],INSERT_FAST_SPEED/60,active_extruder);
+		plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],RETRACT_SPEED_G36/60,active_extruder);
 		st_synchronize();
 		if(gif_processing_state == PROCESSING_ERROR)return;
 		current_position[Y_AXIS] = initial_y_pos-distance_y;  current_position[E_AXIS]+=extrusion_multiplier(distance_y);
@@ -10230,7 +10229,7 @@ void bed_test_print_code(float x_offset, float y_offset, int zline){
 		st_synchronize();
 		if(gif_processing_state == PROCESSING_ERROR)return;
 		current_position[E_AXIS]-=4;
-		plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],INSERT_FAST_SPEED/60,active_extruder);
+		plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],RETRACT_SPEED_G36/60,active_extruder);
 		st_synchronize();
 		if(gif_processing_state == PROCESSING_ERROR)return;
 		if(i != 5){
