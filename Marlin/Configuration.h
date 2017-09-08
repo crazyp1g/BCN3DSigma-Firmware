@@ -795,7 +795,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 	#define BOWDEN_LENGTH 875
 #endif
 #if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEVMODE_1
-	#define BOWDEN_LENGTH 1000
+	#define BOWDEN_LENGTH 1050
 #endif
 #define EXTRUDER_LENGTH 50
 #define INSERT_FAST_SPEED 5000	
