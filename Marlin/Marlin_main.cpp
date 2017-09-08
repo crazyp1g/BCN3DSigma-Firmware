@@ -5124,7 +5124,7 @@ inline void gcode_G36()
 	flag_utilities_calibration_bedcomensationmode = true;
 	setTargetHotend0(print_temp_l);
 	setTargetHotend1(0);
-	setTargetBed(max(bed_temp_l,bed_temp_r));
+	setTargetBed(bed_temp_l);
 	genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 	gif_processing_state = PROCESSING_DEFAULT;
 	doblocking= true;

@@ -3565,8 +3565,17 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						gif_processing_state = PROCESSING_STOP;
 						touchscreen_update();
 						setTargetHotend0(print_temp_l);
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);						
 						gif_processing_state = PROCESSING_DEFAULT;
+						
+						SERIAL_PROTOCOLPGM("OK first Extruder! \n");
+						//We have to override z_prove_offset
+						zprobe_zoffset-=(current_position[Z_AXIS]); //We are putting more offset if needed
+						extruder_offset[Z_AXIS][LEFT_EXTRUDER]=0.0;//It is always the reference
+						SERIAL_PROTOCOLPGM("Z1 Probe offset: ");
+						Serial.println(zprobe_zoffset);
+						Config_StoreSettings(); //Store changes
+						
 						current_position[Z_AXIS] += 2;
 						plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],homing_feedrate[Z_AXIS]/60,active_extruder);
 						st_synchronize();
@@ -3574,23 +3583,13 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						home_axis_from_code(true,false,false);
 						gif_processing_state = PROCESSING_STOP;
 						touchscreen_update();
+						flag_utilities_calibration_bedcomensationmode = true;
 						Calib_check_temps();
+						flag_utilities_calibration_bedcomensationmode = false;
 						gif_processing_state = PROCESSING_STOP;
 						touchscreen_update();
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
 						gif_processing_state = PROCESSING_TEST;
-						SERIAL_PROTOCOLPGM("OK first Extruder! \n");
-						//We have to override z_prove_offset
-						zprobe_zoffset-=(current_position[Z_AXIS]); //We are putting more offset if needed
-						extruder_offset[Z_AXIS][LEFT_EXTRUDER]=0.0;//It is always the reference
-						/*current_position[Z_AXIS]=0;//We are setting this position as Zero
-						plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);*/
-						
-						
-						
-						SERIAL_PROTOCOLPGM("Z1 Probe offset: ");
-						Serial.println(zprobe_zoffset);
-						Config_StoreSettings(); //Store changes
 						
 						
 						home_axis_from_code(false,true,true);
@@ -3619,12 +3618,19 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_CALIBZR_ACCEPT:
 					if (millis() >= waitPeriod_button_press){
-						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						gif_processing_state = PROCESSING_STOP;
-						setTargetHotend1(print_temp_r);
 						touchscreen_update();
+						setTargetHotend1(print_temp_r);
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 						gif_processing_state = PROCESSING_DEFAULT;
+						
+						
+						SERIAL_PROTOCOLLNPGM("OK second Extruder!");
+						extruder_offset[Z_AXIS][RIGHT_EXTRUDER]-=(current_position[Z_AXIS]);//Add the difference to the current offset value
+						SERIAL_PROTOCOLPGM("Z2 Offset: ");
+						Serial.println(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]);
+						Config_StoreSettings(); //Store changes
+						
 						current_position[Z_AXIS] += 2;
 						plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],homing_feedrate[Z_AXIS]/60,active_extruder);
 						st_synchronize();
@@ -3632,16 +3638,14 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						home_axis_from_code(true,false,false);
 						gif_processing_state = PROCESSING_STOP;
 						touchscreen_update();
+						flag_utilities_calibration_bedcomensationmode = true;
 						Calib_check_temps();
+						flag_utilities_calibration_bedcomensationmode = false;
 						gif_processing_state = PROCESSING_STOP;
 						touchscreen_update();
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
 						gif_processing_state = PROCESSING_TEST;
-						SERIAL_PROTOCOLLNPGM("OK second Extruder!");
-						extruder_offset[Z_AXIS][RIGHT_EXTRUDER]-=(current_position[Z_AXIS]);//Add the difference to the current offset value
-						SERIAL_PROTOCOLPGM("Z2 Offset: ");
-						Serial.println(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]);
-						Config_StoreSettings(); //Store changes
+						
 						
 						
 						st_synchronize();
@@ -3726,7 +3730,9 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						if(redo_source == 0){		 //redo z test print
 							if (active_extruder==0){
 								setTargetHotend0(print_temp_l);
+								flag_utilities_calibration_bedcomensationmode = true;
 								Calib_check_temps();
+								flag_utilities_calibration_bedcomensationmode = false;
 								gif_processing_state = PROCESSING_STOP;
 								touchscreen_update();
 								genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
@@ -3739,7 +3745,9 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							}
 							else{
 								setTargetHotend1(print_temp_r);
+								flag_utilities_calibration_bedcomensationmode = true;
 								Calib_check_temps();
+								flag_utilities_calibration_bedcomensationmode = false;
 								gif_processing_state = PROCESSING_STOP;
 								touchscreen_update();
 								genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
@@ -3755,7 +3763,9 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						else if(redo_source == 1){ //redo x test print
 							setTargetHotend1(print_temp_r);
 							setTargetHotend0(print_temp_l);
+							flag_utilities_calibration_bedcomensationmode = true;
 							Calib_check_temps();
+							flag_utilities_calibration_bedcomensationmode = false;
 							gif_processing_state = PROCESSING_STOP;
 							touchscreen_update();
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
@@ -3768,7 +3778,9 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						else if(redo_source == 2){ //redo y test print
 							setTargetHotend1(print_temp_r);
 							setTargetHotend0(print_temp_l);
+							flag_utilities_calibration_bedcomensationmode = true;
 							Calib_check_temps();
+							flag_utilities_calibration_bedcomensationmode = false;
 							gif_processing_state = PROCESSING_STOP;
 							touchscreen_update();
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_PRINTINGTEST,0);
