@@ -2728,7 +2728,7 @@ long code_value_long()
 float extrusion_multiplier(float distance)
 {
 	float flow = 1.05*BCN3D_NOZZLE_DEFAULD_SIZE/0.4;
-	return distance*(current_position[Z_AXIS]*flow*0.3284/(0.188*29.402)); ////////// (distance * flow * extrusion value)------- extrusion multiplier = 1.05*(current_position[Z_AXIS]*0.3284/(0.188*29.402))
+	return distance*(0.2*flow*0.3284/(0.188*29.402)); ////////// (distance * flow * extrusion value)------- extrusion multiplier = 1.05*(layer height*0.3284/(0.188*29.402))
 }
 
 bool code_seen(char code)
@@ -9959,10 +9959,10 @@ void left_test_print_code(){
 	if(gif_processing_state == PROCESSING_ERROR)return;
 	int	  distance_x = 4;
 	int	  distance_y = 72;
-	float initial_x_pos = 129.5;
+	float initial_x_pos = 144.5;
 	float initial_y_pos = 183.5;
-	float initial_z_pos = 0.1;
-	float z_layer_test = 0.15;
+	float initial_z_pos = 0.3;
+	float z_layer_test = 0.2;
 	
 	#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 	current_position[X_AXIS] = initial_x_pos;
@@ -9990,12 +9990,12 @@ void left_test_print_code(){
 		if(gif_processing_state == PROCESSING_ERROR)return;
 		if(i != 5){
 			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
-			current_position[X_AXIS] = initial_x_pos+(distance_x*i);
+			current_position[X_AXIS] = initial_x_pos-(distance_x*i);
 			#else
-			current_position[X_AXIS] = initial_x_pos+(distance_x*i) + X_OFFSET_CALIB_PROCEDURES;
+			current_position[X_AXIS] = initial_x_pos-(distance_x*i) + X_OFFSET_CALIB_PROCEDURES;
 			#endif
 			current_position[Y_AXIS] = initial_y_pos;
-			current_position[Z_AXIS]+= 0.05;
+			current_position[Z_AXIS]-= 0.05;
 			plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],200,active_extruder);
 			st_synchronize();
 			if(gif_processing_state == PROCESSING_ERROR)return;
@@ -10075,10 +10075,10 @@ void right_test_print_code(){
 	
 	int distance_x = 4;
 	int distance_y = 72;
-	float initial_x_pos = 161.5;
+	float initial_x_pos = 176.5;
 	float initial_y_pos = 183.5;
-	float initial_z_pos = 0.1;
-	float z_layer_test = 0.15;
+	float initial_z_pos = 0.3;
+	float z_layer_test = 0.2;
 		
 	#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 	current_position[X_AXIS] = initial_x_pos;
@@ -10106,12 +10106,12 @@ void right_test_print_code(){
 		if(gif_processing_state == PROCESSING_ERROR)return;
 		if(i != 5){
 			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
-			current_position[X_AXIS] = initial_x_pos+(distance_x*i);
+			current_position[X_AXIS] = initial_x_pos-(distance_x*i);
 			#else
-			current_position[X_AXIS] = initial_x_pos+(distance_x*i) + X_OFFSET_CALIB_PROCEDURES;
+			current_position[X_AXIS] = initial_x_pos-(distance_x*i) + X_OFFSET_CALIB_PROCEDURES;
 			#endif			
 			current_position[Y_AXIS] = initial_y_pos;
-			current_position[Z_AXIS]+= 0.05;
+			current_position[Z_AXIS]-= 0.05;
 			plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],200,active_extruder);
 			st_synchronize();
 		}
@@ -10206,7 +10206,7 @@ void bed_test_print_code(float x_offset, float y_offset, int zline){
 	float initial_x_pos = NOZZLE_PARK_DISTANCE_BED_X0 + 113 + x_offset;
 	float initial_y_pos = 275 + y_offset;
 	float initial_z_pos = 0.4 + 0.1*zline;
-	float z_layer_test = 0.15;
+	float z_layer_test = 0.2;
 	
 	#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 	current_position[X_AXIS] = initial_x_pos;
