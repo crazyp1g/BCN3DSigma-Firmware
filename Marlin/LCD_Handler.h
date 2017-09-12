@@ -364,7 +364,6 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							}
 						}
 					}
-					
 					break;
 					
 					#pragma endregion Printing_screen
@@ -523,8 +522,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_BACK,0);
 						}
 					}
-					
 					break;
+					
 					case BUTTON_UTILITIES_FILAMENT_LOAD_ABS:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
@@ -560,8 +559,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_BACK,0);
 						}
 					}
-					
 					break;
+					
 					case BUTTON_UTILITIES_FILAMENT_LOAD_PVA:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
@@ -698,6 +697,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						genie.WriteStr(STRING_UTILITIES_FILAMENT_LOAD_CUSTOM_BED,buffer);
 					}
 					break;
+					
 					case BUTTON_UTILITIES_FILAMENT_LOAD_CUSTOM_BED_MORE:
 					if (custom_bed_temp < BED_MAXTEMP -5){
 						char buffer[256];
@@ -3666,7 +3666,6 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					}
 					break;
 					
-					break;
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZR_REDO:
 					if (millis() >= waitPeriod_button_press){
 						
@@ -3831,6 +3830,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
 					}
 					break;
+					
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDOZR_BEST1:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
@@ -3842,6 +3842,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
 					}
 					break;
+					
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDOZL_BEST5:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
@@ -4044,6 +4045,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						Z_compensation_coolingdown();
 					}
 					break;
+					
 					case BUTTON_Z_COMPENSATION_COMFIRMATION_YES:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
@@ -4063,6 +4065,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						surfing_utilities = true;
 					}
 					break;
+					
 					case BUTTON_Z_COMPENSATION_COMFIRMATION_NOT:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
@@ -4452,6 +4455,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						}
 					}
 					break;
+					
 					case BUTTON_ERROR_OK:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
