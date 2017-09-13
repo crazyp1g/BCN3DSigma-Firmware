@@ -107,9 +107,9 @@ int custom_insert_temp = 210;
 int custom_remove_temp = 210;
 int custom_print_temp = 210;
 int custom_bed_temp = 40;
-unsigned int buttonsdselected[6] = {BUTTON_SDLIST_SELECT0, BUTTON_SDLIST_SELECT1, BUTTON_SDLIST_SELECT2, BUTTON_SDLIST_SELECT3, BUTTON_SDLIST_SELECT4, BUTTON_SDLIST_SELECT5};
-unsigned int stringfilename[8] = {STRING_SDLIST_NAMEFILE0, STRING_SDLIST_NAMEFILE1, STRING_SDLIST_NAMEFILE2, STRING_SDLIST_NAMEFILE3, STRING_SDLIST_NAMEFILE4, STRING_SDLIST_NAMEFILE5,STRING_SDLIST_CONFIRMATION_NAMEFILE,STRING_RECOVERY_PRINT_ASK};
-unsigned int stringfiledur[8] = {STRING_SDLIST_DURFILE0, STRING_SDLIST_DURFILE1, STRING_SDLIST_DURFILE2, STRING_SDLIST_DURFILE3, STRING_SDLIST_DURFILE4,STRING_SDLIST_DURFILE5, STRING_SDLIST_CONFIRMATION_DURFILE, STRING_RECOVERY_PRINT_ASK_DUR};
+unsigned int buttonsdselected[6] = {BUTTON_SDLIST_SELECT0, BUTTON_SDLIST_SELECT1, BUTTON_SDLIST_SELECT2, BUTTON_SDLIST_SELECT3, BUTTON_SDLIST_SELECT4, 255};
+unsigned int stringfilename[8] = {STRING_SDLIST_NAMEFILE0, STRING_SDLIST_NAMEFILE1, STRING_SDLIST_NAMEFILE2, STRING_SDLIST_NAMEFILE3, STRING_SDLIST_NAMEFILE4, 255,STRING_SDLIST_CONFIRMATION_NAMEFILE,STRING_RECOVERY_PRINT_ASK};
+unsigned int stringfiledur[8] = {STRING_SDLIST_DURFILE0, STRING_SDLIST_DURFILE1, STRING_SDLIST_DURFILE2, STRING_SDLIST_DURFILE3, STRING_SDLIST_DURFILE4,255, STRING_SDLIST_CONFIRMATION_DURFILE, STRING_RECOVERY_PRINT_ASK_DUR};
 
 
 int redo_source;
@@ -1336,13 +1336,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					flag_sdlist_select4 = true;
 					SERIAL_PROTOCOLLNPGM("Select 4");
 					break;
-					
-					case BUTTON_SDLIST_SELECT5:
-					if(flag_sdlist_filesupdown){
-						flag_sdlist_select5 = true;
-					}
-					break;
-					
+															
 					case BUTTON_SDLIST_FOLDERBACK:
 					if (millis() >= waitPeriod_button_press){
 						
@@ -3676,35 +3670,35 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL_SELECT1:
 					if (millis() >= waitPeriod_button_press){
-						Full_calibration_ZL_set(0.05);
+						Full_calibration_ZL_set(0.1);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL_SELECT2:
 					if (millis() >= waitPeriod_button_press){
-						Full_calibration_ZL_set(0);
+						Full_calibration_ZL_set(0.05);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL_SELECT3:
 					if (millis() >= waitPeriod_button_press){
-						Full_calibration_ZL_set(-0.05);
+						Full_calibration_ZL_set(0);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL_SELECT4:
 					if (millis() >= waitPeriod_button_press){
-						Full_calibration_ZL_set(-0.1);
+						Full_calibration_ZL_set(-0.05);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZL_SELECT5:
 					if (millis() >= waitPeriod_button_press){
-						Full_calibration_ZL_set(-0.15);
+						Full_calibration_ZL_set(-0.1);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
@@ -3795,7 +3789,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								gif_processing_state = PROCESSING_DEFAULT;
 								genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 								current_position[E_AXIS]-=4;
-								plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],INSERT_FAST_SPEED/60,LEFT_EXTRUDER);
+								plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],7.5,LEFT_EXTRUDER);
 								st_synchronize();
 								home_axis_from_code(true,true,true);
 								if(gif_processing_state == PROCESSING_ERROR)return;
@@ -3806,7 +3800,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								gif_processing_state = PROCESSING_DEFAULT;
 								genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 								current_position[E_AXIS]-=4;
-								plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],INSERT_FAST_SPEED/60,RIGHT_EXTRUDER);
+								plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],7.5,RIGHT_EXTRUDER);
 								st_synchronize();
 								if(gif_processing_state == PROCESSING_ERROR)return;
 								home_axis_from_code(true,true,true);
@@ -3834,6 +3828,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_REDOZR_BEST1:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+						redo_source = 0;
 						extruder_offset[Z_AXIS][RIGHT_EXTRUDER]+=0.1;
 						Config_StoreSettings(); //Store changes
 						gcode_T0_T1_auto(1);
@@ -3880,14 +3875,14 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZR_SELECT1:
 					if (millis() >= waitPeriod_button_press){
-						Full_calibration_ZR_set(0.05);
+						Full_calibration_ZR_set(0.1);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZR_SELECT2:
 					if (millis() >= waitPeriod_button_press){
-						Full_calibration_ZR_set(0);
+						Full_calibration_ZR_set(0.05);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					
@@ -3895,21 +3890,21 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZR_SELECT3:
 					if (millis() >= waitPeriod_button_press){
-						Full_calibration_ZR_set(-0.05);
+						Full_calibration_ZR_set(0);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZR_SELECT4:
 					if (millis() >= waitPeriod_button_press){
-						Full_calibration_ZR_set(-0.1);
+						Full_calibration_ZR_set(-0.05);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
 					
 					case BUTTON_UTILITIES_CALIBRATION_CALIBFULL_RESULTSZR_SELECT5:
 					if (millis() >= waitPeriod_button_press){
-						Full_calibration_ZR_set(-0.15);
+						Full_calibration_ZR_set(-0.1);
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;

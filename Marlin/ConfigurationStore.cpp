@@ -153,7 +153,6 @@ void Config_StoreSettings()
 	EEPROM_WRITE_VAR(i,log_E0_mmdone);
 	EEPROM_WRITE_VAR(i,log_E1_mmdone);
 	EEPROM_WRITE_VAR(i,FLAG_First_Start_Wizard);
-	#ifdef RECOVERY_PRINT
 	EEPROM_WRITE_VAR(i,saved_print_flag);
 	EEPROM_WRITE_VAR(i,saved_x_position);
 	EEPROM_WRITE_VAR(i,saved_y_position);
@@ -190,7 +189,6 @@ void Config_StoreSettings()
 	EEPROM_WRITE_VAR(i,Flag_fanSpeed_mirror);
 	EEPROM_WRITE_VAR(i,bed_offset_version);
 	EEPROM_WRITE_VAR(i,flag_utilities_calibration_zcomensationmode_gauges);
-	#endif
 	char ver2[4]=EEPROM_VERSION;
 	i=EEPROM_OFFSET;
 	EEPROM_WRITE_VAR(i,ver2); // validate data
@@ -482,7 +480,6 @@ void Config_RetrieveSettings()
 		EEPROM_READ_VAR(i,log_E0_mmdone);
 		EEPROM_READ_VAR(i,log_E1_mmdone);
 		EEPROM_READ_VAR(i,FLAG_First_Start_Wizard);
-		#ifdef RECOVERY_PRINT
 		EEPROM_READ_VAR(i,saved_print_flag);
 		EEPROM_READ_VAR(i,saved_x_position);
 		EEPROM_READ_VAR(i,saved_y_position);
@@ -519,7 +516,6 @@ void Config_RetrieveSettings()
 		EEPROM_READ_VAR(i,saved_Flag_fanSpeed_mirror);
 		EEPROM_READ_VAR(i,bed_offset_version);
 		EEPROM_READ_VAR(i,flag_utilities_calibration_zcomensationmode_gauges);
-		#endif RECOVERY_PRINT
 		// Call updatePID (similar to when we have processed M301)
 		updatePID();
 		SERIAL_ECHO_START;
