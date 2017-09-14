@@ -347,20 +347,20 @@ extern char namefilegcode[24];
 
 ////// Temperatures of current material for two extruders //////
 
-extern int insert_temp_l;
-extern int remove_temp_l;
+extern int load_temp_l;
+extern int unload_temp_l;
 extern int print_temp_l;
 extern int bed_temp_l;
-extern int insert_temp_r;
-extern int remove_temp_r;
+extern int load_temp_r;
+extern int unload_temp_r;
 extern int print_temp_r;
 extern int bed_temp_r;
-extern int old_insert_temp_l;
-extern int old_remove_temp_l;
+extern int old_load_temp_l;
+extern int old_unload_temp_l;
 extern int old_print_temp_l;
 extern int old_bed_temp_l;
-extern int old_insert_temp_r;
-extern int old_remove_temp_r;
+extern int old_load_temp_r;
+extern int old_unload_temp_r;
 extern int old_print_temp_r;
 extern int old_bed_temp_r;
 

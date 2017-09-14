@@ -312,21 +312,21 @@ bool Step_First_Start_Wizard = false; // State
 ////// Temperatures of current material for two extruders //////
 #pragma region temperatures
 
-int insert_temp_l;
-int remove_temp_l;
+int load_temp_l;
+int unload_temp_l;
 int print_temp_l;
 int bed_temp_l;
-int insert_temp_r;
-int remove_temp_r;
+int load_temp_r;
+int unload_temp_r;
 int print_temp_r;
 int bed_temp_r;
 
-int old_insert_temp_l;
-int old_remove_temp_l;
+int old_load_temp_l;
+int old_unload_temp_l;
 int old_print_temp_l;
 int old_bed_temp_l;
-int old_insert_temp_r;
-int old_remove_temp_r;
+int old_load_temp_r;
+int old_unload_temp_r;
 int old_print_temp_r;
 int old_bed_temp_r;
 
@@ -917,7 +917,7 @@ void setup()
 		genie.WriteObject(GENIE_OBJ_FORM,FORN_SETUPASSISTANT_YESNOT,0);
 		}
 		#if BCN3D_SCREEN_VERSION_SETUP == BCN3D_SIGMA_PRINTER_DEVMODE_1
-		else if(flag_utilities_calibration_zcomensationmode_gauges == 1888){
+		else if(flag_utilities_calibration_zcomensationmode_gauges == 1888 || flag_utilities_calibration_zcomensationmode_gauges == 2888 ){
 			genie.WriteObject(GENIE_OBJ_FORM, FORM_Z_COMPENSATION_COMFIRMATION,0);
 		}
 		#endif
