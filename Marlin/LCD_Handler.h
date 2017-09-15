@@ -456,8 +456,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							which_extruder=1;
 						}
 						Temp_ChangeFilament_Saved = target_temperature[which_extruder];
-						if(which_extruder == 0) setTargetHotend(max(remove_temp_l,old_remove_temp_l),which_extruder);
-						else setTargetHotend(max(remove_temp_r,old_remove_temp_r),which_extruder);
+						if(which_extruder == 0) setTargetHotend(max(unload_temp_l,old_unload_temp_l),which_extruder);
+						else setTargetHotend(max(unload_temp_r,old_unload_temp_r),which_extruder);
 						gif_processing_state = PROCESSING_DEFAULT;
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_UNLOAD_MENU,0);
@@ -496,12 +496,12 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						{
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							print_temp_r = PLA_PRINT_TEMP;
-							insert_temp_r = PLA_INSERT_TEMP;
-							remove_temp_r = PLA_REMOVE_TEMP;
+							load_temp_r = PLA_LOAD_TEMP;
+							unload_temp_r = PLA_UNLOAD_TEMP;
 							bed_temp_r = PLA_BED_TEMP;
 							//genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_FIL_INSERTED,0);
 							Config_StoreSettings();
-							setTargetHotend1(print_temp_r);
+							setTargetHotend1(load_temp_r);
 							insertmetod();
 							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_MENU,0);
 							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_BACK,0);
@@ -511,12 +511,12 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							print_temp_l = PLA_PRINT_TEMP;
-							insert_temp_l = PLA_INSERT_TEMP;
-							remove_temp_l = PLA_REMOVE_TEMP;
+							load_temp_l = PLA_LOAD_TEMP;
+							unload_temp_l = PLA_UNLOAD_TEMP;
 							bed_temp_l = PLA_BED_TEMP;
 							//genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_FIL_INSERTED,0);
 							Config_StoreSettings();
-							setTargetHotend0(print_temp_l);
+							setTargetHotend0(load_temp_l);
 							insertmetod();
 							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_MENU,0);
 							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_BACK,0);
@@ -534,12 +534,12 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							
 							
 							print_temp_r = ABS_PRINT_TEMP;
-							insert_temp_r = ABS_INSERT_TEMP;
-							remove_temp_r = ABS_REMOVE_TEMP;
+							load_temp_r = ABS_LOAD_TEMP;
+							unload_temp_r = ABS_UNLOAD_TEMP;
 							bed_temp_r = ABS_BED_TEMP;
 							//genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_FIL_INSERTED,0);
 							Config_StoreSettings();
-							setTargetHotend1(print_temp_r);
+							setTargetHotend1(load_temp_r);
 							insertmetod();
 							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_MENU,0);
 							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_BACK,0);
@@ -548,12 +548,12 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							
 							print_temp_l = ABS_PRINT_TEMP;
-							insert_temp_l = ABS_INSERT_TEMP;
-							remove_temp_l = ABS_REMOVE_TEMP;
+							load_temp_l = ABS_LOAD_TEMP;
+							unload_temp_l = ABS_UNLOAD_TEMP;
 							bed_temp_l = ABS_BED_TEMP;
 							//genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_FIL_INSERTED,0);
 							Config_StoreSettings();
-							setTargetHotend0(print_temp_l);
+							setTargetHotend0(load_temp_l);
 							insertmetod();
 							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_MENU,0);
 							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_BACK,0);
@@ -571,12 +571,12 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							
 							
 							print_temp_r = PVA_PRINT_TEMP;
-							insert_temp_r = PVA_INSERT_TEMP;
-							remove_temp_r = PVA_REMOVE_TEMP;
+							load_temp_r = PVA_LOAD_TEMP;
+							unload_temp_r = PVA_UNLOAD_TEMP;
 							bed_temp_r = PVA_BED_TEMP;
 							//genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_FIL_INSERTED,0);
 							Config_StoreSettings();
-							setTargetHotend1(print_temp_r);
+							setTargetHotend1(load_temp_r);
 							insertmetod();
 							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_MENU,0);
 							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_BACK,0);
@@ -585,12 +585,12 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							
 							print_temp_l = PVA_PRINT_TEMP;
-							insert_temp_l = PVA_INSERT_TEMP;
-							remove_temp_l = PVA_REMOVE_TEMP;
+							load_temp_l = PVA_LOAD_TEMP;
+							unload_temp_l = PVA_UNLOAD_TEMP;
 							bed_temp_l = PVA_BED_TEMP;
 							//genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_FIL_INSERTED,0);
 							Config_StoreSettings();
-							setTargetHotend0(print_temp_l);
+							setTargetHotend0(load_temp_l);
 							insertmetod();
 							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_MENU,0);
 							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_BACK,0);
@@ -716,24 +716,24 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						if(which_extruder == 0){
 							if (custom_print_temp <= HEATER_0_MAXTEMP) print_temp_l = custom_print_temp;
 							else print_temp_l = HEATER_0_MAXTEMP;
-							if (custom_insert_temp <= HEATER_0_MAXTEMP) insert_temp_l = custom_insert_temp;
-							else insert_temp_l = HEATER_0_MAXTEMP;
-							if (custom_remove_temp <= HEATER_0_MAXTEMP) remove_temp_l = custom_remove_temp;
-							else remove_temp_l = HEATER_0_MAXTEMP;
+							if (custom_insert_temp <= HEATER_0_MAXTEMP) load_temp_l = custom_insert_temp;
+							else load_temp_l = HEATER_0_MAXTEMP;
+							if (custom_remove_temp <= HEATER_0_MAXTEMP) unload_temp_l = custom_remove_temp;
+							else unload_temp_l = HEATER_0_MAXTEMP;
 							if (custom_bed_temp <= BED_MAXTEMP) bed_temp_l = custom_bed_temp;
 							else bed_temp_l = BED_MAXTEMP;
-							setTargetHotend0(insert_temp_l);
+							setTargetHotend0(load_temp_l);
 						}
 						else{
 							if (custom_print_temp <= HEATER_1_MAXTEMP)print_temp_r = custom_print_temp;
 							else print_temp_r = HEATER_1_MAXTEMP;
-							if (custom_insert_temp <= HEATER_1_MAXTEMP)insert_temp_r = custom_insert_temp;
+							if (custom_insert_temp <= HEATER_1_MAXTEMP)load_temp_r = custom_insert_temp;
 							else print_temp_r = HEATER_1_MAXTEMP;
-							if (custom_remove_temp <= HEATER_1_MAXTEMP)remove_temp_r = custom_remove_temp;
-							else remove_temp_r = HEATER_1_MAXTEMP;
+							if (custom_remove_temp <= HEATER_1_MAXTEMP)unload_temp_r = custom_remove_temp;
+							else unload_temp_r = HEATER_1_MAXTEMP;
 							if (custom_bed_temp <= BED_MAXTEMP)bed_temp_r = custom_bed_temp;
 							else bed_temp_r = BED_MAXTEMP;
-							setTargetHotend1(insert_temp_r);
+							setTargetHotend1(load_temp_r);
 						}
 						Config_StoreSettings();
 						insertmetod();
@@ -753,8 +753,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						//genie.WriteStr(STRING_ADVISE_FILAMENT,"Insert the filament until you feel it stops, \n then while you keep inserting around \n 10 mm of filament, press the clip");
 						gif_processing_state = PROCESSING_CHANGE_FILAMENT_TEMPS;
 						touchscreen_update();
-						if (which_extruder==0) setTargetHotend(max(insert_temp_l,old_insert_temp_l),which_extruder);
-						else setTargetHotend(max(insert_temp_r,old_insert_temp_r),which_extruder);
+						if (which_extruder==0) setTargetHotend(max(load_temp_l,old_load_temp_l),which_extruder);
+						else setTargetHotend(max(load_temp_r,old_load_temp_r),which_extruder);
 						//delay(3500);
 						
 						
@@ -835,13 +835,13 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_FILAMENT_SUCCESS,0);
 							gif_processing_state = PROCESSING_SUCCESS;
 							if (which_extruder == 0){
-								old_insert_temp_l = insert_temp_l;
-								old_remove_temp_l = remove_temp_l;
+								old_load_temp_l = load_temp_l;
+								old_unload_temp_l = unload_temp_l;
 								old_print_temp_l  = print_temp_l;
 							}
 							else{
-								old_insert_temp_r = insert_temp_r;
-								old_remove_temp_r = remove_temp_r;
+								old_load_temp_r = load_temp_r;
+								old_unload_temp_r = unload_temp_r;
 								old_print_temp_r  = print_temp_r;
 							}
 						}
@@ -1380,7 +1380,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							if(listsd.check_extract_ensure_duplication_print()){
 								if(abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) > RAFT_Z_THRESHOLD){
 									genie.WriteObject(GENIE_OBJ_FORM,FORM_RAFT_ADVISE, 0);
-									sprintf_P(buffer, PSTR("First layer printed with %s Hotend will\nbe %d.%1d%1d mm higher."),
+									sprintf_P(buffer, PSTR("The first layer printed with the %s Hotend\nwill be distorted by %d.%1d%1d mm"),
 									((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0)?"left":"right"),
 									(int)abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]),(int)(abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])*10)%10, (int)(abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])*100)%10);
 									//((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0)?"right":"left"),
@@ -1428,7 +1428,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					break;
 					
-					case BUTTON_RAFT_ADVISE_CANCEL:
+					case BUTTON_RAFT_ADVISE_INSTALL_CANCEL:
 					case BUTTON_SDLIST_CONFIRMATION_NO:
 					if (millis() >= waitPeriod_button_press){
 						
@@ -1766,8 +1766,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						}
 						if(which_extruder != 255){
 							
-							if(which_extruder == 0) setTargetHotend(max(remove_temp_l,old_remove_temp_l),which_extruder);
-							else setTargetHotend(max(remove_temp_r,old_remove_temp_r),which_extruder);
+							if(which_extruder == 0) setTargetHotend(max(unload_temp_l,old_unload_temp_l),which_extruder);
+							else setTargetHotend(max(unload_temp_r,old_unload_temp_r),which_extruder);
 							
 							doblocking = true;
 							gif_processing_state = PROCESSING_DEFAULT;
@@ -2167,8 +2167,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							which_extruder=1;
 						}
 						
-						if(which_extruder == 0) setTargetHotend(max(remove_temp_l,old_remove_temp_l),which_extruder);
-						else setTargetHotend(max(remove_temp_r,old_remove_temp_r),which_extruder);
+						if(which_extruder == 0) setTargetHotend(max(unload_temp_l,old_unload_temp_l),which_extruder);
+						else setTargetHotend(max(unload_temp_r,old_unload_temp_r),which_extruder);
 						gif_processing_state = PROCESSING_DEFAULT;
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 						
@@ -2287,8 +2287,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							
 							else {
 								//*********Move the bed down and the extruders inside
-								if(which_extruder == 0) setTargetHotend(max(remove_temp_l,old_remove_temp_l),which_extruder);
-								else setTargetHotend(max(remove_temp_r,old_remove_temp_r),which_extruder);
+								if(which_extruder == 0) setTargetHotend(unload_temp_l,which_extruder);
+								else setTargetHotend(unload_temp_r,which_extruder);
 								gif_processing_state = PROCESSING_DEFAULT;
 								genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 								
@@ -2348,24 +2348,24 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							
 							
 							print_temp_r = PLA_PRINT_TEMP;
-							insert_temp_r = PLA_INSERT_TEMP;
-							remove_temp_r = PLA_REMOVE_TEMP;
+							load_temp_r = PLA_LOAD_TEMP;
+							unload_temp_r = PLA_UNLOAD_TEMP;
 							bed_temp_r = PLA_BED_TEMP;
 							//genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_FIL_INSERTED,0);
 							Config_StoreSettings();
-							setTargetHotend1(print_temp_r);
+							setTargetHotend1(load_temp_r);
 							insertmetod();
 						}
 						else if(which_extruder == 0){
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							
 							print_temp_l = PLA_PRINT_TEMP;
-							insert_temp_l = PLA_INSERT_TEMP;
-							remove_temp_l = PLA_REMOVE_TEMP;
+							load_temp_l = PLA_LOAD_TEMP;
+							unload_temp_l = PLA_UNLOAD_TEMP;
 							bed_temp_l = PLA_BED_TEMP;
 							//genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_FIL_INSERTED,0);
 							Config_StoreSettings();
-							setTargetHotend0(print_temp_l);
+							setTargetHotend0(load_temp_l);
 							insertmetod();
 						}
 						
@@ -2383,24 +2383,24 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							
 							
 							print_temp_r = ABS_PRINT_TEMP;
-							insert_temp_r = ABS_INSERT_TEMP;
-							remove_temp_r = ABS_REMOVE_TEMP;
+							load_temp_r = ABS_LOAD_TEMP;
+							unload_temp_r = ABS_UNLOAD_TEMP;
 							bed_temp_r = ABS_BED_TEMP;
 							//genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_FIL_INSERTED,0);
 							Config_StoreSettings();
-							setTargetHotend1(print_temp_r);
+							setTargetHotend1(load_temp_r);
 							insertmetod();
 						}
 						else if(which_extruder == 0){
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							
 							print_temp_l = ABS_PRINT_TEMP;
-							insert_temp_l = ABS_INSERT_TEMP;
-							remove_temp_l = ABS_REMOVE_TEMP;
+							load_temp_l = ABS_LOAD_TEMP;
+							unload_temp_l = ABS_UNLOAD_TEMP;
 							bed_temp_l = ABS_BED_TEMP;
 							//genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_FIL_INSERTED,0);
 							Config_StoreSettings();
-							setTargetHotend0(print_temp_l);
+							setTargetHotend0(load_temp_l);
 							insertmetod();
 						}
 						
@@ -2417,24 +2417,24 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							
 							
 							print_temp_r = PVA_PRINT_TEMP;
-							insert_temp_r = PVA_INSERT_TEMP;
-							remove_temp_r = PVA_REMOVE_TEMP;
+							load_temp_r = PVA_LOAD_TEMP;
+							unload_temp_r = PVA_UNLOAD_TEMP;
 							bed_temp_r = PVA_BED_TEMP;
 							//genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_FIL_INSERTED,0);
 							Config_StoreSettings();
-							setTargetHotend1(print_temp_r);
+							setTargetHotend1(load_temp_r);
 							insertmetod();
 						}
 						else if(which_extruder == 0){
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							
 							print_temp_l = PVA_PRINT_TEMP;
-							insert_temp_l = PVA_INSERT_TEMP;
-							remove_temp_l = PVA_REMOVE_TEMP;
+							load_temp_l = PVA_LOAD_TEMP;
+							unload_temp_l = PVA_UNLOAD_TEMP;
 							bed_temp_l = PVA_BED_TEMP;
 							//genie.WriteObject(GENIE_OBJ_FORM,FORM_INFO_FIL_INSERTED,0);
 							Config_StoreSettings();
-							setTargetHotend0(print_temp_l);
+							setTargetHotend0(load_temp_l);
 							insertmetod();
 						}
 						
@@ -2580,24 +2580,24 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						if(which_extruder == 0){
 							if (custom_print_temp <= HEATER_0_MAXTEMP) print_temp_l = custom_print_temp;
 							else print_temp_l = HEATER_0_MAXTEMP;
-							if (custom_insert_temp <= HEATER_0_MAXTEMP) insert_temp_l = custom_insert_temp;
-							else insert_temp_l = HEATER_0_MAXTEMP;
-							if (custom_remove_temp <= HEATER_0_MAXTEMP) remove_temp_l = custom_remove_temp;
-							else remove_temp_l = HEATER_0_MAXTEMP;
+							if (custom_insert_temp <= HEATER_0_MAXTEMP) load_temp_l = custom_insert_temp;
+							else load_temp_l = HEATER_0_MAXTEMP;
+							if (custom_remove_temp <= HEATER_0_MAXTEMP) unload_temp_l = custom_remove_temp;
+							else unload_temp_l = HEATER_0_MAXTEMP;
 							if (custom_bed_temp <= BED_MAXTEMP) bed_temp_l = custom_bed_temp;
 							else bed_temp_l = BED_MAXTEMP;
-							setTargetHotend0(insert_temp_l);
+							setTargetHotend0(load_temp_l);
 						}
 						else{
 							if (custom_print_temp <= HEATER_1_MAXTEMP)print_temp_r = custom_print_temp;
 							else print_temp_r = HEATER_1_MAXTEMP;
-							if (custom_insert_temp <= HEATER_1_MAXTEMP)insert_temp_r = custom_insert_temp;
+							if (custom_insert_temp <= HEATER_1_MAXTEMP)load_temp_r = custom_insert_temp;
 							else print_temp_r = HEATER_1_MAXTEMP;
-							if (custom_remove_temp <= HEATER_1_MAXTEMP)remove_temp_r = custom_remove_temp;
-							else remove_temp_r = HEATER_1_MAXTEMP;
+							if (custom_remove_temp <= HEATER_1_MAXTEMP)unload_temp_r = custom_remove_temp;
+							else unload_temp_r = HEATER_1_MAXTEMP;
 							if (custom_bed_temp <= BED_MAXTEMP)bed_temp_r = custom_bed_temp;
 							else bed_temp_r = BED_MAXTEMP;
-							setTargetHotend1(insert_temp_r);
+							setTargetHotend1(load_temp_r);
 						}
 						Config_StoreSettings();
 						insertmetod();
@@ -2616,8 +2616,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						//genie.WriteStr(STRING_ADVISE_FILAMENT,"Insert the filament until you feel it stops, \n then while you keep inserting around \n 10 mm of filament, press the clip");
 						gif_processing_state = PROCESSING_CHANGE_FILAMENT_TEMPS;
 						
-						if (which_extruder==0) setTargetHotend(max(insert_temp_l,old_insert_temp_l),which_extruder);
-						else setTargetHotend(max(insert_temp_r,old_insert_temp_r),which_extruder);
+						if (which_extruder==0) setTargetHotend(max(load_temp_l,old_load_temp_l),which_extruder);
+						else setTargetHotend(max(load_temp_r,old_load_temp_r),which_extruder);
 						//delay(3500);
 						
 						
@@ -2691,13 +2691,13 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							genie.WriteObject(GENIE_OBJ_VIDEO,GIF_UTILITIES_FILAMENT_SUCCESS,0);
 							gif_processing_state = PROCESSING_SUCCESS;
 							if (which_extruder == 0){
-								old_insert_temp_l = insert_temp_l;
-								old_remove_temp_l = remove_temp_l;
+								old_load_temp_l = load_temp_l;
+								old_unload_temp_l = unload_temp_l;
 								old_print_temp_l  = print_temp_l;
 							}
 							else{
-								old_insert_temp_r = insert_temp_r;
-								old_remove_temp_r = remove_temp_r;
+								old_load_temp_r = load_temp_r;
+								old_unload_temp_r = unload_temp_r;
 								old_print_temp_r  = print_temp_r;
 							}
 						}
@@ -2931,7 +2931,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						if (millis() >= waitPeriod_button_press){
 							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 							if(blocks_queued()) quickStop();
-							
+							if(which_extruder == 0) setTargetHotend(print_temp_l,which_extruder);
+							else setTargetHotend(print_temp_r,which_extruder);
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							flag_utilities_filament_acceptok = true;
 							home_made = false;
@@ -3206,6 +3207,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								HeaterCooldownInactivity(true);
 							}
 							else{
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
+								gif_processing_state = PROCESSING_DEFAULT;
 								setTargetHotend0(0);
 								setTargetHotend1(0);
 								home_axis_from_code(true, true, false);
@@ -3221,8 +3224,6 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								current_position[X_AXIS] = 155 + 100;
 								#endif
 								doblocking = true;
-								genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
-								gif_processing_state = PROCESSING_DEFAULT;
 								plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_TRAVEL_SPEED*1.5,which_extruder);
 								st_synchronize();
 								if(gif_processing_state == PROCESSING_ERROR)return;
@@ -4037,6 +4038,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					case BUTTON_Z_COMPENSATION_INSTALL:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+						flag_utilities_calibration_zcomensationmode_gauges = 1888;
 						Z_compensation_coolingdown();
 					}
 					break;
@@ -4064,32 +4066,50 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					case BUTTON_Z_COMPENSATION_COMFIRMATION_NOT:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
-						char offset_string[250]="";
-						int offset_aprox;
-						offset_aprox = (int)(abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])*100.01)/5.0;
-						char buffer[80];
-						//sprintf_P(offset_string, PSTR("Your Sigma Z axis has been calibrated\n\nTo avoid first layer Z compensation in Mirror/Duplication Mode:\n1.Turn off the machine and install gauges \n    on %s Hotend to correct %d.%1d%1dmm\n2. Re-run a Full Calibration\n\nWarning: Hotends may be hot when turning off the machine\n "),
-						/*sprintf_P(offset_string, PSTR("Remember install gauges\non %s Hotend to correct %d.%1d%1dmm"),
-						((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0)?"right":"left"),
-						(int)(5*offset_aprox)/100,(int)((5*offset_aprox)/10)%10,(int)(5*offset_aprox)%10);*/
-						sprintf_P(offset_string, PSTR("Remember to install %d %s on the %s hotend."), offset_aprox, ((offset_aprox > 1)?"shims":"shim") , ((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0)?"right":"left"));
-						Serial.println(offset_string);
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_Z_COMPENSATION_COMFIRMATION_SURECANCEL,0);
-						genie.WriteStr(STRING_Z_COMPENSATION_COMFIRMATION_SURECANCEL,offset_string);
 					}
 					break;
 					
 					case BUTTON_Z_COMPENSATION_COMFIRMATION_SURECANCEL_YES:
 					if (millis() >= waitPeriod_button_press){
+						if (millis() >= waitPeriod_button_press){
+							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+							if(flag_utilities_calibration_zcomensationmode_gauges == 1888){
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBX,0);
+							setTargetHotend0(print_temp_l);
+							setTargetHotend1(print_temp_r);
+							setTargetBed(max(bed_temp_l,bed_temp_r));
+							SERIAL_PROTOCOLLNPGM("Gauges installation confirmed");
+							flag_utilities_calibration_zcomensationmode_gauges = 888;
+							Config_StoreSettings();
+							surfing_utilities = true;
+							}else if(flag_utilities_calibration_zcomensationmode_gauges == 2888){
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_MAIN,0);
+							flag_utilities_calibration_zcomensationmode_gauges = 888;
+							Config_StoreSettings();	
+							}
+						}
+					}
+					break;
+					
+					case BUTTON_RAFT_ADVISE_CANCEL:
+					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_MAIN,0);
-						flag_utilities_calibration_zcomensationmode_gauges = 888;
-						Config_StoreSettings();
+						genie.WriteObject(GENIE_OBJ_FORM,FORM_RAFT_ADVISE_INSTALL,0);
+					}
+					break;
+					
+					case BUTTON_RAFT_ADVISE_INSTALL_ACCEPT:
+					if (millis() >= waitPeriod_button_press){
+						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
+						flag_utilities_calibration_zcomensationmode_gauges = 2888;
+						Z_compensation_coolingdown();
 					}
 					break;
 					
 					case BUTTON_Z_COMPENSATION_COMFIRMATION_SURECANCEL_NOT:
 					if (millis() >= waitPeriod_button_press){
+						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						Z_compensation_coolingdown();
 					}
 					break;
@@ -5307,7 +5327,7 @@ inline void Z_compensation_decisor(void){
 		offset_aprox = (int)(abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])*100.01)/5.0;
 		char buffer[80];
 		//sprintf_P(offset_string, PSTR("Your Sigma Z axis has been calibrated\n\nTo avoid first layer Z compensation in Mirror/Duplication Mode:\n1.Turn off the machine and install gauges \n    on %s Hotend to correct %d.%1d%1dmm\n2. Re-run a Full Calibration\n\nWarning: Hotends may be hot when turning off the machine\n "),
-		sprintf_P(offset_string, PSTR("Install %d %s on the %s hotend. Learn how at the Quick Start Guide"), offset_aprox, ((offset_aprox > 1)?"shims":"shim") , ((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0)?"right":"left"));
+		sprintf_P(offset_string, PSTR("Install %d %s on the %s hotend"), offset_aprox, ((offset_aprox > 1)?"shims":"shim") , ((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0)?"right":"left"));
 		/*if ((extruder_offset[Z_AXIS][RIGHT_EXTRUDER])<0){
 		sprintf_P(offset_string, PSTR("RIGHT HOTEND %d.%1d%1d"),(int)(5*offset_aprox)/100,(int)((5*offset_aprox)/10)%10,(int)(5*offset_aprox)%10);
 		}else{
@@ -5503,7 +5523,6 @@ inline void Z_compensation_coolingdown(void){
 	setTargetHotend1(0);
 	setTargetHotend0(0);
 	setTargetBed(0);
-	flag_utilities_calibration_zcomensationmode_gauges = 1888;
 	Config_StoreSettings();
 	which_extruder = (extruder_offset[Z_AXIS][RIGHT_EXTRUDER]<0) ? 1:0;
 	if(degHotend(which_extruder)>NYLON_TEMP_COOLDOWN_THRESHOLD){
@@ -5541,7 +5560,17 @@ inline void Z_compensation_coolingdown(void){
 		gif_processing_state = PROCESSING_STOP;
 		touchscreen_update();
 	}
+	char offset_string[250]="";
+	int offset_aprox;
+	offset_aprox = (int)(abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER])*100.01)/5.0;
+	//sprintf_P(offset_string, PSTR("Your Sigma Z axis has been calibrated\n\nTo avoid first layer Z compensation in Mirror/Duplication Mode:\n1.Turn off the machine and install gauges \n    on %s Hotend to correct %d.%1d%1dmm\n2. Re-run a Full Calibration\n\nWarning: Hotends may be hot when turning off the machine\n "),
+	/*sprintf_P(offset_string, PSTR("Remember install gauges\non %s Hotend to correct %d.%1d%1dmm"),
+	((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0)?"right":"left"),
+	(int)(5*offset_aprox)/100,(int)((5*offset_aprox)/10)%10,(int)(5*offset_aprox)%10);*/
+	sprintf_P(offset_string, PSTR("Install %d %s on the %s hotend"), offset_aprox, ((offset_aprox > 1)?"shims":"shim") , ((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0)?"right":"left"));
+	Serial.println(offset_string);
 	genie.WriteObject(GENIE_OBJ_FORM,FORM_Z_COMPENSATION_SHUTDOWN,0);
+	genie.WriteStr(STRING_Z_COMPENSATION_SHUTDOWN,offset_string);
 }
 #endif
 #endif /* INCLUDE */

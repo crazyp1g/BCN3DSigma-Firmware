@@ -28,7 +28,7 @@
 //get the hw and fw version to Cura-BCN3D and update the new firmware
 
 #define VERSION_STRING  "01-1.2.6RC"
-#define BUILD_DATE  "|M09.13"
+#define BUILD_DATE  "|M09.15"
 #define VERSION_NUMBER  126
 //#define BUILD_DATE  " "
 #define UI_SerialID  "At Bottom Sticker"
@@ -295,20 +295,20 @@
 #define BED_MINTEMP 5
 
 //To clean the extruder's the best temperature configuration
-#define	PLA_INSERT_TEMP			215
-#define	PLA_REMOVE_TEMP			170
+#define	PLA_LOAD_TEMP			215
+#define	PLA_UNLOAD_TEMP			170
 #define	PLA_PRINT_TEMP			215
 #define PLA_BED_TEMP			65
 
-#define	ABS_INSERT_TEMP			260
-#define	ABS_REMOVE_TEMP			230
+#define	ABS_LOAD_TEMP			260
+#define	ABS_UNLOAD_TEMP			230
 #define	ABS_PRINT_TEMP			260
 #define ABS_BED_TEMP			90
 
-#define	PVA_INSERT_TEMP			190
-#define	PVA_REMOVE_TEMP			160
-#define	PVA_PRINT_TEMP			190
-#define PVA_BED_TEMP			65
+#define	PVA_LOAD_TEMP			230
+#define	PVA_UNLOAD_TEMP			160
+#define	PVA_PRINT_TEMP			220
+#define PVA_BED_TEMP			60
 
 
 #define EXTRUDER_LEFT_CLEAN_TEMP 170
@@ -780,12 +780,12 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 //Quick guide control
 //#define DEFAULT_QUICK_GUIDE false;
 #define DEFAULT_PRINT_TEMP  PLA_PRINT_TEMP;
-#define DEFAULT_INSERT_TEMP PLA_INSERT_TEMP;
-#define DEFAULT_REMOVE_TEMP PLA_REMOVE_TEMP;
+#define DEFAULT_INSERT_TEMP PLA_LOAD_TEMP;
+#define DEFAULT_REMOVE_TEMP PLA_UNLOAD_TEMP;
 #define DEFAULT_BED_TEMP	PLA_BED_TEMP;
 #define DEFAULT_OLD_PRINT_TEMP PLA_PRINT_TEMP;
-#define DEFAULT_OLD_INSERT_TEMP PLA_INSERT_TEMP;
-#define DEFAULT_OLD_REMOVE_TEMP PLA_REMOVE_TEMP;
+#define DEFAULT_OLD_INSERT_TEMP PLA_LOAD_TEMP;
+#define DEFAULT_OLD_REMOVE_TEMP PLA_UNLOAD_TEMP;
 #define DEFAULT_OLD_BED_TEMP	PLA_BED_TEMP;
 
 

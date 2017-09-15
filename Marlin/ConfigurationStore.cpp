@@ -92,21 +92,21 @@ void Config_StoreSettings()
 	//Quick Start Guide
 	//EEPROM_WRITE_VAR(i,quick_guide);
 	EEPROM_WRITE_VAR(i,print_temp_l);
-	EEPROM_WRITE_VAR(i,insert_temp_l);
-	EEPROM_WRITE_VAR(i,remove_temp_l);
+	EEPROM_WRITE_VAR(i,load_temp_l);
+	EEPROM_WRITE_VAR(i,unload_temp_l);
 	EEPROM_WRITE_VAR(i,bed_temp_l);
 	EEPROM_WRITE_VAR(i,old_print_temp_l);
-	EEPROM_WRITE_VAR(i,old_insert_temp_l);
-	EEPROM_WRITE_VAR(i,old_remove_temp_l);
+	EEPROM_WRITE_VAR(i,old_load_temp_l);
+	EEPROM_WRITE_VAR(i,old_unload_temp_l);
 	EEPROM_WRITE_VAR(i,old_bed_temp_l);
 	
 	EEPROM_WRITE_VAR(i,print_temp_r);
-	EEPROM_WRITE_VAR(i,insert_temp_r);
-	EEPROM_WRITE_VAR(i,remove_temp_r);
+	EEPROM_WRITE_VAR(i,load_temp_r);
+	EEPROM_WRITE_VAR(i,unload_temp_r);
 	EEPROM_WRITE_VAR(i,bed_temp_r);
 	EEPROM_WRITE_VAR(i,old_print_temp_r);
-	EEPROM_WRITE_VAR(i,old_insert_temp_r);
-	EEPROM_WRITE_VAR(i,old_remove_temp_r);
+	EEPROM_WRITE_VAR(i,old_load_temp_r);
+	EEPROM_WRITE_VAR(i,old_unload_temp_r);
 	EEPROM_WRITE_VAR(i,old_bed_temp_r);
 	
 	
@@ -295,8 +295,8 @@ void Config_PrintSettings()
 	SERIAL_ECHO_START;
 	SERIAL_ECHOLNPGM("Temp (C):");
 	SERIAL_ECHO_START;
-	SERIAL_ECHOPAIR("  L_INSERT: ",(unsigned long)insert_temp_l);
-	SERIAL_ECHOPAIR(" C, L_REMOVE: " ,(unsigned long)remove_temp_l);
+	SERIAL_ECHOPAIR("  L_INSERT: ",(unsigned long)load_temp_l);
+	SERIAL_ECHOPAIR(" C, L_REMOVE: " ,(unsigned long)unload_temp_l);
 	SERIAL_ECHOPAIR(" C, L_BED: " ,(unsigned long)bed_temp_l);
 	SERIAL_ECHOPAIR(" C, L_PRINT: " ,(unsigned long)print_temp_l);
 	SERIAL_ECHOLN(" C");
@@ -304,8 +304,8 @@ void Config_PrintSettings()
 	SERIAL_ECHO_START;
 	SERIAL_ECHOLNPGM("Temp (C):");
 	SERIAL_ECHO_START;
-	SERIAL_ECHOPAIR("  R_INSERT: ",(unsigned long)insert_temp_r);
-	SERIAL_ECHOPAIR(" C, R_REMOVE: " ,(unsigned long)remove_temp_r);
+	SERIAL_ECHOPAIR("  R_INSERT: ",(unsigned long)load_temp_r);
+	SERIAL_ECHOPAIR(" C, R_REMOVE: " ,(unsigned long)unload_temp_r);
 	SERIAL_ECHOPAIR(" C, R_BED: " ,(unsigned long)bed_temp_r);
 	SERIAL_ECHOPAIR(" C, R_PRINT: " ,(unsigned long)print_temp_r);
 	SERIAL_ECHOLN(" C");
@@ -425,21 +425,21 @@ void Config_RetrieveSettings()
 		//Quick Start Guide
 		//EEPROM_READ_VAR(i,quick_guide);
 		EEPROM_READ_VAR(i,print_temp_l);
-		EEPROM_READ_VAR(i,insert_temp_l);
-		EEPROM_READ_VAR(i,remove_temp_l);
+		EEPROM_READ_VAR(i,load_temp_l);
+		EEPROM_READ_VAR(i,unload_temp_l);
 		EEPROM_READ_VAR(i,bed_temp_l);
 		EEPROM_READ_VAR(i,old_print_temp_l);
-		EEPROM_READ_VAR(i,old_insert_temp_l);
-		EEPROM_READ_VAR(i,old_remove_temp_l);
+		EEPROM_READ_VAR(i,old_load_temp_l);
+		EEPROM_READ_VAR(i,old_unload_temp_l);
 		EEPROM_READ_VAR(i,old_bed_temp_l);
 		
 		EEPROM_READ_VAR(i,print_temp_r);
-		EEPROM_READ_VAR(i,insert_temp_r);
-		EEPROM_READ_VAR(i,remove_temp_r);
+		EEPROM_READ_VAR(i,load_temp_r);
+		EEPROM_READ_VAR(i,unload_temp_r);
 		EEPROM_READ_VAR(i,bed_temp_r);
 		EEPROM_READ_VAR(i,old_print_temp_r);
-		EEPROM_READ_VAR(i,old_insert_temp_r);
-		EEPROM_READ_VAR(i,old_remove_temp_r);
+		EEPROM_READ_VAR(i,old_load_temp_r);
+		EEPROM_READ_VAR(i,old_unload_temp_r);
 		EEPROM_READ_VAR(i,old_bed_temp_r);
 		
 		//Language
@@ -585,20 +585,20 @@ void Config_ResetDefault()
 	add_homing[0] = add_homing[1] = add_homing[2] = 0;
 	//quick_guide = DEFAULT_QUICK_GUIDE;
 	print_temp_l = DEFAULT_PRINT_TEMP;
-	insert_temp_l=DEFAULT_INSERT_TEMP;
-	remove_temp_l=DEFAULT_REMOVE_TEMP;
+	load_temp_l=DEFAULT_INSERT_TEMP;
+	unload_temp_l=DEFAULT_REMOVE_TEMP;
 	bed_temp_l = DEFAULT_BED_TEMP;
 	old_print_temp_l=DEFAULT_OLD_PRINT_TEMP;
-	old_insert_temp_l=DEFAULT_OLD_INSERT_TEMP;
-	old_remove_temp_l=DEFAULT_OLD_REMOVE_TEMP;
+	old_load_temp_l=DEFAULT_OLD_INSERT_TEMP;
+	old_unload_temp_l=DEFAULT_OLD_REMOVE_TEMP;
 	old_bed_temp_l = DEFAULT_OLD_BED_TEMP;
 	print_temp_r = DEFAULT_PRINT_TEMP;
-	insert_temp_r=DEFAULT_INSERT_TEMP;
-	remove_temp_r=DEFAULT_REMOVE_TEMP;
+	load_temp_r=DEFAULT_INSERT_TEMP;
+	unload_temp_r=DEFAULT_REMOVE_TEMP;
 	bed_temp_r = DEFAULT_BED_TEMP;
 	old_print_temp_r=DEFAULT_OLD_PRINT_TEMP;
-	old_insert_temp_r=DEFAULT_OLD_INSERT_TEMP;
-	old_remove_temp_r=DEFAULT_OLD_REMOVE_TEMP;
+	old_load_temp_r=DEFAULT_OLD_INSERT_TEMP;
+	old_unload_temp_r=DEFAULT_OLD_REMOVE_TEMP;
 	old_bed_temp_r = DEFAULT_OLD_BED_TEMP;
 	
 	#ifdef DELTA
@@ -740,8 +740,8 @@ void Change_ConfigTemp_LeftHotend(int i_temp_l, int r_temp_l, int p_temp_l, int 
 	else{
 		
 		
-		insert_temp_l =i_temp_l;
-		remove_temp_l = r_temp_l;
+		load_temp_l =i_temp_l;
+		unload_temp_l = r_temp_l;
 		print_temp_l = p_temp_l;
 		bed_temp_l = b_temp_l;
 		
@@ -769,8 +769,8 @@ void Change_ConfigTemp_RightHotend(int i_temp_r, int r_temp_r, int p_temp_r, int
 	else{
 		
 		
-		insert_temp_r =i_temp_r;
-		remove_temp_r = r_temp_r;
+		load_temp_r =i_temp_r;
+		unload_temp_r = r_temp_r;
 		print_temp_r = p_temp_r;
 		bed_temp_r = b_temp_r;
 		SERIAL_PROTOCOLLNPGM("SUCCESS");
