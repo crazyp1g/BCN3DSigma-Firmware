@@ -3207,6 +3207,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								HeaterCooldownInactivity(true);
 							}
 							else{
+								genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
+								gif_processing_state = PROCESSING_DEFAULT;
 								setTargetHotend0(0);
 								setTargetHotend1(0);
 								home_axis_from_code(true, true, false);
@@ -3222,8 +3224,6 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								current_position[X_AXIS] = 155 + 100;
 								#endif
 								doblocking = true;
-								genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
-								gif_processing_state = PROCESSING_DEFAULT;
 								plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_TRAVEL_SPEED*1.5,which_extruder);
 								st_synchronize();
 								if(gif_processing_state == PROCESSING_ERROR)return;
