@@ -915,13 +915,13 @@ void setup()
 			
 		}
 		genie.WriteObject(GENIE_OBJ_FORM,FORN_SETUPASSISTANT_YESNOT,0);
-		}
-		#if BCN3D_SCREEN_VERSION_SETUP == BCN3D_SIGMA_PRINTER_DEVMODE_1
-		else if(flag_utilities_calibration_zcomensationmode_gauges == 1888 || flag_utilities_calibration_zcomensationmode_gauges == 2888 ){
-			genie.WriteObject(GENIE_OBJ_FORM, FORM_Z_COMPENSATION_COMFIRMATION,0);
-		}
-		#endif
-		else{
+	}
+	#if BCN3D_SCREEN_VERSION_SETUP == BCN3D_SIGMA_PRINTER_DEVMODE_1
+	else if(flag_utilities_calibration_zcomensationmode_gauges == 1888 || flag_utilities_calibration_zcomensationmode_gauges == 2888 ){
+		genie.WriteObject(GENIE_OBJ_FORM, FORM_Z_COMPENSATION_COMFIRMATION,0);
+	}
+	#endif
+	else{
 		genie.WriteObject(GENIE_OBJ_FORM,FORM_MAIN,0);
 	}
 	
@@ -1868,7 +1868,7 @@ void update_screen_noprinting(){
 
 void update_screen_sdcard(){
 	static uint32_t waitPeriod_input_button_command = millis();
-		
+	
 	if(flag_sdlist_goup){
 		ListFilesDownfunc();
 		flag_sdlist_goup = false;
@@ -2586,7 +2586,7 @@ void get_command()
 		(serial_char == ':' && comment_mode == false) ||
 		serial_count >= (MAX_CMD_SIZE - 1)||n==-1)
 		{
-						
+			
 			if(card.eof()){
 				SERIAL_PROTOCOLLNPGM(MSG_FILE_PRINTED);
 				stoptime=millis();
@@ -2685,7 +2685,7 @@ void get_command()
 			
 		}
 		else
-		{	
+		{
 			
 			if(serial_char == ';') comment_mode = true;
 			if(!comment_mode) cmdbuffer[bufindw][serial_count++] = serial_char;
@@ -2699,7 +2699,7 @@ void get_command()
 						fileraftstart = card.getIndex()-serial_count;
 						raft_line_counter_g = 1;
 						raft_line_counter = 1;
-						}
+					}
 					
 				}
 				if(raft_indicator >= 1 && !comment_mode){
@@ -2934,12 +2934,12 @@ static void set_bed_level_equation_3pts(float z_at_pt_1, float z_at_pt_2, float 
 
 int sentit (float dz)
 {
-	return (dz > 0) ? 1 : -1;//Clockwise  & Counterclockwise 
+	return (dz > 0) ? 1 : -1;//Clockwise  & Counterclockwise
 }
 
 float voltes (float dz)
 {
-		return dz/PAS_M5;
+	return dz/PAS_M5;
 }
 
 int aprox (float voltes)
@@ -3882,7 +3882,7 @@ inline void gcode_G40(){
 	for (int i=0; i<(NUM_LINES);i++) //N times
 	{
 		if (i == 0) {
-						
+			
 			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 			current_position[X_AXIS] = 197.5;
 			#else
@@ -3929,7 +3929,7 @@ inline void gcode_G40(){
 		st_synchronize();
 		if(gif_processing_state == PROCESSING_ERROR)return;
 		Serial.println(mm_second_extruder[i]);
-		current_position[Y_AXIS]= mm_right_lines_x_up; 
+		current_position[Y_AXIS]= mm_right_lines_x_up;
 		#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 		current_position[X_AXIS] = mm_left_offset+(mm_second_extruder[i]+(mm_each_extrusion*(i)));
 		#else
@@ -3945,7 +3945,7 @@ inline void gcode_G40(){
 		if(gif_processing_state == PROCESSING_ERROR)return;
 		if (i != 9){
 			current_position[Y_AXIS]= mm_right_lines_x_down;
-			 			
+			
 			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 			current_position[X_AXIS] = mm_left_offset+(mm_second_extruder[i]+(mm_each_extrusion*(i+1)));
 			#else
@@ -4082,7 +4082,7 @@ inline void gcode_G41(){
 		plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], RETRACT_SPEED_G36/60, active_extruder);
 		st_synchronize();
 		if(gif_processing_state == PROCESSING_ERROR)return;
-		if(i != 9){			
+		if(i != 9){
 			#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 			current_position[X_AXIS] = mm_left_lines_y_l;
 			#else
@@ -4149,7 +4149,7 @@ inline void gcode_G41(){
 			current_position[X_AXIS] = mm_right_lines_y_r;
 			#else
 			current_position[X_AXIS] = mm_right_lines_y_r + X_OFFSET_CALIB_PROCEDURES;
-			#endif			
+			#endif
 			current_position[Y_AXIS]=y_first_line-((i)*mm_each_extrusion)-mm_second_extruder[i];
 			plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200 , active_extruder);
 			st_synchronize();
@@ -4262,8 +4262,8 @@ inline void gcode_G33(){
 	
 	//WARNING: T0 (LEFT_EXTRUDER) MUST BE SELECTED!
 	if (active_extruder==RIGHT_EXTRUDER){
-		SERIAL_PROTOCOLLNPGM("Error: Left Extruder MUST BE ACTIVE");
-		return; //An error message should show up on screen
+	SERIAL_PROTOCOLLNPGM("Error: Left Extruder MUST BE ACTIVE");
+	return; //An error message should show up on screen
 	}
 	
 	#if Z_MIN_PIN == -1
@@ -4273,10 +4273,10 @@ inline void gcode_G33(){
 	// Prevent user from running a G29 without first homing in X and Y
 	if (! (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) )
 	{
-		LCD_MESSAGEPGM(MSG_POSITION_UNKNOWN);
-		SERIAL_ECHO_START;
-		SERIAL_ECHOLNPGM(MSG_POSITION_UNKNOWN);
-		//break; // abort G29, since we don't know where we are
+	LCD_MESSAGEPGM(MSG_POSITION_UNKNOWN);
+	SERIAL_ECHO_START;
+	SERIAL_ECHOLNPGM(MSG_POSITION_UNKNOWN);
+	//break; // abort G29, since we don't know where we are
 	}
 	
 	//We have to save the active extruder.
@@ -4446,11 +4446,11 @@ inline void gcode_G33(){
 	
 	if(saved_active_extruder==LEFT_EXTRUDER)
 	{
-		//changeToolSigma(LEFT_EXTRUDER); //Get again the same tool
-		SERIAL_PROTOCOLPGM("Extruder active: ");
-		Serial.println(saved_active_extruder);
-		}else{
-		
+	//changeToolSigma(LEFT_EXTRUDER); //Get again the same tool
+	SERIAL_PROTOCOLPGM("Extruder active: ");
+	Serial.println(saved_active_extruder);
+	}else{
+	
 	}
 	
 	
@@ -4564,97 +4564,97 @@ inline void gcode_G33(){
 	
 	if (aprox1==0 && aprox2==0 && aprox3==0)
 	{
-		#ifdef SIGMA_TOUCH_SCREEN
-		
-		genie.WriteObject(GENIE_OBJ_FORM,FORM_CAL_WIZARD_DONE_GOOD,0);
-		gif_processing_state = PROCESSING_BED_SUCCESS;
-		#endif
-		
-		SERIAL_PROTOCOL(" Platform is Calibrated! ");
-		}else{
-		
-		#ifdef SIGMA_TOUCH_SCREEN
-		char buffer[256];
-		sprintf(buffer, " %d / 8",vuitens1); //Printing how to calibrate on screen
-		//genie.WriteStr(STRING_BED_SCREW1,buffer);
-		
-		if (sentit1>0){genie.WriteObject(GENIE_OBJ_USERIMAGES,3,1);} //The direction is inverted in Sigma's bed screws
-		else{genie.WriteObject(GENIE_OBJ_USERIMAGES,3,0);}
-		
-		//sprintf(buffer, " %d / 8",vuitens2);
-		//genie.WriteStr(STRING_SCREW2,buffer);
-		
-		//sprintf(buffer, " %d / 8",vuitens3);
-		//genie.WriteStr(STRING_SCREW3,buffer);
-		
-		//genie.WriteObject(GENIE_OBJ_FORM,FORM_CAL_WIZARD_DONE_BAD,1);
-		genie.WriteObject(GENIE_OBJ_FORM,FORM_CALIB_BED_SCREW1,0);
-		
-		
-		#endif
-		
-		SERIAL_PROTOCOLPGM(" zc: ");
-		SERIAL_PROTOCOL(zc);
-		SERIAL_PROTOCOLPGM("\n");
-		SERIAL_PROTOCOLPGM(" dz1: ");
-		SERIAL_PROTOCOL(dz1);
-		SERIAL_PROTOCOLPGM(" dz2: ");
-		SERIAL_PROTOCOL(dz2);
-		SERIAL_PROTOCOLPGM(" dz3: ");
-		SERIAL_PROTOCOL(dz3);
-		SERIAL_PROTOCOLPGM("\n");
+	#ifdef SIGMA_TOUCH_SCREEN
+	
+	genie.WriteObject(GENIE_OBJ_FORM,FORM_CAL_WIZARD_DONE_GOOD,0);
+	gif_processing_state = PROCESSING_BED_SUCCESS;
+	#endif
+	
+	SERIAL_PROTOCOL(" Platform is Calibrated! ");
+	}else{
+	
+	#ifdef SIGMA_TOUCH_SCREEN
+	char buffer[256];
+	sprintf(buffer, " %d / 8",vuitens1); //Printing how to calibrate on screen
+	//genie.WriteStr(STRING_BED_SCREW1,buffer);
+	
+	if (sentit1>0){genie.WriteObject(GENIE_OBJ_USERIMAGES,3,1);} //The direction is inverted in Sigma's bed screws
+	else{genie.WriteObject(GENIE_OBJ_USERIMAGES,3,0);}
+	
+	//sprintf(buffer, " %d / 8",vuitens2);
+	//genie.WriteStr(STRING_SCREW2,buffer);
+	
+	//sprintf(buffer, " %d / 8",vuitens3);
+	//genie.WriteStr(STRING_SCREW3,buffer);
+	
+	//genie.WriteObject(GENIE_OBJ_FORM,FORM_CAL_WIZARD_DONE_BAD,1);
+	genie.WriteObject(GENIE_OBJ_FORM,FORM_CALIB_BED_SCREW1,0);
+	
+	
+	#endif
+	
+	SERIAL_PROTOCOLPGM(" zc: ");
+	SERIAL_PROTOCOL(zc);
+	SERIAL_PROTOCOLPGM("\n");
+	SERIAL_PROTOCOLPGM(" dz1: ");
+	SERIAL_PROTOCOL(dz1);
+	SERIAL_PROTOCOLPGM(" dz2: ");
+	SERIAL_PROTOCOL(dz2);
+	SERIAL_PROTOCOLPGM(" dz3: ");
+	SERIAL_PROTOCOL(dz3);
+	SERIAL_PROTOCOLPGM("\n");
 
-		SERIAL_PROTOCOLPGM(" Voltes cargol 1: ");
-		if (numvoltes1 > 0)
-		{
-			SERIAL_PROTOCOL(numvoltes1);
-			SERIAL_PROTOCOLPGM(" ");
-		}
-		SERIAL_PROTOCOL(vuitens1);
-		SERIAL_PROTOCOLPGM("/8");
-		if (sentit1 > 0)
-		{
-			SERIAL_PROTOCOLPGM(" horari\n ");
-		}
-		else
-		{
-			SERIAL_PROTOCOLPGM(" antihorari\n: ");
-		}
+	SERIAL_PROTOCOLPGM(" Voltes cargol 1: ");
+	if (numvoltes1 > 0)
+	{
+	SERIAL_PROTOCOL(numvoltes1);
+	SERIAL_PROTOCOLPGM(" ");
+	}
+	SERIAL_PROTOCOL(vuitens1);
+	SERIAL_PROTOCOLPGM("/8");
+	if (sentit1 > 0)
+	{
+	SERIAL_PROTOCOLPGM(" horari\n ");
+	}
+	else
+	{
+	SERIAL_PROTOCOLPGM(" antihorari\n: ");
+	}
 
-		SERIAL_PROTOCOLPGM(" Voltes cargol 2: ");
-		if (numvoltes2 > 0)
-		{
-			SERIAL_PROTOCOL(numvoltes2);
-			SERIAL_PROTOCOLPGM(" ");
-		}
-		SERIAL_PROTOCOL(vuitens2);
-		SERIAL_PROTOCOLPGM("/8");
-		if (sentit2 > 0)
-		{
-			SERIAL_PROTOCOLPGM(" horari\n ");
-		}
-		else
-		{
-			SERIAL_PROTOCOLPGM(" antihorari\n: ");
-		}
-		
-		SERIAL_PROTOCOLPGM(" Voltes cargol 3: ");
-		if (numvoltes3 > 0)
-		{
-			SERIAL_PROTOCOL(numvoltes3);
-			SERIAL_PROTOCOLPGM(" ");
-		}
-		SERIAL_PROTOCOL(vuitens3);
-		SERIAL_PROTOCOLPGM("/8");
-		if (sentit3 > 0)
-		{
-			SERIAL_PROTOCOLPGM(" horari\n ");
-		}
-		else
-		{
-			SERIAL_PROTOCOLPGM(" antihorari\n: ");
-		}
-		SERIAL_PROTOCOLPGM("\n");
+	SERIAL_PROTOCOLPGM(" Voltes cargol 2: ");
+	if (numvoltes2 > 0)
+	{
+	SERIAL_PROTOCOL(numvoltes2);
+	SERIAL_PROTOCOLPGM(" ");
+	}
+	SERIAL_PROTOCOL(vuitens2);
+	SERIAL_PROTOCOLPGM("/8");
+	if (sentit2 > 0)
+	{
+	SERIAL_PROTOCOLPGM(" horari\n ");
+	}
+	else
+	{
+	SERIAL_PROTOCOLPGM(" antihorari\n: ");
+	}
+	
+	SERIAL_PROTOCOLPGM(" Voltes cargol 3: ");
+	if (numvoltes3 > 0)
+	{
+	SERIAL_PROTOCOL(numvoltes3);
+	SERIAL_PROTOCOLPGM(" ");
+	}
+	SERIAL_PROTOCOL(vuitens3);
+	SERIAL_PROTOCOLPGM("/8");
+	if (sentit3 > 0)
+	{
+	SERIAL_PROTOCOLPGM(" horari\n ");
+	}
+	else
+	{
+	SERIAL_PROTOCOLPGM(" antihorari\n: ");
+	}
+	SERIAL_PROTOCOLPGM("\n");
 	}
 	
 	#endif //Z_SIGMA_AUTOLEVEL
@@ -4671,7 +4671,7 @@ inline void gcode_G34(){
 	homing_feedrate[Z_AXIS]= CALIB_FEEDRATE_ZAXIS;
 	doblocking= true;
 	
-	if (flag_utilities_calibration_calibfull){
+	if (flag_utilities_calibration_calibfull || flag_utilities_calibration_calibfull_skipZcalib){
 		setTargetHotend0(CALIBFULL_HOTEND_STANDBY_TEMP);
 		setTargetHotend1(CALIBFULL_HOTEND_STANDBY_TEMP);
 		setTargetBed(max(bed_temp_l,bed_temp_r));
@@ -4768,7 +4768,7 @@ inline void gcode_G34(){
 	//Probe at 3 arbitrary points
 	//probe left extruder
 
-	float z2_at_pt_3 = probe_pt(X_SIGMA_PROBE_3_RIGHT_EXTR,Y_SIGMA_PROBE_3_RIGHT_EXTR, Z_RAISE_BEFORE_PROBING);	
+	float z2_at_pt_3 = probe_pt(X_SIGMA_PROBE_3_RIGHT_EXTR,Y_SIGMA_PROBE_3_RIGHT_EXTR, Z_RAISE_BEFORE_PROBING);
 	float z2_at_pt_2 = probe_pt(X_SIGMA_PROBE_2_RIGHT_EXTR,Y_SIGMA_PROBE_2_RIGHT_EXTR, current_position[Z_AXIS] + Z_RAISE_BEFORE_PROBING);
 	float z2_at_pt_1 = probe_pt(X_SIGMA_PROBE_1_RIGHT_EXTR,Y_SIGMA_PROBE_1_RIGHT_EXTR, current_position[Z_AXIS] + Z_RAISE_BEFORE_PROBING);
 	
@@ -4807,7 +4807,7 @@ inline void gcode_G34(){
 	
 	float Zscroll_0=(-planeNormal_0.x*(CARGOL_1_X-X_SIGMA_PROBE_1_LEFT_EXTR)-planeNormal_0.y*(CARGOL_1_Y-Y_SIGMA_PROBE_3_LEFT_EXTR))/planeNormal_0.z;
 	float Zscroll_1=(-planeNormal_1.x*(CARGOL_1_X-X_SIGMA_PROBE_1_LEFT_EXTR)-planeNormal_1.y*(CARGOL_1_Y-Y_SIGMA_PROBE_3_LEFT_EXTR))/planeNormal_1.z;
-		
+	
 	//float z1_0=(-planeNormal_0.x*0.0-planeNormal_0.y*(Y_SIGMA_PROBE_1_LEFT_EXTR-Y_SIGMA_PROBE_3_LEFT_EXTR))/planeNormal_0.z;
 	float z2_0=(-planeNormal_0.x*(CARGOL_2_X-X_SIGMA_PROBE_1_LEFT_EXTR)-planeNormal_0.y*(CARGOL_2_Y-Y_SIGMA_PROBE_3_LEFT_EXTR))/planeNormal_0.z;
 	float z3_0=(-planeNormal_0.x*(CARGOL_3_X-X_SIGMA_PROBE_1_LEFT_EXTR)-planeNormal_0.y*(CARGOL_3_Y-Y_SIGMA_PROBE_3_LEFT_EXTR))/planeNormal_0.z;
@@ -4836,9 +4836,9 @@ inline void gcode_G34(){
 	Serial.println(z2_0);
 	SERIAL_PROTOCOLPGM("z3_0: ");
 	Serial.println(z3_0);
-		
+	
 	SERIAL_PROTOCOLPGM("Zscroll_1: ");
-	Serial.println(Zscroll_1);	
+	Serial.println(Zscroll_1);
 	SERIAL_PROTOCOLPGM("z2_1: ");
 	Serial.println(z2_1);
 	SERIAL_PROTOCOLPGM("z3_1: ");
@@ -4967,9 +4967,23 @@ inline void gcode_G34(){
 			}
 			
 			flag_continue_calib = true;
-		}else if(flag_utilities_calibration_bedcomensationmode){
-			
+		}
+		else if(flag_utilities_calibration_calibfull_skipZcalib){
+			flag_utilities_calibration_calibfull_skipZcalib = false;
 			active_extruder = LEFT_EXTRUDER;
+			setTargetHotend0(CALIBFULL_HOTEND_STANDBY_TEMP);
+			setTargetHotend1(CALIBFULL_HOTEND_STANDBY_TEMP);
+			setTargetBed(max(bed_temp_l,bed_temp_r));
+			
+			st_synchronize();
+			if(gif_processing_state == PROCESSING_ERROR)return;
+			enquecommand_P(PSTR("T0"));
+			genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBX,0);
+			
+		}
+		else if(flag_utilities_calibration_bedcomensationmode){
+			
+			active_extruder = which_extruder;
 			//genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
 			//gif_processing_state = PROCESSING_DEFAULT;
 			
@@ -4978,7 +4992,11 @@ inline void gcode_G34(){
 			Bed_Compensation_state = 2;
 			Bed_compensation_redo_offset = 0;
 			if(gif_processing_state == PROCESSING_ERROR)return;
-			enquecommand_P(PSTR("T0"));
+			if(which_extruder==0){
+				enquecommand_P(PSTR("T0"));
+				}else{
+				enquecommand_P(PSTR("T1"));
+			}
 			genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
 			
 			
@@ -5064,46 +5082,54 @@ inline void gcode_G34(){
 }
 /*inline void gcode_G35(){
 
-	home_axis_from_code(true,true,true);
-	doblocking = true;
-	if (active_extruder != LEFT_EXTRUDER) changeTool(LEFT_EXTRUDER);
-	
-	current_position[E_AXIS]+=15;  //0.5 + 0.15 per ajustar una bona alçada
-	plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],INSERT_SLOW_SPEED/60,active_extruder);
-	st_synchronize();
-	if(gif_processing_state == PROCESSING_ERROR)return;
-	current_position[Z_AXIS]=2; //0.5 + 0.15 per ajustar una bona alçada
-	plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],15,active_extruder);
-	st_synchronize();
-	if(gif_processing_state == PROCESSING_ERROR)return;
-	current_position[E_AXIS]-=4;
-	plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],INSERT_FAST_SPEED/60,active_extruder);
-	//Step 1
-	bed_test_print_code(0, 0, 0);
-	
-	//Step 2
-	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
-	bed_test_print_code(-84.0,-220.0, 0);
-	#else
-	bed_test_print_code(-184.0,-220.0, 0);
-	#endif
-	
-	//Step 3
-	#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
-	bed_test_print_code(82.0,-220.0, 0);
-	#else
-	bed_test_print_code(192.0,-220.0, 0);
-	#endif
-	
-	home_axis_from_code(true,true,false);
-	if(gif_processing_state == PROCESSING_ERROR)return;
-	doblocking = false;
+home_axis_from_code(true,true,true);
+doblocking = true;
+if (active_extruder != LEFT_EXTRUDER) changeTool(LEFT_EXTRUDER);
+
+current_position[E_AXIS]+=15;  //0.5 + 0.15 per ajustar una bona alçada
+plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],INSERT_SLOW_SPEED/60,active_extruder);
+st_synchronize();
+if(gif_processing_state == PROCESSING_ERROR)return;
+current_position[Z_AXIS]=2; //0.5 + 0.15 per ajustar una bona alçada
+plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],15,active_extruder);
+st_synchronize();
+if(gif_processing_state == PROCESSING_ERROR)return;
+current_position[E_AXIS]-=4;
+plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],INSERT_FAST_SPEED/60,active_extruder);
+//Step 1
+bed_test_print_code(0, 0, 0);
+
+//Step 2
+#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+bed_test_print_code(-84.0,-220.0, 0);
+#else
+bed_test_print_code(-184.0,-220.0, 0);
+#endif
+
+//Step 3
+#if BCN3D_PRINTER == BCN3D_SIGMA_PRINTER
+bed_test_print_code(82.0,-220.0, 0);
+#else
+bed_test_print_code(192.0,-220.0, 0);
+#endif
+
+home_axis_from_code(true,true,false);
+if(gif_processing_state == PROCESSING_ERROR)return;
+doblocking = false;
 
 
-	
+
 }*/
 inline void gcode_G36()
 {
+	which_extruder = 0; //--Left active extruder by default
+	if (code_seen('T')) {
+		if((int) code_value() == 0){
+			which_extruder = 0;
+		}else if((int) code_value() == 1){
+			which_extruder = 1;			
+		}
+	}
 	HeaterCooldownInactivity(false);
 	bed_offset_left_screw = 0.0;
 	bed_offset_right_screw = 0.0;
@@ -5114,7 +5140,15 @@ inline void gcode_G36()
 	flag_utilities_calibration_bedcomensationmode = true;
 	setTargetHotend0(print_temp_l);
 	setTargetHotend1(0);
-	setTargetBed(bed_temp_l);
+	if(which_extruder == 0 ){
+		setTargetHotend0(print_temp_l);
+		setTargetHotend1(0);
+		setTargetBed(bed_temp_l);
+	}else if (which_extruder == 1){
+		setTargetHotend0(0);
+		setTargetHotend1(print_temp_r);
+		setTargetBed(bed_temp_r);
+	}
 	genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 	gif_processing_state = PROCESSING_DEFAULT;
 	doblocking= true;
@@ -6580,8 +6614,8 @@ inline void gcode_M109(){
 		/* start/restart the TEMP_RESIDENCY_TIME timer whenever we reach target temp for the first time
 		or when current temp falls outside the hysteresis after target temp was reached */
 		if ((residencyStart == -1 &&  target_direction && (degHotend(tmp_extruder) >= (degTargetHotend(tmp_extruder)-TEMP_WINDOW))) ||
-		 (residencyStart == -1 && !target_direction && (degHotend(tmp_extruder) <= (degTargetHotend(tmp_extruder)+TEMP_WINDOW))) ||
-		  (residencyStart > -1 && labs(degHotend(tmp_extruder) - degTargetHotend(tmp_extruder)) > TEMP_HYSTERESIS) )
+		(residencyStart == -1 && !target_direction && (degHotend(tmp_extruder) <= (degTargetHotend(tmp_extruder)+TEMP_WINDOW))) ||
+		(residencyStart > -1 && labs(degHotend(tmp_extruder) - degTargetHotend(tmp_extruder)) > TEMP_HYSTERESIS) )
 		{
 			residencyStart = millis();
 		}
@@ -7761,108 +7795,108 @@ inline void gcode_M600(){
 }
 inline void gcode_M605(){
 	#if BCN3D_SCREEN_VERSION_SETUP == BCN3D_SIGMA_PRINTER_DEVMODE_1
-		#ifdef DUAL_X_CARRIAGE
-		//    M605 S0: Full control mode. The slicer has full control over x-carriage movement
-		//    M605 S1: Auto-park mode. The inactive head will auto park/unpark without slicer involvement
-		//    M605 S2 [Xnnn] [Rmmm]: Duplication mode. The second extruder will duplicate the first with nnn
-		//                         millimeters x-offset and an optional differential hotend temperature of
-		//                         mmm degrees. E.g., with "M605 S2 X100 R2" the second extruder will duplicate
-		//                         the first with a spacing of 100mm in the x direction and 2 degrees hotter.
-		//
-		//    Note: the X axis should be homed after changing dual x-carriage mode.
-		//    M605 S3: Default mode
-		//	  M605 S4: Duplication Mirror mode
-		//    M605 S5 [Xnnn] [Rmmm]: Duplication Raft mode
-		//	  M605 S6: Duplication Raft Mirror mode
-		//
-		//    Note: the X axis should be homed after changing dual x-carriage mode.
-		st_synchronize();
+	#ifdef DUAL_X_CARRIAGE
+	//    M605 S0: Full control mode. The slicer has full control over x-carriage movement
+	//    M605 S1: Auto-park mode. The inactive head will auto park/unpark without slicer involvement
+	//    M605 S2 [Xnnn] [Rmmm]: Duplication mode. The second extruder will duplicate the first with nnn
+	//                         millimeters x-offset and an optional differential hotend temperature of
+	//                         mmm degrees. E.g., with "M605 S2 X100 R2" the second extruder will duplicate
+	//                         the first with a spacing of 100mm in the x direction and 2 degrees hotter.
+	//
+	//    Note: the X axis should be homed after changing dual x-carriage mode.
+	//    M605 S3: Default mode
+	//	  M605 S4: Duplication Mirror mode
+	//    M605 S5 [Xnnn] [Rmmm]: Duplication Raft mode
+	//	  M605 S6: Duplication Raft Mirror mode
+	//
+	//    Note: the X axis should be homed after changing dual x-carriage mode.
+	st_synchronize();
 
-		if (code_seen('S'))
-		dual_x_carriage_mode = (int)code_value();
+	if (code_seen('S'))
+	dual_x_carriage_mode = (int)code_value();
 
-		if (dual_x_carriage_mode == DXC_DUPLICATION_MODE || dual_x_carriage_mode == DXC_DUPLICATION_MODE_RAFT)
-		{
-			if (code_seen('X'))
-			duplicate_extruder_x_offset = max(code_value(),X2_MIN_POS - x_home_pos(0));
+	if (dual_x_carriage_mode == DXC_DUPLICATION_MODE || dual_x_carriage_mode == DXC_DUPLICATION_MODE_RAFT)
+	{
+		if (code_seen('X'))
+		duplicate_extruder_x_offset = max(code_value(),X2_MIN_POS - x_home_pos(0));
 
-			if (code_seen('R'))
-			duplicate_extruder_temp_offset = code_value();
+		if (code_seen('R'))
+		duplicate_extruder_temp_offset = code_value();
 
-			SERIAL_ECHO_START;
-			SERIAL_ECHOPGM(MSG_HOTEND_OFFSET);
-			SERIAL_ECHO(" ");
-			SERIAL_ECHO(extruder_offset[X_AXIS][0]);
-			SERIAL_ECHO(",");
-			SERIAL_ECHO(extruder_offset[Y_AXIS][0]);
-			SERIAL_ECHO(" ");
-			SERIAL_ECHO(duplicate_extruder_x_offset);
-			SERIAL_ECHO(",");
-			SERIAL_ECHOLN(extruder_offset[Y_AXIS][1]);
-		}
-		else if (dual_x_carriage_mode != DXC_FULL_CONTROL_MODE && dual_x_carriage_mode != DXC_AUTO_PARK_MODE && dual_x_carriage_mode != DXC_DUPLICATION_MIRROR_MODE && dual_x_carriage_mode != DXC_DUPLICATION_MIRROR_MODE_RAFT)
-		{
-			dual_x_carriage_mode = DEFAULT_DUAL_X_CARRIAGE_MODE;
-		}
+		SERIAL_ECHO_START;
+		SERIAL_ECHOPGM(MSG_HOTEND_OFFSET);
+		SERIAL_ECHO(" ");
+		SERIAL_ECHO(extruder_offset[X_AXIS][0]);
+		SERIAL_ECHO(",");
+		SERIAL_ECHO(extruder_offset[Y_AXIS][0]);
+		SERIAL_ECHO(" ");
+		SERIAL_ECHO(duplicate_extruder_x_offset);
+		SERIAL_ECHO(",");
+		SERIAL_ECHOLN(extruder_offset[Y_AXIS][1]);
+	}
+	else if (dual_x_carriage_mode != DXC_FULL_CONTROL_MODE && dual_x_carriage_mode != DXC_AUTO_PARK_MODE && dual_x_carriage_mode != DXC_DUPLICATION_MIRROR_MODE && dual_x_carriage_mode != DXC_DUPLICATION_MIRROR_MODE_RAFT)
+	{
+		dual_x_carriage_mode = DEFAULT_DUAL_X_CARRIAGE_MODE;
+	}
 	
-		active_extruder_parked = false;
-		extruder_duplication_enabled = false;
-		extruder_duplication_mirror_enabled = false;
-		Flag_Raft_Dual_Mode_On = false;
-		delayed_move_time = 0;
+	active_extruder_parked = false;
+	extruder_duplication_enabled = false;
+	extruder_duplication_mirror_enabled = false;
+	Flag_Raft_Dual_Mode_On = false;
+	delayed_move_time = 0;
 	
-		switch(dual_x_carriage_mode){
-			case DXC_DUPLICATION_MODE:
-			case DXC_DUPLICATION_MODE_RAFT:
-			case DXC_DUPLICATION_MIRROR_MODE:
-			case DXC_DUPLICATION_MIRROR_MODE_RAFT:
-			home_axis_from_code(true, false, false);
-		}
-		#endif //DUAL_X_CARRIAGE
+	switch(dual_x_carriage_mode){
+		case DXC_DUPLICATION_MODE:
+		case DXC_DUPLICATION_MODE_RAFT:
+		case DXC_DUPLICATION_MIRROR_MODE:
+		case DXC_DUPLICATION_MIRROR_MODE_RAFT:
+		home_axis_from_code(true, false, false);
+	}
+	#endif //DUAL_X_CARRIAGE
 	#elif BCN3D_SCREEN_VERSION_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
-		#ifdef DUAL_X_CARRIAGE
-		//    M605 S0: Full control mode. The slicer has full control over x-carriage movement
-		//    M605 S1: Auto-park mode. The inactive head will auto park/unpark without slicer involvement
-		//    M605 S2 [Xnnn] [Rmmm]: Duplication mode. The second extruder will duplicate the first with nnn
-		//                         millimeters x-offset and an optional differential hotend temperature of
-		//                         mmm degrees. E.g., with "M605 S2 X100 R2" the second extruder will duplicate
-		//                         the first with a spacing of 100mm in the x direction and 2 degrees hotter.
-		//
-		//    Note: the X axis should be homed after changing dual x-carriage mode.
+	#ifdef DUAL_X_CARRIAGE
+	//    M605 S0: Full control mode. The slicer has full control over x-carriage movement
+	//    M605 S1: Auto-park mode. The inactive head will auto park/unpark without slicer involvement
+	//    M605 S2 [Xnnn] [Rmmm]: Duplication mode. The second extruder will duplicate the first with nnn
+	//                         millimeters x-offset and an optional differential hotend temperature of
+	//                         mmm degrees. E.g., with "M605 S2 X100 R2" the second extruder will duplicate
+	//                         the first with a spacing of 100mm in the x direction and 2 degrees hotter.
+	//
+	//    Note: the X axis should be homed after changing dual x-carriage mode.
 	
-		st_synchronize();
+	st_synchronize();
 
-		if (code_seen('S'))
-		dual_x_carriage_mode = (int)code_value();
+	if (code_seen('S'))
+	dual_x_carriage_mode = (int)code_value();
 
-		if (dual_x_carriage_mode == DXC_DUPLICATION_MODE)
-		{
-			if (code_seen('X'))
-			duplicate_extruder_x_offset = max(code_value(),X2_MIN_POS - x_home_pos(0));
+	if (dual_x_carriage_mode == DXC_DUPLICATION_MODE)
+	{
+		if (code_seen('X'))
+		duplicate_extruder_x_offset = max(code_value(),X2_MIN_POS - x_home_pos(0));
 
-			if (code_seen('R'))
-			duplicate_extruder_temp_offset = code_value();
+		if (code_seen('R'))
+		duplicate_extruder_temp_offset = code_value();
 
-			SERIAL_ECHO_START;
-			SERIAL_ECHOPGM(MSG_HOTEND_OFFSET);
-			SERIAL_ECHO(" ");
-			SERIAL_ECHO(extruder_offset[X_AXIS][0]);
-			SERIAL_ECHO(",");
-			SERIAL_ECHO(extruder_offset[Y_AXIS][0]);
-			SERIAL_ECHO(" ");
-			SERIAL_ECHO(duplicate_extruder_x_offset);
-			SERIAL_ECHO(",");
-			SERIAL_ECHOLN(extruder_offset[Y_AXIS][1]);
-		}
-		else if (dual_x_carriage_mode != DXC_FULL_CONTROL_MODE && dual_x_carriage_mode != DXC_AUTO_PARK_MODE)
-		{
-			dual_x_carriage_mode = DEFAULT_DUAL_X_CARRIAGE_MODE;
-		}
+		SERIAL_ECHO_START;
+		SERIAL_ECHOPGM(MSG_HOTEND_OFFSET);
+		SERIAL_ECHO(" ");
+		SERIAL_ECHO(extruder_offset[X_AXIS][0]);
+		SERIAL_ECHO(",");
+		SERIAL_ECHO(extruder_offset[Y_AXIS][0]);
+		SERIAL_ECHO(" ");
+		SERIAL_ECHO(duplicate_extruder_x_offset);
+		SERIAL_ECHO(",");
+		SERIAL_ECHOLN(extruder_offset[Y_AXIS][1]);
+	}
+	else if (dual_x_carriage_mode != DXC_FULL_CONTROL_MODE && dual_x_carriage_mode != DXC_AUTO_PARK_MODE)
+	{
+		dual_x_carriage_mode = DEFAULT_DUAL_X_CARRIAGE_MODE;
+	}
 
-		active_extruder_parked = false;
-		extruder_duplication_enabled = false;
-		delayed_move_time = 0;
-		#endif //DUAL_X_CARRIAGE
+	active_extruder_parked = false;
+	extruder_duplication_enabled = false;
+	delayed_move_time = 0;
+	#endif //DUAL_X_CARRIAGE
 	#endif //BCN3D_SCREEN_VERSION
 }
 inline void gcode_M907(){
@@ -9190,10 +9224,10 @@ inline void dual_mode_duplication_z_adjust_raft(void){
 		destination[Z_AXIS] = abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) - raft_z_init*(raft_line_counter-1);
 		raft_extrusion_adjusting = destination[Z_AXIS]/raft_z_init;
 		Flag_raft_last_line = true;
-	}else if(Flag_raft_last_line){
+		}else if(Flag_raft_last_line){
 		destination[Z_AXIS] = (abs(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]) - raft_z_init*(raft_line_counter-1)) + (destination_Z_2 - raft_z_init);
 		//gestion de Z
-			
+		
 	}
 	
 }
@@ -9457,7 +9491,7 @@ void prepare_move()
 							active_extruder=RIGHT_EXTRUDER;
 							Flag_Raft_Dual_Mode_On = true;
 							st_synchronize();
-						}						
+						}
 						destination[X_AXIS] = extruder_offset[X_AXIS][RIGHT_EXTRUDER]-destination_X_2;
 						dual_mode_duplication_z_adjust_raft();
 					}
@@ -10069,7 +10103,7 @@ void right_test_print_code(){
 	float initial_y_pos = 183.5;
 	float initial_z_pos = 0.3;
 	float z_layer_test = 0.2;
-		
+	
 	#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
 	current_position[X_AXIS] = initial_x_pos;
 	#else
@@ -10099,7 +10133,7 @@ void right_test_print_code(){
 			current_position[X_AXIS] = initial_x_pos-(distance_x*i);
 			#else
 			current_position[X_AXIS] = initial_x_pos-(distance_x*i) + X_OFFSET_CALIB_PROCEDURES;
-			#endif			
+			#endif
 			current_position[Y_AXIS] = initial_y_pos;
 			current_position[Z_AXIS]-= 0.05;
 			plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],200,active_extruder);
@@ -10125,9 +10159,8 @@ void bed_test_print_code(float x_offset, float y_offset, int zline){
 
 	//home_axis_from_code(true,true,true);
 	doblocking = true;
-	if (active_extruder != LEFT_EXTRUDER) changeTool(LEFT_EXTRUDER);
 	////////////////////
-	//LEFT Z TEST PRINT/
+	//BED COMPENSATION TEST PRINT/
 	////////////////////
 	current_position[E_AXIS]+=15;  //0.5 + 0.15 per ajustar una bona alçada
 	plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],INSERT_SLOW_SPEED/60,active_extruder);

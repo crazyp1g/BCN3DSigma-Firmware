@@ -46,6 +46,7 @@ bool flag_utilities_filament_purgeselect1 = false;
 bool flag_utilities_filament_purgeload = false;
 bool flag_utilities_filament_purgeunload = false;
 bool flag_utilities_calibration_calibfull = false;
+bool flag_utilities_calibration_calibfull_skipZcalib = false;
 bool flag_utilities_calibration_calibbeddone = false;
 bool flag_utilities_calibration_bedcomensationmode = false;
 bool flag_temp_gifhotent0 = false;
@@ -4046,20 +4047,47 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					case BUTTON_Z_COMPENSATION_COMFIRMATION_YES:
 					if (millis() >= waitPeriod_button_press){
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
-						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBX,0);
-						setTargetHotend0(print_temp_l);
-						setTargetHotend1(print_temp_r);
+						setTargetHotend0(CALIBFULL_HOTEND_STANDBY_TEMP);
+						setTargetHotend1(CALIBFULL_HOTEND_STANDBY_TEMP);
 						setTargetBed(max(bed_temp_l,bed_temp_r));
 						if(extruder_offset[Z_AXIS][RIGHT_EXTRUDER]<0){
-							extruder_offset[Z_AXIS][RIGHT_EXTRUDER] = 0;
-							}else{
-							zprobe_zoffset +=extruder_offset[Z_AXIS][RIGHT_EXTRUDER];
-							extruder_offset[Z_AXIS][RIGHT_EXTRUDER] = 0;
-						}
+								extruder_offset[Z_AXIS][RIGHT_EXTRUDER] = 0;
+								}else{
+								zprobe_zoffset +=extruder_offset[Z_AXIS][RIGHT_EXTRUDER];
+								extruder_offset[Z_AXIS][RIGHT_EXTRUDER] = 0;
+							}
 						SERIAL_PROTOCOLLNPGM("Gauges installation confirmed");
+						
+						surfing_utilities = true;
+						
+						if(flag_utilities_calibration_zcomensationmode_gauges == 1888){
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBX,0);
+							
+							}else if(flag_utilities_calibration_zcomensationmode_gauges == 2888){
+							
+							bed_calibration_times = 0;
+							if(saved_print_flag==1888){
+								saved_print_flag = 888;
+								Config_StoreSettings();
+							}
+							
+							SERIAL_PROTOCOLPGM("INFO: BED CALIB - ");
+							Serial.println(flag_utilities_calibration_calibbeddone);
+							flag_utilities_calibration_calibfull_skipZcalib = true;
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
+							gif_processing_state = PROCESSING_DEFAULT;
+							doblocking= true;
+							home_axis_from_code(true,true,true);
+							st_synchronize();
+							if(gif_processing_state == PROCESSING_ERROR)return;
+							enquecommand_P(PSTR("G34"));	//Start BED Calibration Wizard
+							changeTool(0);
+						}
 						flag_utilities_calibration_zcomensationmode_gauges = 888;
 						Config_StoreSettings();
-						surfing_utilities = true;
+						
+						
+						
 					}
 					break;
 					
@@ -4086,7 +4114,8 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							}else if(flag_utilities_calibration_zcomensationmode_gauges == 2888){
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_MAIN,0);
 							flag_utilities_calibration_zcomensationmode_gauges = 888;
-							Config_StoreSettings();	
+							Config_StoreSettings();
+							
 							}
 						}
 					}
@@ -4434,7 +4463,6 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						if (flag_utilities_calibration_calibfull){
 							bed_calibration_times = 0;
 							
-							
 							active_extruder = LEFT_EXTRUDER;
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							gif_processing_state = PROCESSING_DEFAULT;
@@ -4453,13 +4481,37 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBZL_SKIP,0);
 							if(Step_First_Start_Wizard){
 								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBZL_SKIP,1);
-								}else if(flag_utilities_calibration_bedcomensationmode){
-								Bed_Compensation_state = 1;
-								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBZL_SKIP,1);
 							}
 							
+						}
+						else if(flag_utilities_calibration_bedcomensationmode){
+							active_extruder = which_extruder;
+							//genie.WriteObject(GENIE_OBJ_FORM,FORM_WAITING_ROOM,0);
+							//gif_processing_state = PROCESSING_DEFAULT;
 							
+							st_synchronize();
 							
+							Bed_Compensation_state = 2;
+							Bed_compensation_redo_offset = 0;
+							if(gif_processing_state == PROCESSING_ERROR)return;
+							if(which_extruder==0){
+								enquecommand_P(PSTR("T0"));
+								}else{
+								enquecommand_P(PSTR("T1"));
+							}
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_CLEANBED,0);
+						}
+						else if(flag_utilities_calibration_calibfull_skipZcalib){
+							flag_utilities_calibration_calibfull_skipZcalib = false;
+							active_extruder = LEFT_EXTRUDER;
+							setTargetHotend0(CALIBFULL_HOTEND_STANDBY_TEMP);
+							setTargetHotend1(CALIBFULL_HOTEND_STANDBY_TEMP);
+							setTargetBed(max(bed_temp_l,bed_temp_r));
+							
+							st_synchronize();
+							if(gif_processing_state == PROCESSING_ERROR)return;
+							enquecommand_P(PSTR("T0"));
+							genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION_CALIBFULL_GOCALIBX,0);
 							
 						}
 						else{
@@ -5567,6 +5619,26 @@ inline void Z_compensation_coolingdown(void){
 	/*sprintf_P(offset_string, PSTR("Remember install gauges\non %s Hotend to correct %d.%1d%1dmm"),
 	((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0)?"right":"left"),
 	(int)(5*offset_aprox)/100,(int)((5*offset_aprox)/10)%10,(int)(5*offset_aprox)%10);*/
+	genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
+	gif_processing_state = PROCESSING_DEFAULT;
+	if(home_made_Z){
+		home_axis_from_code(true, true, false);	
+		}else{
+			home_axis_from_code(true, true, true);		
+	}
+	changeTool(which_extruder);
+	current_position[Z_AXIS]= 180;
+	plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],15,which_extruder);
+	current_position[Y_AXIS] = 100;
+	#if BCN3D_PRINTER_SETUP == BCN3D_SIGMA_PRINTER_DEFAULT
+	plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],XY_TRAVEL_SPEED*1.5,which_extruder);
+	st_synchronize();
+	current_position[X_AXIS] = 155;
+	#else
+	current_position[X_AXIS] = 155 + X_OFFSET_CALIB_PROCEDURES;
+	#endif
+	plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS],current_position[Z_AXIS],current_position[E_AXIS],XY_TRAVEL_SPEED*1.5,which_extruder);
+	st_synchronize();
 	sprintf_P(offset_string, PSTR("Install %d %s on the %s hotend"), offset_aprox, ((offset_aprox > 1)?"shims":"shim") , ((extruder_offset[Z_AXIS][RIGHT_EXTRUDER] < 0)?"right":"left"));
 	Serial.println(offset_string);
 	genie.WriteObject(GENIE_OBJ_FORM,FORM_Z_COMPENSATION_SHUTDOWN,0);
