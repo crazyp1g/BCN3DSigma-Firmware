@@ -1295,6 +1295,11 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						setTargetBed(0);
 						setTargetHotend0(0);
 						setTargetHotend1(0);
+						screen_sdcard = false;
+						surfing_utilities=false;
+						SERIAL_PROTOCOLPGM("Surfing 0 \n");
+						surfing_temps = false;
+						HeaterCooldownInactivity(false);
 						genie.WriteObject(GENIE_OBJ_FORM, FORM_MAIN, 0);
 						printer_state = STATE_NONE;
 					}
@@ -5394,7 +5399,7 @@ inline void Z_compensation_decisor(void){
 }
 inline void Calib_check_temps(void){
 	static long waitPeriod_s = millis();
-	if((abs(degHotend(LEFT_EXTRUDER)-degTargetHotend(LEFT_EXTRUDER))>5) || (abs(degHotend(RIGHT_EXTRUDER)-degTargetHotend(RIGHT_EXTRUDER))>5) || (max(bed_temp_l,bed_temp_r)-degBed()> 2)){
+	if((abs(degHotend(LEFT_EXTRUDER)-degTargetHotend(LEFT_EXTRUDER))>5) || (abs(degHotend(RIGHT_EXTRUDER)-degTargetHotend(RIGHT_EXTRUDER))>5) || ((degTargetBed()-degBed())-degBed()> 2)){
 		int Tref0 = (int)degHotend0();
 		int Tref1 = (int)degHotend1();
 		int Trefbed = (int)degBed();
@@ -5404,7 +5409,7 @@ inline void Calib_check_temps(void){
 		long percentage = 0;
 		genie.WriteObject(GENIE_OBJ_FORM,FORM_ADJUSTING_TEMPERATURES,0);
 		gif_processing_state = PROCESSING_ADJUSTING;
-		while (((abs(degHotend(LEFT_EXTRUDER)-degTargetHotend(LEFT_EXTRUDER))>5) && Tfinal0!=0) || ((abs(degHotend(RIGHT_EXTRUDER)-degTargetHotend(RIGHT_EXTRUDER))>5) && Tfinal1!=0) || (max(bed_temp_l,bed_temp_r)-degBed()> 2)){ //Waiting to heat the extruder
+		while (((abs(degHotend(LEFT_EXTRUDER)-degTargetHotend(LEFT_EXTRUDER))>5) && Tfinal0!=0) || ((abs(degHotend(RIGHT_EXTRUDER)-degTargetHotend(RIGHT_EXTRUDER))>5) && Tfinal1!=0) || ((degTargetBed()-degBed())> 2)){ //Waiting to heat the extruder
 			
 			manage_heater();
 			touchscreen_update();
