@@ -2575,6 +2575,7 @@ void get_command()
 	static bool stop_buffering=false;
 	if(buflen==0) stop_buffering=false;
 	static int raft_indicator = 0;
+	static int raft_indicator_is_Gcode = 0;
 	static uint32_t fileraftstart = 0;
 	static float current_z_raft_seen = 0.0;
 	while( !card.eof()  && buflen < BUFSIZE && !stop_buffering) {
@@ -2668,6 +2669,7 @@ void get_command()
 					break;
 					
 				}
+				raft_indicator_is_Gcode = 0;
 			}
 			#endif
 			
@@ -2691,21 +2693,23 @@ void get_command()
 			if(!comment_mode) cmdbuffer[bufindw][serial_count++] = serial_char;
 			#if BCN3D_SCREEN_VERSION_SETUP == BCN3D_SIGMA_PRINTER_DEVMODE_1
 			if(get_dual_x_carriage_mode() == 5 || get_dual_x_carriage_mode() == 6){//5 = dual mode raft
-				
-				if(serial_char == 'Z' && !comment_mode){
-					raft_indicator = 1;
-					raft_line++;
-					if(raft_line == 1){
-						fileraftstart = card.getIndex()-serial_count;
-						raft_line_counter_g = 1;
-						raft_line_counter = 1;
+				if(serial_char == 'G'&& !comment_mode) raft_indicator_is_Gcode = 1;
+				if(raft_indicator_is_Gcode){
+					if(serial_char == 'Z' && !comment_mode){
+						raft_indicator = 1;
+						raft_line++;
+						if(raft_line == 1){
+							fileraftstart = card.getIndex()-serial_count;
+							raft_line_counter_g = 1;
+							raft_line_counter = 1;
+						}
+						
 					}
-					
-				}
-				if(raft_indicator >= 1 && !comment_mode){
-					if(serial_char == 'X')raft_indicator=raft_indicator+2;
-					if(serial_char == 'Y')raft_indicator=raft_indicator+3;
-					if(serial_char == 'E')raft_indicator=raft_indicator+4;
+					if(raft_indicator >= 1 && !comment_mode){
+						if(serial_char == 'X')raft_indicator=raft_indicator+2;
+						if(serial_char == 'Y')raft_indicator=raft_indicator+3;
+						if(serial_char == 'E')raft_indicator=raft_indicator+4;
+					}
 				}
 			}
 			#endif
@@ -6326,7 +6330,7 @@ inline void gcode_M104(){
 	}
 	if (code_seen('S')) setTargetHotend(code_value()+(tmp_extruder==0 ? sd_printing_temp_setting_offset_hotent0:sd_printing_temp_setting_offset_hotent1), tmp_extruder);
 	#ifdef DUAL_X_CARRIAGE
-	if ((dual_x_carriage_mode == DXC_DUPLICATION_MODE) && tmp_extruder == 0)
+	if ((dual_x_carriage_mode == DXC_DUPLICATION_MODE || dual_x_carriage_mode == DXC_DUPLICATION_MIRROR_MODE) && tmp_extruder == 0)
 	setTargetHotend1(code_value() == 0.0 ? 0.0 : code_value() + duplicate_extruder_temp_offset);
 	#endif
 	setWatch();
@@ -6537,7 +6541,7 @@ inline void gcode_M109(){
 		setTargetHotend(code_value()+(tmp_extruder==0 ? sd_printing_temp_setting_offset_hotent0:sd_printing_temp_setting_offset_hotent1), tmp_extruder);
 		
 		#ifdef DUAL_X_CARRIAGE
-		if ((dual_x_carriage_mode == DXC_DUPLICATION_MODE) && tmp_extruder == 0)
+		if ((dual_x_carriage_mode == DXC_DUPLICATION_MODE || dual_x_carriage_mode == DXC_DUPLICATION_MIRROR_MODE) && tmp_extruder == 0)
 		setTargetHotend1(code_value() == 0.0 ? 0.0 : code_value() + duplicate_extruder_temp_offset);
 		#endif
 		
@@ -6545,7 +6549,7 @@ inline void gcode_M109(){
 		} else if (code_seen('R')) {
 		setTargetHotend(code_value(), tmp_extruder);
 		#ifdef DUAL_X_CARRIAGE
-		if (dual_x_carriage_mode == DXC_DUPLICATION_MODE && tmp_extruder == 0)
+		if ((dual_x_carriage_mode == DXC_DUPLICATION_MODE || dual_x_carriage_mode == DXC_DUPLICATION_MIRROR_MODE) && tmp_extruder == 0)
 		setTargetHotend1(code_value() == 0.0 ? 0.0 : code_value() + duplicate_extruder_temp_offset);
 		#endif
 		CooldownNoWait = false;
