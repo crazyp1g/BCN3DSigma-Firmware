@@ -1320,27 +1320,22 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					
 					case BUTTON_SDLIST_SELECT0:
 					flag_sdlist_select0 = true;
-					SERIAL_PROTOCOLLNPGM("Select 0");
 					break;
 					
 					case BUTTON_SDLIST_SELECT1:
 					flag_sdlist_select1 = true;
-					SERIAL_PROTOCOLLNPGM("Select 1");
 					break;
 					
 					case BUTTON_SDLIST_SELECT2:
 					flag_sdlist_select2 = true;
-					SERIAL_PROTOCOLLNPGM("Select 2");
 					break;
 					
 					case BUTTON_SDLIST_SELECT3:
 					flag_sdlist_select3 = true;
-					SERIAL_PROTOCOLLNPGM("Select 3");
 					break;
 					
 					case BUTTON_SDLIST_SELECT4:
 					flag_sdlist_select4 = true;
-					SERIAL_PROTOCOLLNPGM("Select 4");
 					break;
 															
 					case BUTTON_SDLIST_FOLDERBACK:

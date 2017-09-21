@@ -14,7 +14,7 @@ Please refer to the [wiki][8] in order to get instructions on how to upgrade the
 - Dual independent X extruders.
 - Autolevel, autocalibration of XYZ axis.
 - LCD Touchscreen support.
-- Insert/Remove filament
+- Load/Unload filament
 - Refined firmware for better printing experience.
 
 This firmware was first developed by [Jordi Calduch][1] then was [Xavier Gómez][2] and now the current developer is [Alejandro Garcia][6] at [BCN3D Technologies][3]. This firmware is a rework of the popular [Marlin][4].
