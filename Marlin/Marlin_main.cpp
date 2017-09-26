@@ -1449,8 +1449,7 @@ void update_screen_printing(){
 				
 				if ((abs((int)degHotend(which_extruder)-(int)degTargetHotend(which_extruder)) < CHANGE_FIL_TEMP_HYSTERESIS)){
 					// if we want to add user setting temp, we should control if is heating
-					SERIAL_PROTOCOLPGM("temp ok \n");
-					SERIAL_PROTOCOLPGM("Ready to Insert/Remove \n");
+					SERIAL_PROTOCOLPGM("Ready to Load/Unload \n");
 					//We have preheated correctly
 					
 					if (filament_mode =='I'){
@@ -1769,8 +1768,7 @@ void update_screen_noprinting(){
 				if ((abs((int)degHotend(which_extruder)-(int)degTargetHotend(which_extruder)) < CHANGE_FIL_TEMP_HYSTERESIS)){
 					// if we want to add user setting temp, we should control if is heating
 					
-					SERIAL_PROTOCOLPGM("temp ok \n");
-					SERIAL_PROTOCOLPGM("Ready to Insert/Remove \n");
+					SERIAL_PROTOCOLPGM("Ready to Load/Unload \n");
 					//We have preheated correctly
 					if (filament_mode =='I'){
 						
@@ -2317,7 +2315,7 @@ void touchscreen_update() //Updates the Serial Communications with the screen
 					enquecommand_P((PSTR("T0")));
 					st_synchronize();
 					if(gif_processing_state == PROCESSING_ERROR)return;
-					SERIAL_PROTOCOLPGM("Calibration Successful, going back to main menu \n");
+					SERIAL_PROTOCOLPGM("Calibration Successful\n");
 					
 					doblocking=false;
 					
@@ -5159,23 +5157,7 @@ inline void gcode_G36()
 	home_axis_from_code(true,true,true);
 	gcode_G34();
 }
-
-inline void gcode_G69(){
-	#ifdef ENABLE_AUTO_BED_LEVELING
-	SERIAL_PROTOCOLLNPGM("G69 ACTIVATED");
-	////*******SAVE ACTUIAL POSITION
-	saved_position[X_AXIS] = current_position[X_AXIS];
-	saved_position[Y_AXIS] = current_position[Y_AXIS];
-	saved_position[Z_AXIS] = current_position[Z_AXIS];
-	saved_position[E_AXIS] = current_position[E_AXIS];
-	saved_feedrate = feedrate;
-	//*********************************//
-	saved_active_extruder = active_extruder;
-	//********Retract
-	current_position[E_AXIS]-=PAUSE_G69_RETRACT;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], INSERT_FAST_SPEED/60, active_extruder);//Retract
-	st_synchronize();
-	//*********************************//
+inline void pause_procedure_G69_G71_XY(){
 	feedrate=homing_feedrate[X_AXIS];
 	if (active_extruder == LEFT_EXTRUDER && current_position[X_AXIS] != 0){															//Move X axis, controlling the current_extruder
 		current_position[X_AXIS] = current_position[X_AXIS]-PAUSE_G69_XYMOVE;
@@ -5187,22 +5169,10 @@ inline void gcode_G69(){
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],  current_position[Z_AXIS], current_position[E_AXIS], feedrate/60, active_extruder);
 	}
 	st_synchronize();
-	//********MOVE TO PAUSE POSITION
-	
-	if(current_position[Z_AXIS]>=180) current_position[Z_AXIS] += 2;								//
-	else if(current_position[Z_AXIS]>=205) {}														//Move the bed, more or less in function of current_position
-	else current_position[Z_AXIS] += 10;															//
-	int feedrate=homing_feedrate[Z_AXIS];
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],  current_position[Z_AXIS], current_position[E_AXIS], feedrate/60, active_extruder);
-	st_synchronize();
-	
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],  current_position[Z_AXIS], current_position[E_AXIS] -= 4, INSERT_FAST_SPEED/60, active_extruder);	//Retract
-	st_synchronize();
+}
+inline void pause_procedure_G69_G71_goparking(){
 	if(dual_x_carriage_mode == DXC_DUPLICATION_MODE){
-		feedrate=homing_feedrate[X_AXIS];
-		extruder_duplication_enabled = false;
-		extruder_duplication_mirror_enabled = false;
-		
+		feedrate=homing_feedrate[X_AXIS];		
 		current_position[X_AXIS] = 0;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],  current_position[Z_AXIS], current_position[E_AXIS], feedrate/60, LEFT_EXTRUDER);
 		
@@ -5222,8 +5192,59 @@ inline void gcode_G69(){
 		}
 		st_synchronize();
 	}
-	if(dual_x_carriage_mode ==DXC_DUPLICATION_MIRROR_MODE)	extruder_duplication_mirror_enabled =false;
 	
+}
+inline void pause_procedure_G70_G72_prepurge(){
+	
+	current_position[Z_AXIS] = saved_position[Z_AXIS]+PAUSE_G70_ZMOVE;
+	feedrate=homing_feedrate[Z_AXIS];
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],  current_position[Z_AXIS], current_position[E_AXIS], feedrate/60, active_extruder);
+	destination[Z_AXIS] = current_position[Z_AXIS];
+	st_synchronize();
+
+	current_position[Y_AXIS] = saved_position[Y_AXIS];
+	feedrate=homing_feedrate[Y_AXIS];
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate/60, active_extruder);//Purge
+	st_synchronize();
+}
+inline void pause_procedure_G70_G72_postpurge(){
+	if(dual_x_carriage_mode ==DXC_DUPLICATION_MODE){
+		plan_set_position(extruder_offset[X_AXIS][RIGHT_EXTRUDER], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+		plan_buffer_line(current_position[X_AXIS]+duplicate_extruder_x_offset, current_position[Y_AXIS],  current_position[Z_AXIS], current_position[E_AXIS], 200, RIGHT_EXTRUDER);
+		plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+	}
+	st_synchronize();
+}
+inline void gcode_G69(){
+	#ifdef ENABLE_AUTO_BED_LEVELING
+	////*******SAVE ACTUIAL POSITION
+	saved_position[X_AXIS] = current_position[X_AXIS];
+	saved_position[Y_AXIS] = current_position[Y_AXIS];
+	saved_position[Z_AXIS] = current_position[Z_AXIS];
+	saved_position[E_AXIS] = current_position[E_AXIS];
+	saved_feedrate = feedrate;
+	//*********************************//
+	saved_active_extruder = active_extruder;
+	//********Retract
+	current_position[E_AXIS]-=PAUSE_G69_RETRACT;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], INSERT_FAST_SPEED/60, active_extruder);//Retract
+	st_synchronize();
+	//*********************************//
+	pause_procedure_G69_G71_XY();
+	//********MOVE TO PAUSE POSITION
+	
+	if(current_position[Z_AXIS]>=180) current_position[Z_AXIS] += 2;								//
+	else if(current_position[Z_AXIS]>=205) {}														//Move the bed, more or less in function of current_position
+	else current_position[Z_AXIS] += 10;															//
+	int feedrate=homing_feedrate[Z_AXIS];
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],  current_position[Z_AXIS], current_position[E_AXIS], feedrate/60, active_extruder);
+	st_synchronize();
+	
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],  current_position[Z_AXIS], current_position[E_AXIS] -= 4, INSERT_FAST_SPEED/60, active_extruder);	//Retract
+	st_synchronize();
+	if(dual_x_carriage_mode ==DXC_DUPLICATION_MODE)	extruder_duplication_enabled = false;
+	pause_procedure_G69_G71_goparking();
+	if(dual_x_carriage_mode ==DXC_DUPLICATION_MIRROR_MODE)	extruder_duplication_mirror_enabled =false;
 	//*********************************//
 	flag_sdprinting_pausepause = false;
 	doblocking = true;
@@ -5244,16 +5265,7 @@ inline void gcode_G70(){
 	active_extruder = saved_active_extruder;
 	
 	
-	current_position[Z_AXIS] = saved_position[Z_AXIS]+PAUSE_G70_ZMOVE;
-	feedrate=homing_feedrate[Z_AXIS];
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],  current_position[Z_AXIS], current_position[E_AXIS], feedrate/60, active_extruder);
-	destination[Z_AXIS] = current_position[Z_AXIS];
-	st_synchronize();
-	
-	current_position[Y_AXIS] = saved_position[Y_AXIS];
-	feedrate=homing_feedrate[Y_AXIS];
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate/60, active_extruder);//Purge
-	st_synchronize();
+	pause_procedure_G70_G72_prepurge();
 	
 	if(dual_x_carriage_mode ==DXC_DUPLICATION_MODE)	extruder_duplication_enabled =true;
 	if(dual_x_carriage_mode ==DXC_DUPLICATION_MIRROR_MODE)	extruder_duplication_mirror_enabled =true;
@@ -5271,17 +5283,8 @@ inline void gcode_G70(){
 	
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],  current_position[Z_AXIS], current_position[E_AXIS], 200, active_extruder);
 	
-	if(dual_x_carriage_mode ==DXC_DUPLICATION_MODE){
-		plan_set_position(extruder_offset[X_AXIS][RIGHT_EXTRUDER], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-		plan_buffer_line(current_position[X_AXIS]+duplicate_extruder_x_offset, current_position[Y_AXIS],  current_position[Z_AXIS], current_position[E_AXIS], 200, RIGHT_EXTRUDER);
-		plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-	}
-	
-	
-	st_synchronize();
-	
+	pause_procedure_G70_G72_postpurge();
 	if(dual_x_carriage_mode ==DXC_DUPLICATION_MODE)	extruder_duplication_enabled =true;
-	
 	current_position[Z_AXIS] = saved_position[Z_AXIS];
 	feedrate=homing_feedrate[Z_AXIS];
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],  current_position[Z_AXIS], current_position[E_AXIS], 15, active_extruder);
@@ -5311,6 +5314,55 @@ inline void gcode_G70(){
 	flag_sdprinting_pauseresume = false;
 	
 	#endif //ENABLE_AUTO_BED_LEVELING
+	
+}
+inline void gcode_G71(){//pause rest
+	////*******SAVE ACTUIAL POSITION
+	saved_position[X_AXIS] = current_position[X_AXIS];
+	saved_position[Y_AXIS] = current_position[Y_AXIS];
+	saved_position[Z_AXIS] = current_position[Z_AXIS];
+	saved_position[E_AXIS] = current_position[E_AXIS];
+	saved_feedrate = feedrate;
+	//*********************************//
+	saved_active_extruder = active_extruder;
+	//********Retract
+	
+	//*********************************//
+	pause_procedure_G69_G71_XY();
+	//********MOVE TO PAUSE POSITION
+	
+	if(current_position[Z_AXIS]>=180) current_position[Z_AXIS] += 2;								//
+	else if(current_position[Z_AXIS]>=205) {}														//Move the bed, more or less in function of current_position
+	else current_position[Z_AXIS] += 2;															//
+	int feedrate=homing_feedrate[Z_AXIS];
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],  current_position[Z_AXIS], current_position[E_AXIS], feedrate/60, active_extruder);
+	st_synchronize();
+	pause_procedure_G69_G71_goparking();
+	
+}
+inline void gcode_G72(){//resume
+	doblocking = true;
+	active_extruder = saved_active_extruder;
+	
+	
+	pause_procedure_G70_G72_prepurge();
+	
+	current_position[X_AXIS] = saved_position[X_AXIS];
+	
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],  current_position[Z_AXIS], current_position[E_AXIS], 200, active_extruder);
+	
+	pause_procedure_G70_G72_postpurge();
+	
+	current_position[Z_AXIS] = saved_position[Z_AXIS];
+	feedrate=homing_feedrate[Z_AXIS];
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],  current_position[Z_AXIS], current_position[E_AXIS], 15, active_extruder);
+	destination[Z_AXIS] = current_position[Z_AXIS];
+	st_synchronize();
+	
+	
+	//*********************************//
+	
+	feedrate = saved_feedrate;
 	
 }
 inline void gcode_G29(){
@@ -5703,12 +5755,9 @@ inline void gcode_M24(){
 			if (namefilegcode[i] == '.') i = String(card.longFilename).length() +10;
 			else namefilegcode[i]=card.longFilename[i];
 		}
-		//buffer[count]='\0';
 		genie.WriteStr(STRING_SDPRINTING_GCODE,namefilegcode);//Printing form//Printing form
 	}
 	
-	//Serial.println((char*)prepareString(card.longFilename,12));
-	//genie.WriteStr(6,"Ready");
 	#endif
 	#endif //SDSUPPORT
 }
@@ -8402,6 +8451,14 @@ void process_commands()
 			
 			case 70:
 			gcode_G70();
+			break;
+			
+			case 71:
+			gcode_G71();
+			break;
+			
+			case 72:
+			gcode_G72();
 			break;
 
 			case 29: // G29 Detailed Z-Probe, probes the bed at 3 or more points.
