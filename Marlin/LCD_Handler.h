@@ -32,7 +32,7 @@ inline void ListFileSelect1();
 inline void ListFileSelect2();
 inline void ListFileSelect3();
 inline void ListFileSelect4();
-inline void ListFileSelect5();
+//inline void ListFileSelect5();
 inline void setfoldernames(int jint);
 inline void folder_navigation_register(bool upchdir);
 void myGenieEventHandler();
@@ -348,7 +348,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_PURGE,0);
 								surfing_utilities = true;
 								purge_extruder_selected = -1;
-								SERIAL_PROTOCOLPGM("Enter in purge mode \n");
+								SERIAL_PROTOCOLPGM("Purge Filament \n");
 								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT0,0);
 								genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT1,0);
 								
@@ -793,7 +793,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							#endif
 							plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_TRAVEL_SPEED*1.5,which_extruder);
 							st_synchronize();
-							SERIAL_PROTOCOLPGM("Inserting :   \n");
+							SERIAL_PROTOCOLPGM("Loading:\n");
 							current_position[E_AXIS] += 30;//Extra extrusion at low feedrate
 							plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS],  700/60, which_extruder); //850/60
 							st_synchronize();
@@ -1050,7 +1050,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 							
 							//enquecommand_P((PSTR("G28 X0 Y0")));
-							SERIAL_PROTOCOLPGM("SUCCESS \n");
+							SERIAL_PROTOCOLPGM("SUCCESS\n");
 							gif_processing_state = PROCESSING_STOP;
 							flag_utilities_filament_acceptok = false;
 							if (filament_mode == 'R')
@@ -1132,7 +1132,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							gif_processing_state = PROCESSING_STOP;
 							screen_sdcard = false;
 							surfing_utilities=false;
-							SERIAL_PROTOCOLPGM("Surfing 0 \n");
+							SERIAL_PROTOCOLPGM("Surfing 0\n");
 							surfing_temps = false;
 							HeaterCooldownInactivity(true);
 							genie.WriteObject(GENIE_OBJ_FORM, FORM_MAIN, 0);
@@ -1297,7 +1297,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						setTargetHotend1(0);
 						screen_sdcard = false;
 						surfing_utilities=false;
-						SERIAL_PROTOCOLPGM("Surfing 0 \n");
+						SERIAL_PROTOCOLPGM("Surfing 0\n");
 						surfing_temps = false;
 						HeaterCooldownInactivity(false);
 						genie.WriteObject(GENIE_OBJ_FORM, FORM_MAIN, 0);
@@ -1362,7 +1362,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						
 						screen_sdcard = false;
 						surfing_utilities=false;
-						SERIAL_PROTOCOLPGM("Surfing 0 \n");
+						SERIAL_PROTOCOLPGM("Surfing 0\n");
 						surfing_temps = false;
 						HeaterCooldownInactivity(true);
 						genie.WriteObject(GENIE_OBJ_FORM, FORM_MAIN, 0);
@@ -1486,7 +1486,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					if (millis() >= waitPeriod_button_press){
 						screen_sdcard = false;
 						surfing_utilities=false;
-						SERIAL_PROTOCOLPGM("Surfing 0 \n");
+						SERIAL_PROTOCOLPGM("Surfing 0\n");
 						surfing_temps = false;
 						touchscreen_update();
 						HeaterCooldownInactivity(true);
@@ -1559,7 +1559,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_MAIN,0);
 						screen_sdcard = false;
 						surfing_utilities=false;
-						SERIAL_PROTOCOLPGM("Surfing 0 \n");
+						SERIAL_PROTOCOLPGM("Surfing 0\n");
 						surfing_temps = false;
 						saved_print_flag = 888;
 						Config_StoreSettings();
@@ -1580,7 +1580,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								card.getfilename(saved_workDir_vector[i]);
 								workDir_vector[i]=saved_workDir_vector[i];
 								if (!card.filenameIsDir){
-									SERIAL_PROTOCOLLNPGM("Te pille");
+									SERIAL_PROTOCOLLNPGM("Found");
 									}else{
 									if (card.chdir(card.filename)!=-1){
 									}
@@ -1674,7 +1674,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					if (millis() >= waitPeriod_button_press){
 						screen_sdcard = false;
 						surfing_utilities=false;
-						SERIAL_PROTOCOLPGM("Surfing 0 \n");
+						SERIAL_PROTOCOLPGM("Surfing 0\n");
 						surfing_temps = false;
 						touchscreen_update();
 						genie.WriteObject(GENIE_OBJ_FORM, FORM_MAIN, 0);
@@ -1719,7 +1719,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						
 						screen_sdcard = false;
 						surfing_utilities=false;
-						SERIAL_PROTOCOLPGM("Surfing 0 \n");
+						SERIAL_PROTOCOLPGM("Surfing 0\n");
 						surfing_temps = false;
 						genie.WriteObject(GENIE_OBJ_FORM, FORM_MAIN, 0);
 						genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_MAINTENANCE_NYLONCLEANING_SELECTLEFT, 0);
@@ -1836,11 +1836,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], max_feedrate[Y_AXIS], active_extruder); //check speed
 							st_synchronize();
 							if(gif_processing_state == PROCESSING_ERROR)return;
-							
-							
-							
-							SERIAL_PROTOCOLPGM("Filament Removed, GOING TO CLEAN THE NOZZLE \n");
-							
+																					
 							if (which_extruder == 0) changeTool(0);
 							else changeTool(1);
 							
@@ -2060,7 +2056,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT_PURGE,0);
 						
 						purge_extruder_selected = -1;
-						SERIAL_PROTOCOLPGM("Enter in purge mode \n");
+						SERIAL_PROTOCOLPGM("Purge Filament\n");
 						/*setTargetHotend0(print_temp_l);
 						setTargetHotend1(print_temp_r);*/
 						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT0,0);
@@ -2098,7 +2094,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						screen_sdcard = false;
 						surfing_utilities=false;
 						surfing_temps = false;
-						SERIAL_PROTOCOLPGM("Surfing 0 \n");
+						SERIAL_PROTOCOLPGM("Surfing 0\n");
 						HeaterCooldownInactivity(true);
 						touchscreen_update();
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_MAIN,0);
@@ -2227,7 +2223,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						screen_sdcard = false;
 						surfing_utilities=false;
 						surfing_temps = false;
-						SERIAL_PROTOCOLPGM("Surfing 0 \n");
+						SERIAL_PROTOCOLPGM("Surfing 0\n");
 						genie.WriteObject(GENIE_OBJ_FORM,FORM_MAIN,0);
 						
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
@@ -2242,7 +2238,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							screen_sdcard = false;
 							surfing_utilities=false;
 							surfing_temps = false;
-							SERIAL_PROTOCOLPGM("Surfing 0 \n");
+							SERIAL_PROTOCOLPGM("Surfing 0\n");
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_MAIN,0);
 							waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 						}
@@ -2650,7 +2646,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							#endif
 							plan_buffer_line(current_position[X_AXIS],current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_TRAVEL_SPEED*1.5,which_extruder);
 							st_synchronize();
-							SERIAL_PROTOCOLPGM("Inserting :   \n");
+							SERIAL_PROTOCOLPGM("Loading\n");
 							doblocking = false;
 							current_position[E_AXIS] += 30;//Extra extrusion at low feedrate
 							plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS],  700/60, which_extruder); //850/60
@@ -3160,7 +3156,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								enquecommand_P((PSTR("T0")));
 								st_synchronize();
 								if(gif_processing_state == PROCESSING_ERROR)return;
-								SERIAL_PROTOCOLPGM("Calibration Successful, going back to main menu \n");
+								SERIAL_PROTOCOLPGM("Calibration Successful\n");
 								gif_processing_state = PROCESSING_STOP;
 								
 								genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_CALIBRATION,0);
@@ -3180,7 +3176,6 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							if(Step_First_Start_Wizard){
 								if(which_extruder == 0){
 									enquecommand_P((PSTR("T0")));
-									SERIAL_PROTOCOLPGM("Filament Inserted/Removed, going to the next extruder \n");
 									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT1, 1);
 									genie.WriteObject(GENIE_OBJ_USERBUTTON, BUTTON_UTILITIES_FILAMENT_LOAD_SELECT0, 0);
 									genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_LOAD_MENU,1);
@@ -3195,15 +3190,12 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								}
 								else if (which_extruder == 1){
 									enquecommand_P((PSTR("T0")));
-									SERIAL_PROTOCOLPGM("Filament Inserted/Removed, going to Calib \n");
-									
 									genie.WriteObject(GENIE_OBJ_FORM,FORN_SETUPASSISTANT_STEP_2,0);
 									which_extruder = 0;
 								}
 							}
 							else if(!flag_utilities_maintenance_nyloncleaning){
 								enquecommand_P((PSTR("T0")));
-								SERIAL_PROTOCOLPGM("Filament Inserted/Removed, returning to Main Menu \n");
 								genie.WriteObject(GENIE_OBJ_FORM,FORM_UTILITIES_FILAMENT,0);
 								HeaterCooldownInactivity(true);
 							}
@@ -3213,7 +3205,6 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								setTargetHotend0(0);
 								setTargetHotend1(0);
 								home_axis_from_code(true, true, false);
-								SERIAL_PROTOCOLPGM("Filament Removed, GOING TO CLEAN THE NOZZLE \n");
 								setTargetHotend(NYLON_TEMP_HEATUP_THRESHOLD,which_extruder);
 								if (which_extruder == 0) changeTool(0);
 								else changeTool(1);
@@ -4056,7 +4047,6 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								zprobe_zoffset +=extruder_offset[Z_AXIS][RIGHT_EXTRUDER];
 								extruder_offset[Z_AXIS][RIGHT_EXTRUDER] = 0;
 							}
-						SERIAL_PROTOCOLLNPGM("Gauges installation confirmed");
 						
 						surfing_utilities = true;
 						
@@ -4071,8 +4061,6 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 								Config_StoreSettings();
 							}
 							
-							SERIAL_PROTOCOLPGM("INFO: BED CALIB - ");
-							Serial.println(flag_utilities_calibration_calibbeddone);
 							flag_utilities_calibration_calibfull_skipZcalib = true;
 							genie.WriteObject(GENIE_OBJ_FORM,FORM_PROCESSING,0);
 							gif_processing_state = PROCESSING_DEFAULT;
@@ -4107,7 +4095,6 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							setTargetHotend0(print_temp_l);
 							setTargetHotend1(print_temp_r);
 							setTargetBed(max(bed_temp_l,bed_temp_r));
-							SERIAL_PROTOCOLLNPGM("Gauges installation confirmed");
 							flag_utilities_calibration_zcomensationmode_gauges = 888;
 							Config_StoreSettings();
 							surfing_utilities = true;
@@ -4277,7 +4264,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 						screen_sdcard = false;
 						surfing_utilities=false;
 						surfing_temps = false;
-						SERIAL_PROTOCOLPGM("Surfing 0 \n");
+						SERIAL_PROTOCOLPGM("Surfing 0\n");
 						waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 					}
 					break;
@@ -4548,7 +4535,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 							gif_processing_state = PROCESSING_STOP;
 							screen_sdcard = false;
 							surfing_utilities=false;
-							SERIAL_PROTOCOLPGM("Surfing 0 \n");
+							SERIAL_PROTOCOLPGM("Surfing 0\n");
 							surfing_temps = false;
 							HeaterCooldownInactivity(true);
 							genie.WriteObject(GENIE_OBJ_FORM, FORM_MAIN, 0);
@@ -4697,7 +4684,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 					surfing_temps = false;
 					processing_z_set = 255;
 					touchscreen_update();
-					SERIAL_PROTOCOLPGM("Surfing 0 \n");
+					SERIAL_PROTOCOLPGM("Surfing 0\n");
 					waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 				}
 				break;
@@ -4706,7 +4693,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 				if (millis() >= waitPeriod_button_press){
 					
 					surfing_utilities=true;
-					SERIAL_PROTOCOLPGM("Surfing 1 \n");
+					SERIAL_PROTOCOLPGM("Surfing 1\n");
 					waitPeriod_button_press=millis()+WAITPERIOD_PRESS_BUTTON;
 				}
 				break;
@@ -4722,7 +4709,7 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 				case FORM_UTILITIES_FILAMENT_PURGE:
 				if (millis() >= waitPeriod_button_press){
 					
-					SERIAL_PROTOCOLPGM("Enter in purge mode \n");
+					SERIAL_PROTOCOLPGM("Purge Filament\n");
 					if(purge_extruder_selected == 0) {
 						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT0,1);
 						genie.WriteObject(GENIE_OBJ_USERBUTTON,BUTTON_UTILITIES_FILAMENT_PURGE_SELECT1,0);
@@ -4763,31 +4750,6 @@ void myGenieEventHandler(void) //Handler for the do.Events() function
 	}
 }
 
-
-char* prepareString(char* text, int len){
-	SERIAL_PROTOCOLPGM("Text: ");
-	Serial.println(text);
-	if (String(text).length()>12){
-		char buffer[len+1];
-		for (int i = 0; i<len ; i++)
-		{
-			buffer[i]=card.longFilename[i];
-		}
-		buffer[len]='\0';
-		SERIAL_PROTOCOLPGM("Buffer temp: ");
-		Serial.println(buffer);
-		char* buffer2 = strcat(buffer,"...\0");
-		SERIAL_PROTOCOLPGM("Buffer returned: ");
-		Serial.println(buffer2);
-		return buffer2;
-		//buffer2 = strcat(buffer,"...\0");
-		}else{
-		char* buffer2 = text;
-		SERIAL_PROTOCOLPGM("Buffer returned: ");
-		Serial.println(buffer2);
-		return buffer2;
-	}
-}
 inline void setfilenames(int jint){
 	int count = 22;
 	char buffer[count+3];
@@ -4802,7 +4764,7 @@ inline void setfilenames(int jint){
 				buffer[i]=card.longFilename[x];
 			}
 			x++;
-			Serial.print(i);
+			//Serial.print(i);
 		}
 		buffer[count]='\0';
 		char* buffer2 = strcat(buffer,"...\0");
@@ -4818,7 +4780,7 @@ inline void setfilenames(int jint){
 				buffer[i]=card.longFilename[x];
 			}
 			x++;
-			Serial.print(i);
+			//Serial.print(i);
 		}
 		//buffer[count]='\0';
 		genie.WriteStr(stringfilename[jint],buffer);//Printing form
@@ -4826,7 +4788,7 @@ inline void setfilenames(int jint){
 		//Is a file
 		//genie.WriteObject(GENIE_OBJ_USERIMAGES,0,0);
 	}
-	Serial.println(buffer);
+	//Serial.println(buffer);
 }
 inline void ListFilesParsingProcedure(int vecto, int jint){
 	char Workdir[20];
@@ -5122,6 +5084,7 @@ inline void ListFileSelect4(){
 		flag_sdlist_filesupdown = true;
 	}
 }
+/*
 inline void ListFileSelect5(){
 	if(card.cardOK)
 	{
@@ -5155,7 +5118,7 @@ inline void ListFileSelect5(){
 		}
 		flag_sdlist_filesupdown = true;
 	}
-}
+}*/
 inline void ListFileListENTERBACKFORLDERSD(){
 	genie.WriteObject(GENIE_OBJ_VIDEO, GIF_SDLIST_SCROLLBAR,0);
 	filepointer = 0;
@@ -5226,7 +5189,7 @@ inline void setfoldernames(int jint){
 				buffer[i]=card.longFilename[x];
 			}
 			x++;
-			Serial.print(i);
+			//Serial.print(i);
 		}
 		buffer[count]='\0';
 		char* buffer2 = strcat(buffer,"...\0");
@@ -5242,14 +5205,14 @@ inline void setfoldernames(int jint){
 				buffer[i]=card.longFilename[x];
 			}
 			x++;
-			Serial.print(i);
+			//Serial.print(i);
 		}
 		//buffer[count]='\0';
 		genie.WriteStr(stringfilename[jint],buffer);//Printing form
 		//Is a file
 		//genie.WriteObject(GENIE_OBJ_USERIMAGES,0,0);
 	}
-	Serial.println(buffer);
+	//Serial.println(buffer);
 	
 	
 }
